@@ -1,0 +1,21 @@
+.container-banner {
+    height: 150px;
+    width: 100%;
+    overflow: hidden;
+
+}
+
+.banner-img {
+    max-height: 150px;
+    width: 100%;
+    object-fit: cover;
+}
+
+.sticky {
+    top: 0;
+    position: sticky;
+}
+
+body {
+    background: hsl(254, 99%, 95%);
+}
