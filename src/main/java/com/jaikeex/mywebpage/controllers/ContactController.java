@@ -6,10 +6,10 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 @Controller
-public class IndexController {
+public class ContactController {
 
-    @RequestMapping(value = "/")
+    @RequestMapping(value = "/contact")
     public String index (Model model) {
-        return "index";
+        return "contact";
     }
 }

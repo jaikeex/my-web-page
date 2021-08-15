@@ -6,10 +6,10 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 @Controller
-public class IndexController {
+public class ResumeController {
 
-    @RequestMapping(value = "/")
+    @RequestMapping(value = "/resume")
     public String index (Model model) {
-        return "index";
+        return "resume";
     }
 }

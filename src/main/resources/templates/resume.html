@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <title>Resume</title>
+  <div th:replace="fragments/head :: head"></div>
+</head>
+<body>
+<div th:replace="fragments/mobile-nav :: mobile-nav"></div>
+<div th:replace="fragments/header :: headertemplate (currentpage='resume')"></div>
+
+  <main id="main">
+
+    <div th:replace="fragments/banner :: banner"></div>
+    <div th:replace="fragments/breadcrumbs :: breadcrumbs"></div>
+
+    <section class="inner-page">
+      <div class="container">
+        <p>Dobrý den!</p>
+
+
+      </div>
+    </section>
+
+  </main><!-- End #main -->
+
+<div th:replace="fragments/footer :: footer"></div>
+<div th:replace="fragments/arrowup :: arrowup"></div>
+<div th:replace="fragments/jsfiles :: jsfiles"></div>
+
+</body>
+
+</html>

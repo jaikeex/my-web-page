@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<div th:fragment="breadcrumbs">
+    <!-- ======= Breadcrumbs ======= -->
+    <section class="breadcrumbs">
+        <div class="container">
+            <div class="d-flex justify-content-between align-items-center">
+                <h2>Dobrý den!</h2>
+                <ol>
+                    <li><p th:text="${#calendars.format(#calendars.createNow(), 'dd.MM.yyyy HH:mm')}"></p></li>
+
+                </ol>
+            </div>
+        </div>
+    </section><!-- End Breadcrumbs -->
+</div>

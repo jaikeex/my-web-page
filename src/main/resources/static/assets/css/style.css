@@ -1010,9 +1010,9 @@ section {
   display: flex;
   flex-wrap: wrap;
   list-style: none;
-  padding: 0;
+  padding-top: 12px;
   margin: 0;
-  font-size: 15px;
+  font-size: 18px;
 }
 
 .breadcrumbs ol li + li {
