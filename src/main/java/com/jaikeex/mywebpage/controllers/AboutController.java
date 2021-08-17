@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 public class AboutController {
 
     @RequestMapping(value = "/about")
-    public String index (Model model) {
+    public String about (Model model) {
         return "about";
     }
 }

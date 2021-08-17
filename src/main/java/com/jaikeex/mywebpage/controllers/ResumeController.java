@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 public class ResumeController {
 
     @RequestMapping(value = "/resume")
-    public String index (Model model) {
+    public String resume (Model model) {
         return "resume";
     }
 }
