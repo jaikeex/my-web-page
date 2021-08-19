@@ -1,6 +1,7 @@
 package com.jaikeex.mywebpage.config;
 
-import com.jaikeex.mywebpage.services.MyPasswordEncoder;
+import com.jaikeex.mywebpage.services.security.MyAuthenticationSuccessHandler;
+import com.jaikeex.mywebpage.services.security.MyPasswordEncoder;
 import com.jaikeex.mywebpage.services.MyUserDetailsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -11,16 +12,19 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 
 @Configuration
 @EnableWebSecurity
 public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 
     UserDetailsService userDetailsService;
+    MyAuthenticationSuccessHandler successHandler;
 
     @Autowired
-    public SecurityConfiguration(MyUserDetailsService userDetailsService) {
+    public SecurityConfiguration(UserDetailsService userDetailsService, MyAuthenticationSuccessHandler successHandler) {
         this.userDetailsService = userDetailsService;
+        this.successHandler = successHandler;
     }
 
     @Override
@@ -30,7 +34,8 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
-        http.authorizeRequests().antMatchers("/admin").hasRole("ADMIN").and().formLogin();
+        http.authorizeRequests().antMatchers("/admin/**").hasRole("ADMIN").and().formLogin();
+        http.authorizeRequests().antMatchers("/user/info").hasAnyRole("USER", "ADMIN").and().formLogin().successHandler(successHandler);
     }
 
     @Bean

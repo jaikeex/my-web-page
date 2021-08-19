@@ -1,13 +1,13 @@
 package com.jaikeex.mywebpage.entity;
 
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.userdetails.UserDetails;
+import com.jaikeex.mywebpage.services.security.MyPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
-import javax.persistence.*;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
 import java.sql.Timestamp;
-import java.util.Collection;
-import java.util.Collections;
 import java.util.Objects;
 
 @Entity
@@ -37,6 +37,35 @@ public class User{
         this.lastAccessDate = lastAccessDate;
         this.updatedAt = updatedAt;
         this.enabled = enabled;
+        this.role = role;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
+    }
+
+    public void setPassword(String password) {
+        PasswordEncoder passwordEncoder = new MyPasswordEncoder();
+        this.password = passwordEncoder.encode(password);
+    }
+
+    public void setCreationDate(Timestamp creationDate) {
+        this.creationDate = creationDate;
+    }
+
+    public void setLastAccessDate(Timestamp lastAccessDate) {
+        this.lastAccessDate = lastAccessDate;
+    }
+
+    public void setUpdatedAt(Timestamp updatedAt) {
+        this.updatedAt = updatedAt;
+    }
+
+    public void setEnabled(boolean enabled) {
+        this.enabled = enabled;
+    }
+
+    public void setRole(String role) {
         this.role = role;
     }
 

@@ -27,14 +27,13 @@ class MyUserDetailsServiceTest {
 
     @Test
     void loadUserByUsernameThrow() {
-        when(repository.findByUsername("This user does not exist in database")).thenReturn(null);
+        String userName = "thisUserDoesNotExistInDatabase";
+        when(repository.findByUsername(userName)).thenReturn(null);
         Exception exception = assertThrows(NullPointerException.class, () -> {
-            userDetailsService.loadUserByUsername("This user does not exist in database");
+            userDetailsService.loadUserByUsername(userName);
         });
-        String expectedMessage = "Not found This user does not exist in database";
         String actualMessage = exception.getMessage();
-
-        assertTrue(actualMessage.contains(expectedMessage));
+        assertTrue(actualMessage.contains(userName));
     }
 
     @Test

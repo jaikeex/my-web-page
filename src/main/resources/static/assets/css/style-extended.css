@@ -18,3 +18,17 @@
 body {
     background: hsl(254, 99%, 95%);
 }
+
+.breadcrumbs-link-fill {
+    white-space: nowrap;
+}
+
+.register-form-container {
+    padding-top: 35px;
+    margin-left: 35px;
+}
+
+.password-error-message {
+    margin-bottom: 25px;
+    margin-top: 10px;
+}

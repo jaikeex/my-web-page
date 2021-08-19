@@ -1015,6 +1015,16 @@ section {
   font-size: 18px;
 }
 
+.breadcrumbs-logging {
+  display: flex;
+  flex-wrap: wrap;
+  list-style: none;
+  padding-top: 12px;
+  margin: 0;
+  font-size: 18px;
+  min-width: 150px;
+}
+
 .breadcrumbs ol li + li {
   padding-left: 10px;
 }

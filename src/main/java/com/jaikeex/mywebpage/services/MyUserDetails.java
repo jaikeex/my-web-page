@@ -5,9 +5,11 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
+import java.sql.Timestamp;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Objects;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -49,6 +51,17 @@ public class MyUserDetails implements UserDetails {
     @Override
     public boolean isCredentialsNonExpired() {
         return true;
+    }
+
+    public Timestamp getCreationDate() {
+        return user.getCreationDate();
+    }
+
+    public String getTimeSinceLastLogin() {
+        long timeSinceLastLoginInMilliseconds = System.currentTimeMillis() - user.getLastAccessDate().getTime();
+        int daysElapsed = ((int)timeSinceLastLoginInMilliseconds / 86400000);
+        DateFormat formatter = new SimpleDateFormat(" 'days' HH 'hours' mm 'minutes'");
+        return String.valueOf(daysElapsed).concat(formatter.format(timeSinceLastLoginInMilliseconds-3600000));
     }
 
     @Override
