@@ -17,7 +17,7 @@
     <div sec:authorize="isAuthenticated()">
       <h4>Registration was successful!!</h4>
       <p th:text="'You are now logged in as ' + ${#authentication.getPrincipal().getUsername()}"></p>
-      <a href="/user/info">See account details</a>
+      <a href="/user/auth/info">See account details</a>
     </div>
     <div sec:authorize="isAnonymous()">
       <div class="row">

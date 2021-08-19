@@ -13,8 +13,7 @@ public interface UserRepository extends JpaRepository<User, Integer> {
 
     @Query("select u from User u where u.username = :username")
     User findByUsername(
-            @Param("username") String username
-    );
+            @Param("username") String username);
 
     @Modifying
     @Transactional
@@ -22,5 +21,13 @@ public interface UserRepository extends JpaRepository<User, Integer> {
     void updateLastAccessDate(
             @Param("newLastAccessDate") Timestamp newLastAccessDate,
             @Param("username") String username);
+
+    @Modifying
+    @Transactional
+    @Query("update User set password = :password where username = :username")
+    void updatePassword(
+            @Param("password") String password,
+            @Param("username") String username);
+
 
 }

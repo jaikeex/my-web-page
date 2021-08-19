@@ -1,6 +1,6 @@
 package com.jaikeex.mywebpage.services.security;
 
-import com.jaikeex.mywebpage.jpa.dto.UserDto;
+import com.jaikeex.mywebpage.dto.UserDto;
 import org.springframework.beans.BeanWrapperImpl;
 
 import javax.validation.ConstraintValidator;
@@ -35,7 +35,7 @@ public class PasswordMatchesValidator implements ConstraintValidator<PasswordMat
         if (!isValid) {
             constraintValidatorContext.disableDefaultConstraintViolation();
             constraintValidatorContext.buildConstraintViolationWithTemplate(
-                    "{org.hibernate.validator.referenceguide.chapter03.constraintvalidatorcontext.CheckCase.message}").addConstraintViolation();
+                    "The form was incorrect").addConstraintViolation();
         }
         return isValid;
     }

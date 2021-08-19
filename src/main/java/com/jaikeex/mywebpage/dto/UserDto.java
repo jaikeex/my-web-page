@@ -1,13 +1,13 @@
-package com.jaikeex.mywebpage.jpa.dto;
+package com.jaikeex.mywebpage.dto;
 
 import com.jaikeex.mywebpage.services.security.PasswordMatches;
 
 @PasswordMatches.List({@PasswordMatches(field = "password", fieldMatch = "passwordForValidation")})
 public class UserDto {
 
-    private String username;
-    private String password;
-    private String passwordForValidation;
+    protected String username;
+    protected String password;
+    protected String passwordForValidation;
 
     public UserDto() {
     }
@@ -23,7 +23,6 @@ public class UserDto {
     }
 
     public void setUsername(String username) {
-        System.out.println(username);
         this.username = username;
     }
 
@@ -32,7 +31,6 @@ public class UserDto {
     }
 
     public void setPassword(String password) {
-        System.out.println(password);
         this.password = password;
     }
 
@@ -41,7 +39,6 @@ public class UserDto {
     }
 
     public void setPasswordForValidation(String passwordForValidation) {
-        System.out.println(passwordForValidation);
         this.passwordForValidation = passwordForValidation;
     }
 }

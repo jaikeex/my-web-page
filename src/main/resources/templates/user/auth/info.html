@@ -18,9 +18,14 @@
       <section class="inner-page">
         <div class="container">
           <div sec:authorize="isAuthenticated()">
+            <div th:if="${passwordChanged == true}" class="password-changed-message">
+              <h4>Password changed successfully!!</h4>
+            </div>
             <p th:text="'User name: ' + ${#authentication.getPrincipal().getUsername()}"></p>
             <p th:text="'Registered: ' + ${#authentication.getPrincipal().getCreationDate()}"></p>
             <p th:text="'Time since last login: ' + ${#authentication.getPrincipal().getTimeSinceLastLogin()}"></p>
+            <p><a href="/" th:href="@{/user/auth/change-password}">Change password</a></p>
+
           </div>
         </div>
       </section>
