@@ -18,6 +18,8 @@ public class User{
     private int id;
     private String username;
     private String password;
+    private String email;
+    private String resetPasswordToken;
     private Timestamp creationDate;
     private Timestamp lastAccessDate;
     private Timestamp updatedAt;
@@ -28,11 +30,13 @@ public class User{
     }
 
     public User(int id, String userName, String password,
-                Timestamp creationDate, Timestamp lastAccessDate,
+                String email, String resetPasswordToken, Timestamp creationDate, Timestamp lastAccessDate,
                 Timestamp updatedAt, boolean enabled, String role) {
         this.id = id;
         this.username = userName;
         this.password = password;
+        this.email = email;
+        this.resetPasswordToken = resetPasswordToken;
         this.creationDate = creationDate;
         this.lastAccessDate = lastAccessDate;
         this.updatedAt = updatedAt;
@@ -99,6 +103,22 @@ public class User{
 
     public String getRole() {
         return role;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public String getResetPasswordToken() {
+        return resetPasswordToken;
+    }
+
+    public void setResetPasswordToken(String resetPasswordToken) {
+        this.resetPasswordToken = resetPasswordToken;
     }
 
     @Override

@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+      xmlns:tiles="http://www.thymeleaf.org"
+>
+<head>
+  <title>Login</title>
+  <div th:replace="fragments/head :: head"></div>
+</head>
+<body>
+<div th:replace="fragments/mobile-nav :: mobile-nav"></div>
+<div th:replace="fragments/header :: headertemplate (currentpage='resume')"></div>
+
+<main id="main">
+
+  <div th:replace="fragments/banner :: banner"></div>
+  <div th:replace="fragments/breadcrumbs :: breadcrumbs"></div>
+
+    <div class="container form-container">
+      <div class="row">
+        <div class="col-md-6 col-md-offset-3">
+        <div tiles:fragment="content">
+        <form name="f" th:action="@{/login}" method="post">
+          <fieldset>
+            <legend>Please Login</legend>
+            <div th:if="${param.error}" class="error-message" style="color:red">
+              Invalid username and password.
+            </div>
+            <div th:if="${param.logout}" class="error-message" style="color:red">
+              You have been logged out.
+            </div>
+
+            <div class="form-group">
+              <label for="username" class="control-label">Username</label>
+              <input id="username" name="username" class="form-control"/>
+            </div>
+            <div class="form-group">
+              <label for="password" class="control-label">Password</label>
+              <input type="password" name="password" id="password" class="form-control"/>
+            </div>
+            <div class="form-actions">
+              <button type="submit" class="btn btn-success">Log in</button>
+              <span><a href="/" th:href="@{/user/reset-password}">Forgot password?</a></span>
+
+            </div>
+          </fieldset>
+        </form>
+      </div>
+        </div>
+
+      </div>
+    </div>
+
+</main><!-- End #main -->
+
+<div th:replace="fragments/footer :: footer"></div>
+<div th:replace="fragments/arrowup :: arrowup"></div>
+<div th:replace="fragments/jsfiles :: jsfiles"></div>
+
+</body>
+
+</html>

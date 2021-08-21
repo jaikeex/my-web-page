@@ -23,16 +23,40 @@ body {
     white-space: nowrap;
 }
 
-.register-form-container {
+.form-container {
     padding-top: 35px;
-    margin-left: 35px;
+    margin-left: 50px;
+}
+
+.form-container textarea {
+    max-width: 80%;
+    margin-bottom: 15px;
+}
+
+.form-container input {
+    max-width: 80%;
+    margin-bottom: 15px;
 }
 
 .password-error-message {
-    margin-bottom: 25px;
+    margin-bottom: 10px;
     margin-top: 10px;
 }
 
 .password-changed-message {
     margin-bottom: 30px;
 }
+
+.breadcrumbs-link-group{
+    display: inline-block;
+
+}
+
+.button-as-text {
+    background: none!important;
+    border: none;
+    padding: 0!important;
+    color: #069;
+    cursor: pointer;
+}
+

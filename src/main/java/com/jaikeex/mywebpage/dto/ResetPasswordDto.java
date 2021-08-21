@@ -3,25 +3,17 @@ package com.jaikeex.mywebpage.dto;
 import com.jaikeex.mywebpage.services.validators.PasswordMatches;
 import com.jaikeex.mywebpage.services.validators.ValidateEmail;
 
-import javax.validation.constraints.NotBlank;
-
 @PasswordMatches.List({@PasswordMatches(field = "password", fieldMatch = "passwordForValidation")})
-public class UserDto implements MatchingPasswords {
-
+public class ResetPasswordDto implements MatchingPasswords {
 
     @ValidateEmail
-    protected String email;
+    private String email;
+    private String token;
+    private String password;
+    private String passwordForValidation;
+    private String resetLink;
 
-    @NotBlank
-    protected String username;
-
-    @NotBlank
-    protected String password;
-
-    @NotBlank
-    protected String passwordForValidation;
-
-    public UserDto() {
+    public ResetPasswordDto() {
     }
 
     public String getEmail() {
@@ -29,15 +21,17 @@ public class UserDto implements MatchingPasswords {
     }
 
     public void setEmail(String email) {
-            this.email = email;
+        this.email = email;
+        updateResetLink();
     }
 
-    public String getUsername() {
-        return username;
+    public String getToken() {
+        return token;
     }
 
-    public void setUsername(String username) {
-        this.username = username;
+    public void setToken(String token) {
+        this.token = token;
+        updateResetLink();
     }
 
     public String getPassword() {
@@ -54,5 +48,13 @@ public class UserDto implements MatchingPasswords {
 
     public void setPasswordForValidation(String passwordForValidation) {
         this.passwordForValidation = passwordForValidation;
+    }
+
+    private void updateResetLink() {
+        this.resetLink = String.format("/user/reset-password?token=%s&email=%s", getToken(), getEmail());
+    }
+
+    public String getResetLink() {
+        return resetLink;
     }
 }

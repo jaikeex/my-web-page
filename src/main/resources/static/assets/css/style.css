@@ -887,6 +887,7 @@ section {
 
 .contact .php-email-form .form-group {
   padding-bottom: 8px;
+  margin-bottom: 10px;
 }
 
 .contact .php-email-form .validate {
@@ -940,7 +941,7 @@ section {
 }
 
 .contact .php-email-form .form-group {
-  margin-bottom: 15px;
+  margin-bottom: 25px;
 }
 
 .contact .php-email-form label {

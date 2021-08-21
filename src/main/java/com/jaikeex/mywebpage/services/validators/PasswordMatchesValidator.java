@@ -1,12 +1,12 @@
-package com.jaikeex.mywebpage.services.security;
+package com.jaikeex.mywebpage.services.validators;
 
-import com.jaikeex.mywebpage.dto.UserDto;
+import com.jaikeex.mywebpage.dto.MatchingPasswords;
 import org.springframework.beans.BeanWrapperImpl;
 
 import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;
 
-public class PasswordMatchesValidator implements ConstraintValidator<PasswordMatches, UserDto> {
+public class PasswordMatchesValidator implements ConstraintValidator<PasswordMatches, MatchingPasswords> {
     private String field;
     private String fieldMatch;
 
@@ -17,11 +17,11 @@ public class PasswordMatchesValidator implements ConstraintValidator<PasswordMat
     }
 
     @Override
-    public boolean isValid(UserDto userDto, ConstraintValidatorContext constraintValidatorContext) {
+    public boolean isValid(MatchingPasswords matchingPasswords, ConstraintValidatorContext constraintValidatorContext) {
 
-        Object fieldValue = new BeanWrapperImpl(userDto)
+        Object fieldValue = new BeanWrapperImpl(matchingPasswords)
                 .getPropertyValue(field);
-        Object fieldMatchValue = new BeanWrapperImpl(userDto)
+        Object fieldMatchValue = new BeanWrapperImpl(matchingPasswords)
                 .getPropertyValue(fieldMatch);
 
         boolean isValid;

@@ -13,7 +13,7 @@
 <main id="main"><!-- #main -->
   <div th:replace="/fragments/banner :: banner"></div>
   <div th:replace="/fragments/breadcrumbs :: breadcrumbs"></div>
-  <div class="container register-form-container">
+  <div class="container form-container">
     <div sec:authorize="isAuthenticated()">
       <h4>Registration was successful!!</h4>
       <p th:text="'You are now logged in as ' + ${#authentication.getPrincipal().getUsername()}"></p>
@@ -24,6 +24,16 @@
         <div class="col-md-6 col-md-offset-3">
           <h1>Registration</h1>
           <form th:action="@{/user/signup}" th:object="${userDto}" method="post">
+            <div th:if="${databaseError} == true" class="password-error-message">
+              <span class="error-message" style="color:red" th:text="${databaseErrorMessage}"></span>
+            </div>
+            <div class="form-group" th:classappend="${#fields.hasErrors('email')}? 'has-error':''">
+              <label for="email" class="control-label">Email (Optional)</label>
+              <input id="email" class="form-control" th:field="*{email}"/>
+            </div>
+            <div class="password-error-message">
+              <span class="error-message" style="color:red" th:text="${wrongEmailMessage}"></span>
+            </div>
             <div class="form-group" th:classappend="${#fields.hasErrors('username')}? 'has-error':''">
               <label for="username" class="control-label">Username</label>
               <input id="username" class="form-control" th:field="*{username}"/>
@@ -36,7 +46,7 @@
               <label for="passwordForValidation" class="control-label">Confirm password</label>
               <input id="passwordForValidation" class="form-control" type="password" th:field="*{passwordForValidation}" />
               <div class="password-error-message">
-                <span class="error-message" th:text="${passwordMatchErrorMessage}"></span>
+                <span class="error-message" style="color:red" th:text="${passwordMatchErrorMessage}"></span>
               </div>
             </div>
             <div class="form-group">

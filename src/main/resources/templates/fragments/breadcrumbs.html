@@ -11,15 +11,20 @@
                     <!--ol>
                         <li><p th:text="${#calendars.format(#calendars.createNow(), 'dd.MM.yyyy HH:mm')}"></p></li>
                     </ol-->
+                    <div>
                     <div sec:authorize="isAuthenticated()">
-                        <a th:href="@{/logout}">Log out</a>
-                        <span class="breadcrumbs-link-fill"> / logged in as: </span>
+                        <form th:action="@{/logout}" method="post" class="breadcrumbs-link-group">
+                            <input type="submit" value="Log out" class="button-as-text"/>
+                        </form>
+                        <!--a th:href="@{/login}" meth>Log out</a-->
+                        <span class="breadcrumbs-link-fill breadcrumbs-link-group"> / logged in as: </span>
                         <a href="/user/auth/info"><span th:text="' ' + ${#authentication.getPrincipal().getUsername()}"></span></a>
                     </div>
                     <div sec:authorize="isAnonymous()">
                         <a th:href="@{/login}">Log in</a>
                         <span class="breadcrumbs-link-fill"> / </span>
                         <a th:href="@{/user/signup}">Sign up</a>
+                    </div>
                     </div>
                 </div>
             </div>

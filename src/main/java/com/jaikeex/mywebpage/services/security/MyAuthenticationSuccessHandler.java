@@ -36,6 +36,6 @@ public class MyAuthenticationSuccessHandler implements AuthenticationSuccessHand
         Timestamp newLastAccessDate = new Timestamp(System.currentTimeMillis());
         String username = authentication.getName();
         repository.updateLastAccessDate(newLastAccessDate, username);
-        redirectStrategy.sendRedirect(httpServletRequest, httpServletResponse, "/user/signup");
+        redirectStrategy.sendRedirect(httpServletRequest, httpServletResponse, "/");
     }
 }

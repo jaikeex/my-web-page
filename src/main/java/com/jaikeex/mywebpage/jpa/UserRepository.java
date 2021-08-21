@@ -15,6 +15,11 @@ public interface UserRepository extends JpaRepository<User, Integer> {
     User findByUsername(
             @Param("username") String username);
 
+
+    @Query("select u from User u where u.email = :email")
+    User findByEmail(
+            @Param("email") String email);
+
     @Modifying
     @Transactional
     @Query("update User set lastAccessDate = :newLastAccessDate where username = :username")

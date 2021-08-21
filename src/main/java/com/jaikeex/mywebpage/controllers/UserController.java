@@ -2,11 +2,12 @@ package com.jaikeex.mywebpage.controllers;
 
 
 import com.jaikeex.mywebpage.dto.UserDto;
-import com.jaikeex.mywebpage.services.UserManagementService;
+import com.jaikeex.mywebpage.services.UserAccountManagementService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
+import org.springframework.validation.ObjectError;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -16,50 +17,48 @@ import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 
 @Controller
+@RequestMapping("/user")
 public class UserController {
 
-    UserManagementService userManagementService;
+    UserAccountManagementService userAccountManagementService;
 
     @Autowired
-    public UserController(UserManagementService userManagementService) {
-        this.userManagementService = userManagementService;
+    public UserController(UserAccountManagementService userAccountManagementService) {
+        this.userAccountManagementService = userAccountManagementService;
     }
 
-    @RequestMapping(value = "user/auth/info")
+    @RequestMapping(value = "/auth/info")
     public String info(Model model) {
         return "user/auth/info";
     }
 
-    @GetMapping(value = "user/signup")
+    @GetMapping(value = "/signup")
     public String signup(Model model) {
         UserDto userDto = new UserDto();
         model.addAttribute(userDto);
         return "user/signup";
     }
 
-    @PostMapping(value = "user/signup")
-    @Validated
+    @PostMapping(value = "/signup")
     public String registerUser(Model model, @Valid UserDto userDto, BindingResult result, HttpServletRequest request) {
         model.addAttribute(userDto);
         if (result.hasErrors()) {
-            model.addAttribute("passwordMatchErrorMessage", "The passwords didn't match.");
+            System.out.println(result.getAllErrors());
+            parseSignupErrors(result, model);
         } else {
-            userManagementService.registerUser(userDto, request);
+            userAccountManagementService.registerUser(userDto, request, model);
         }
         return "user/signup";
     }
 
-
-    @GetMapping(value = "user/auth/change-password")
-    @Validated
+    @GetMapping(value = "/auth/change-password")
     public String changePasswordForm(Model model) {
         UserDto userDto = new UserDto();
         model.addAttribute(userDto);
         return "user/auth/changepassword";
     }
 
-
-    @PostMapping(value = "user/auth/change-password")
+    @PostMapping(value = "/auth/change-password")
     @Validated
     public String changePassword(Model model, @Valid UserDto userDto, BindingResult result) {
         model.addAttribute(userDto);
@@ -67,9 +66,23 @@ public class UserController {
             model.addAttribute("passwordMatchErrorMessage", "The passwords didn't match.");
             return "user/auth/changepassword";
         } else {
-            userManagementService.changePassword(userDto);
+            userAccountManagementService.changePassword(userDto);
             model.addAttribute("passwordChanged", true);
             return "user/auth/info";
+        }
+    }
+
+    private void parseSignupErrors (BindingResult result, Model model) {
+        for (ObjectError error : result.getAllErrors()) {
+            if (error.toString().contains("Blank")) {
+                model.addAttribute("passwordMatchErrorMessage", "Please fill in all the fields!");
+            }
+            if (error.toString().contains("Pattern.email")) {
+                model.addAttribute("wrongEmailMessage", "Wrong email!");
+            }
+            if (error.toString().contains("PasswordMatches")) {
+                model.addAttribute("passwordMatchErrorMessage", "The passwords didn't match.");
+            }
         }
     }
 }
