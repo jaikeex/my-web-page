@@ -6,23 +6,36 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.context.TestComponent;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.when;
 
+@TestComponent
+@SpringBootTest
 @ExtendWith(SpringExtension.class)
 class MyUserDetailsServiceTest {
+
+    private final User testUser1 = new User(
+            1,
+            "testuserfordbaccess",
+            "$argon2id$v=19$m=65536,t=3,p=1$peMkKGWTfioAQols1mso3A$dG2V75p0v6onSrFT9kOtMqhwmqOCsySt6la1QYtH2Jc",
+            "testuserfordbaccess@testuserfordbaccess.com",
+            "$argon2id$v=19$m=65536,t=3,p=1$ZRzpyukFgnnO1m6bkadOGA$2RxS99w4CBZVGQ/vXy8TMbr7VvXcifba2FCJePEyA/4",
+            null,
+            null,
+            null,
+            true,
+            "USER");
 
     @Mock
     UserRepository repository;
 
     @InjectMocks
     MyUserDetailsService userDetailsService;
-
-    private final User testUser1 = new User(1, "kuba", "$argon2id$v=19$m=65536,t=3,p=1$ZzXUj9kdYQm/s7lFErt4wQ$XPemiyn0Pb2Vl9QlD37hWhxn9t1H8vadVUpuE8FGmzM",
-            null, null, null, null, null, true, "ADMIN,USER");
 
     @Test
     void loadUserByUsernameThrow() {
@@ -38,8 +51,8 @@ class MyUserDetailsServiceTest {
     @Test
     void loadUserByUsername() {
         MyUserDetails testDetails1 = new MyUserDetails(testUser1);
-        when(repository.findByUsername("kuba")).thenReturn(testUser1);
-        UserDetails returnedDetails = userDetailsService.loadUserByUsername("kuba");
+        when(repository.findByUsername("testuserfordbaccess")).thenReturn(testUser1);
+        UserDetails returnedDetails = userDetailsService.loadUserByUsername("testuserfordbaccess");
         assertEquals(testDetails1, returnedDetails);
     }
 }

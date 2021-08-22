@@ -21,15 +21,13 @@ import java.sql.Timestamp;
 public class UserAccountManagementService {
 
     private final UserRepository repository;
-    private final MyPasswordEncoder encoder;
 
     @Autowired
-    public UserAccountManagementService(UserRepository repository, MyPasswordEncoder encoder) {
+    public UserAccountManagementService(UserRepository repository) {
         this.repository = repository;
-        this.encoder = encoder;
     }
 
-    public void registerUser (UserDto userDto, HttpServletRequest request, Model model) {
+    public boolean registerUser (UserDto userDto, HttpServletRequest request, Model model) {
         User user = new User();
         Timestamp now = new Timestamp(System.currentTimeMillis());
         user.setUsername(userDto.getUsername());
@@ -40,10 +38,12 @@ public class UserAccountManagementService {
         user.setLastAccessDate(now);
         user.setUpdatedAt(now);
         user.setRole("ROLE_USER");
-        if (canBeRegistered(userDto, model)) {
+        if (canBeRegisteredWithModelUpdate(userDto, model)) {
             repository.save(user);
             loginUser(request, userDto.getUsername(), userDto.getPassword());
+            return true;
         }
+        return false;
     }
 
     private void loginUser(HttpServletRequest request, String username, String password) {
@@ -54,30 +54,28 @@ public class UserAccountManagementService {
         }
     }
 
-    public void changePassword (UserDto userDto) {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        String currentUserName = "";
-        if (!(authentication instanceof AnonymousAuthenticationToken)) {
-            currentUserName = authentication.getName();
-        }
-        String encodedNewPassword = encoder.encode(userDto.getPassword());
-        repository.updatePassword(encodedNewPassword, currentUserName);
+    private boolean canBeRegisteredWithModelUpdate(UserDto userDto, Model model) {
+        return hasOriginalEmailWithModelUpdate(userDto, model) && hasOriginalUsernameWithModelUpdate(userDto, model);
     }
 
-    private boolean canBeRegistered(UserDto userDto, Model model) {
+    private boolean hasOriginalUsernameWithModelUpdate(UserDto userDto, Model model) {
         if (repository.findByUsername(userDto.getUsername()) != null) {
             model.addAttribute("databaseError", true);
             model.addAttribute("databaseErrorMessage", "User already exists.");
             return false;
         }
-        if (!userDto.getEmail().equals("")) {
-            if (repository.findByEmail(userDto.getEmail()) != null) {
-                model.addAttribute("databaseError", true);
-                model.addAttribute("databaseErrorMessage", "User with this email already exists.");
-                return false;
-            }
+        return true;
+    }
+
+    private boolean hasOriginalEmailWithModelUpdate(UserDto userDto, Model model) {
+        if (repository.findByEmail(userDto.getEmail()) != null && !userDto.getEmail().equals("")) {
+            model.addAttribute("databaseError", true);
+            model.addAttribute("databaseErrorMessage", "User with this email already exists.");
+            return false;
         }
         return true;
     }
+
+
 
 }

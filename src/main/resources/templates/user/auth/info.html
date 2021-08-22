@@ -24,7 +24,7 @@
             <p th:text="'User name: ' + ${#authentication.getPrincipal().getUsername()}"></p>
             <p th:text="'Registered: ' + ${#authentication.getPrincipal().getCreationDate()}"></p>
             <p th:text="'Time since last login: ' + ${#authentication.getPrincipal().getTimeSinceLastLogin()}"></p>
-            <p><a href="/" th:href="@{/user/auth/change-password}">Change password</a></p>
+            <p><a href="/" th:href="@{/user/reset-password}">Change password</a></p>
 
           </div>
         </div>

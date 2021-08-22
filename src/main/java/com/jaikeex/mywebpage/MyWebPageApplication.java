@@ -14,10 +14,12 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 public class MyWebPageApplication  implements CommandLineRunner {
 
 	ResetPasswordService resetPasswordService;
+	UserRepository repository;
 
 	@Autowired
-	public MyWebPageApplication(ResetPasswordService resetPasswordService) {
+	public MyWebPageApplication(ResetPasswordService resetPasswordService, UserRepository repository) {
 		this.resetPasswordService = resetPasswordService;
+		this.repository = repository;
 	}
 
 	public static void main(String[] args) {
@@ -27,6 +29,5 @@ public class MyWebPageApplication  implements CommandLineRunner {
 	@Override
 	public void run(String... args) throws Exception {
 		//resetPasswordService.constructResetLink(resetPasswordService.generateToken());
-
 	}
 }

@@ -28,7 +28,7 @@ public class UserController {
     }
 
     @RequestMapping(value = "/auth/info")
-    public String info(Model model) {
+    public String info() {
         return "user/auth/info";
     }
 
@@ -51,26 +51,6 @@ public class UserController {
         return "user/signup";
     }
 
-    @GetMapping(value = "/auth/change-password")
-    public String changePasswordForm(Model model) {
-        UserDto userDto = new UserDto();
-        model.addAttribute(userDto);
-        return "user/auth/changepassword";
-    }
-
-    @PostMapping(value = "/auth/change-password")
-    @Validated
-    public String changePassword(Model model, @Valid UserDto userDto, BindingResult result) {
-        model.addAttribute(userDto);
-        if (result.hasErrors()) {
-            model.addAttribute("passwordMatchErrorMessage", "The passwords didn't match.");
-            return "user/auth/changepassword";
-        } else {
-            userAccountManagementService.changePassword(userDto);
-            model.addAttribute("passwordChanged", true);
-            return "user/auth/info";
-        }
-    }
 
     private void parseSignupErrors (BindingResult result, Model model) {
         for (ObjectError error : result.getAllErrors()) {

@@ -16,6 +16,13 @@ public class ResetPasswordDto implements MatchingPasswords {
     public ResetPasswordDto() {
     }
 
+    public ResetPasswordDto(String email, String token, String password, String passwordForValidation) {
+        this.email = email;
+        this.token = token;
+        this.password = password;
+        this.passwordForValidation = passwordForValidation;
+    }
+
     public String getEmail() {
         return email;
     }

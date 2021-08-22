@@ -24,6 +24,13 @@ public class UserDto implements MatchingPasswords {
     public UserDto() {
     }
 
+    public UserDto(String email, String username, String password, String passwordForValidation) {
+        this.email = email;
+        this.username = username;
+        this.password = password;
+        this.passwordForValidation = passwordForValidation;
+    }
+
     public String getEmail() {
         return email;
     }

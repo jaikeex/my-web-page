@@ -33,6 +33,5 @@ public interface UserRepository extends JpaRepository<User, Integer> {
     void updatePassword(
             @Param("password") String password,
             @Param("username") String username);
-
-
 }
+

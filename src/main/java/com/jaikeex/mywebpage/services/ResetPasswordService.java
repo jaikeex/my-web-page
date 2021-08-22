@@ -1,6 +1,7 @@
 package com.jaikeex.mywebpage.services;
 
 import com.jaikeex.mywebpage.dto.ResetPasswordDto;
+import com.jaikeex.mywebpage.dto.UserDto;
 import com.jaikeex.mywebpage.entity.User;
 import com.jaikeex.mywebpage.jpa.UserRepository;
 import com.jaikeex.mywebpage.services.security.MyPasswordEncoder;
@@ -15,10 +16,17 @@ public class ResetPasswordService extends MyEmailService {
 
     private final UserRepository repository;
     private final PasswordEncoder encoder;
+    private final String subject = "Password reset requested";
+
 
     private final String emailBody =
-                    "You requested to reset your password for www.kubahruby.com.\n " +
+            "Hello!\nYou requested to reset your password for www.kubahruby.com.\n " +
                     "Please follow this link:\n";
+
+    private final String emailFooter =
+            "\nIf you have not requested this email, please ignore it.\n" +
+                    "Best wishes, Jakub Hrubý.";
+
 
     @Autowired
     public ResetPasswordService(UserRepository repository, MyPasswordEncoder encoder) {
@@ -26,16 +34,30 @@ public class ResetPasswordService extends MyEmailService {
         this.encoder = encoder;
     }
 
+    public boolean resetPassword(ResetPasswordDto resetPasswordDto) {
+        User user = repository.findByEmail(resetPasswordDto.getEmail());
+        if (user != null) {
+            return updatePasswordInDatabase(user, resetPasswordDto);
+        }
+        return false;
+    }
+
     public void sendConfirmationEmail (String email) {
         User user = repository.findByEmail(email);
-        String resetToken = generateToken();
-        String subject = "Password reset requested";
         if (user != null) {
-            user.setResetPasswordToken(encoder.encode(resetToken));
-            repository.save(user);
             this.setTo(email);
-            sendMessage(subject, constructEmail(constructResetLink(resetToken), email));
+            String resetToken = generateTokenForUser(user);
+            String messageBody = constructEmail(constructResetLink(resetToken), email);
+            sendMessage(subject, messageBody);
         }
+    }
+
+    private boolean updatePasswordInDatabase(User user, ResetPasswordDto resetPasswordDto) {
+        if (tokenMatches(user.getResetPasswordToken(), resetPasswordDto.getToken())) {
+            repository.updatePassword(resetPasswordDto.getPassword(), user.getUsername());
+            return true;
+        }
+        return false;
     }
 
     private String constructResetLink(String token) {
@@ -43,7 +65,14 @@ public class ResetPasswordService extends MyEmailService {
     }
 
     private String constructEmail(String resetLink, String email) {
-        return emailBody + resetLink + String.format("&email=%s", email);
+        return emailBody + resetLink + String.format("&email=%s", email) + emailFooter;
+    }
+
+    private String generateTokenForUser(User user) {
+        String resetToken = generateToken();
+        user.setResetPasswordToken(encoder.encode(resetToken));
+        repository.save(user);
+        return resetToken;
     }
 
     private String generateToken() {
@@ -59,20 +88,7 @@ public class ResetPasswordService extends MyEmailService {
                 .toString();
     }
 
-    public boolean resetPassword(ResetPasswordDto resetPasswordDto) {
-        User user = repository.findByEmail(resetPasswordDto.getEmail());
-        if (tokenMatches(user.getResetPasswordToken(), resetPasswordDto.getToken())) {
-            user.setPassword(resetPasswordDto.getPassword());
-            repository.save(user);
-            return true;
-        }
-        return false;
-    }
-
     private boolean tokenMatches(String userToken, String token) {
         return encoder.matches(token, userToken);
     }
-
-
-
 }

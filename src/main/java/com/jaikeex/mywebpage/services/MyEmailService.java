@@ -13,9 +13,10 @@ import java.util.Properties;
 @Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
 public class MyEmailService extends Authenticator{
 
-    private final String from = "kbhsmtp@gmail.com";
-    private final String host = "smtp.gmail.com";
+    private String from = "kbhsmtp@gmail.com";
+    private String host = "smtp.gmail.com";
     private String to;
+    private Session session = null;
 
     public MyEmailService() {
     }
@@ -41,7 +42,6 @@ public class MyEmailService extends Authenticator{
         MimeMessage message = new MimeMessage(session);
         message.setFrom(new InternetAddress(from));
         message.addRecipient(Message.RecipientType.TO, new InternetAddress(to));
-        System.out.println(to);
         message.setSubject(subject);
         message.setText(messageText);
         return message;
@@ -49,7 +49,9 @@ public class MyEmailService extends Authenticator{
 
     public boolean sendMessage(String subject, String messageText) {
         Properties properties = constructProperties();
-        Session session = Session.getInstance(properties, this);
+        if (session == null) {
+            session = Session.getInstance(properties, this);
+        }
         try {
             Transport.send(constructMessage(session, subject, messageText));
             return true;
@@ -65,5 +67,29 @@ public class MyEmailService extends Authenticator{
 
     public void setTo(String to) {
         this.to = to;
+    }
+
+    public String getFrom() {
+        return from;
+    }
+
+    public void setFrom(String from) {
+        this.from = from;
+    }
+
+    public String getHost() {
+        return host;
+    }
+
+    public void setHost(String host) {
+        this.host = host;
+    }
+
+    public Session getSession() {
+        return session;
+    }
+
+    public void setSession(Session session) {
+        this.session = session;
     }
 }
