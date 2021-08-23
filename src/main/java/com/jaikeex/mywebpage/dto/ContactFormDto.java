@@ -12,6 +12,12 @@ public class ContactFormDto {
     public ContactFormDto() {
     }
 
+    public ContactFormDto(String email, String subject, String messageText) {
+        this.email = email;
+        this.subject = subject;
+        this.messageText = messageText;
+    }
+
     public String getEmail() {
         return email;
     }

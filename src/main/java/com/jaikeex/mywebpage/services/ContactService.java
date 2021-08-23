@@ -7,6 +7,7 @@ import org.springframework.ui.Model;
 @Service
 public class ContactService extends MyEmailService{
 
+
     public boolean sendContactFormAsEmail(ContactFormDto contactFormDto, Model model) {
         this.setTo("hrubyy.jakub@gmail.com");
 

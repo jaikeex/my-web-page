@@ -8,7 +8,6 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.ObjectError;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -61,7 +60,7 @@ public class UserController {
                 model.addAttribute("wrongEmailMessage", "Wrong email!");
             }
             if (error.toString().contains("PasswordMatches")) {
-                model.addAttribute("passwordMatchErrorMessage", "The passwords didn't match.");
+                model.addAttribute("passwordMatchErrorMessage", "The passwords didn't match!");
             }
         }
     }

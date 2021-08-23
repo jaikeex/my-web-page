@@ -7,7 +7,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.TestComponent;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.ui.Model;
@@ -22,7 +21,6 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 @TestComponent
-@SpringBootTest
 @ExtendWith(SpringExtension.class)
 class UserAccountManagementServiceTest {
 
@@ -80,5 +78,4 @@ class UserAccountManagementServiceTest {
         when(repository.findByEmail(anyString())).thenReturn(testUser1);
         assertFalse(service.registerUser(userDto, request, model));
     }
-
 }

@@ -3,11 +3,7 @@ package com.jaikeex.mywebpage.services;
 import com.jaikeex.mywebpage.dto.UserDto;
 import com.jaikeex.mywebpage.entity.User;
 import com.jaikeex.mywebpage.jpa.UserRepository;
-import com.jaikeex.mywebpage.services.security.MyPasswordEncoder;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.authentication.AnonymousAuthenticationToken;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.ui.Model;
 
@@ -36,6 +32,7 @@ public class UserAccountManagementService {
         }
         return false;
     }
+
 
     private User loadDataFromDtoIntoUserObject(UserDto userDto) {
         Timestamp now = new Timestamp(System.currentTimeMillis());

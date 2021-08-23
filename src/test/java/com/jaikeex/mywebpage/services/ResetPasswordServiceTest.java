@@ -12,7 +12,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.api.extension.RegisterExtension;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.TestComponent;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
@@ -26,7 +25,6 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.when;
 
 @TestComponent
-@SpringBootTest
 @ExtendWith(SpringExtension.class)
 class ResetPasswordServiceTest {
     private final User testUser1 = new User(
@@ -84,7 +82,7 @@ class ResetPasswordServiceTest {
     }
 
     @Test
-    public void testSendConfirmationEmail() throws MessagingException, IOException {
+    public void testSendConfirmationEmailContainsLink() throws MessagingException, IOException {
         when(repository.findByEmail("bar@example.com")).thenReturn(testUser1);
 
         Session smtpSession = greenMail.getSmtp().createSession();
@@ -100,7 +98,43 @@ class ResetPasswordServiceTest {
         inbox.open(Folder.READ_ONLY);
         Message msgReceived = inbox.getMessage(1);
         assertTrue(msgReceived.getContent().toString().contains("http://localhost:8080/user/reset-password?token="));
+    }
+
+    @Test
+    public void testSendConfirmationEmailContainsHeader() throws MessagingException, IOException {
+        when(repository.findByEmail("bar@example.com")).thenReturn(testUser1);
+
+        Session smtpSession = greenMail.getSmtp().createSession();
+        resetPasswordService.setTo("bar@example.com");
+        resetPasswordService.setFrom("foo@example.com");
+        resetPasswordService.setSession(smtpSession);
+        resetPasswordService.sendConfirmationEmail("bar@example.com");
+
+        greenMail.setUser("bar@example.com", "bar@example.com", "password");
+        IMAPStore store = greenMail.getImap().createStore();
+        store.connect("bar@example.com", "password");
+        Folder inbox = store.getFolder("INBOX");
+        inbox.open(Folder.READ_ONLY);
+        Message msgReceived = inbox.getMessage(1);
         assertTrue(msgReceived.getContent().toString().contains("You requested to reset your password for www.kubahruby.com"));
+    }
+
+    @Test
+    public void testSendConfirmationEmailContainsFooter() throws MessagingException, IOException {
+        when(repository.findByEmail("bar@example.com")).thenReturn(testUser1);
+
+        Session smtpSession = greenMail.getSmtp().createSession();
+        resetPasswordService.setTo("bar@example.com");
+        resetPasswordService.setFrom("foo@example.com");
+        resetPasswordService.setSession(smtpSession);
+        resetPasswordService.sendConfirmationEmail("bar@example.com");
+
+        greenMail.setUser("bar@example.com", "bar@example.com", "password");
+        IMAPStore store = greenMail.getImap().createStore();
+        store.connect("bar@example.com", "password");
+        Folder inbox = store.getFolder("INBOX");
+        inbox.open(Folder.READ_ONLY);
+        Message msgReceived = inbox.getMessage(1);
         assertTrue(msgReceived.getContent().toString().contains("Best wishes, Jakub Hrubý."));
     }
 
