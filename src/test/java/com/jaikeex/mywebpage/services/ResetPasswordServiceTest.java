@@ -1,12 +1,8 @@
 package com.jaikeex.mywebpage.services;
 
-import com.icegreen.greenmail.configuration.GreenMailConfiguration;
 import com.icegreen.greenmail.junit5.GreenMailExtension;
-import com.icegreen.greenmail.util.GreenMail;
-import com.icegreen.greenmail.util.GreenMailUtil;
 import com.icegreen.greenmail.util.ServerSetupTest;
 import com.jaikeex.mywebpage.dto.ResetPasswordDto;
-import com.jaikeex.mywebpage.dto.UserDto;
 import com.jaikeex.mywebpage.entity.User;
 import com.jaikeex.mywebpage.jpa.UserRepository;
 import com.jaikeex.mywebpage.services.security.MyPasswordEncoder;
@@ -18,15 +14,12 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.TestComponent;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import javax.mail.Folder;
 import javax.mail.Message;
 import javax.mail.MessagingException;
 import javax.mail.Session;
-import javax.mail.internet.MimeMessage;
-
 import java.io.IOException;
 
 import static org.junit.jupiter.api.Assertions.*;

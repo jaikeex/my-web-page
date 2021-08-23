@@ -1,7 +1,6 @@
 package com.jaikeex.mywebpage.services;
 
 import com.jaikeex.mywebpage.entity.User;
-import org.junit.jupiter.api.Test;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 

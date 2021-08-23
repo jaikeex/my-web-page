@@ -28,8 +28,18 @@ public class UserAccountManagementService {
     }
 
     public boolean registerUser (UserDto userDto, HttpServletRequest request, Model model) {
-        User user = new User();
+        User user = loadDataFromDtoIntoUserObject(userDto);
+        if (canBeRegisteredWithModelUpdate(userDto, model)) {
+            repository.save(user);
+            loginUser(request, userDto.getUsername(), userDto.getPassword());
+            return true;
+        }
+        return false;
+    }
+
+    private User loadDataFromDtoIntoUserObject(UserDto userDto) {
         Timestamp now = new Timestamp(System.currentTimeMillis());
+        User user = new User();
         user.setUsername(userDto.getUsername());
         user.setPassword(userDto.getPassword());
         user.setEmail(userDto.getEmail());
@@ -38,12 +48,7 @@ public class UserAccountManagementService {
         user.setLastAccessDate(now);
         user.setUpdatedAt(now);
         user.setRole("ROLE_USER");
-        if (canBeRegisteredWithModelUpdate(userDto, model)) {
-            repository.save(user);
-            loginUser(request, userDto.getUsername(), userDto.getPassword());
-            return true;
-        }
-        return false;
+        return user;
     }
 
     private void loginUser(HttpServletRequest request, String username, String password) {

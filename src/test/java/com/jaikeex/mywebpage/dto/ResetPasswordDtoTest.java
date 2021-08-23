@@ -2,7 +2,7 @@ package com.jaikeex.mywebpage.dto;
 
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 
 class ResetPasswordDtoTest {
