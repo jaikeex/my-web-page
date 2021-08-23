@@ -23,14 +23,14 @@ public class UserAccountManagementService {
         this.repository = repository;
     }
 
-    public boolean registerUser (UserDto userDto, HttpServletRequest request, Model model) {
+    public User registerUser (UserDto userDto, HttpServletRequest request, Model model) {
         User user = loadDataFromDtoIntoUserObject(userDto);
         if (canBeRegisteredWithModelUpdate(userDto, model)) {
             repository.save(user);
             loginUser(request, userDto.getUsername(), userDto.getPassword());
-            return true;
+            return user;
         }
-        return false;
+        return null;
     }
 
 
