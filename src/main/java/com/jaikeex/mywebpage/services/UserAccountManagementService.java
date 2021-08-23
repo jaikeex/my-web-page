@@ -33,13 +33,6 @@ public class UserAccountManagementService {
         return false;
     }
 
-    private boolean writeUserToDb() {
-
-
-
-        return false;
-    }
-
     private User loadDataFromDtoIntoUserObject(UserDto userDto) {
         Timestamp now = new Timestamp(System.currentTimeMillis());
         User user = new User();
