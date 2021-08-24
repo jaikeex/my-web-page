@@ -38,7 +38,9 @@ public class UserDto implements MatchingPasswords {
     }
 
     public void setEmail(String email) {
+        if (!email.equals("")) {
             this.email = email;
+        }
     }
 
     public String getUsername() {

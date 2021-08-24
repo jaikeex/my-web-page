@@ -70,7 +70,7 @@ public class UserAccountManagementService {
     }
 
     private boolean hasOriginalEmailWithModelUpdate(UserDto userDto, Model model) {
-        if (repository.findByEmail(userDto.getEmail()) != null && !userDto.getEmail().equals("")) {
+        if (repository.findByEmail(userDto.getEmail()) != null) {
             model.addAttribute("databaseError", true);
             model.addAttribute("databaseErrorMessage", "User with this email already exists.");
             return false;
