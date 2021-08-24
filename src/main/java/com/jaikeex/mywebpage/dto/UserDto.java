@@ -2,9 +2,11 @@ package com.jaikeex.mywebpage.dto;
 
 import com.jaikeex.mywebpage.services.validators.PasswordMatches;
 import com.jaikeex.mywebpage.services.validators.ValidateEmail;
+import org.springframework.stereotype.Component;
 
 import javax.validation.constraints.NotBlank;
 
+@Component
 @PasswordMatches.List({@PasswordMatches(field = "password", fieldMatch = "passwordForValidation")})
 public class UserDto implements MatchingPasswords {
 

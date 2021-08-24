@@ -40,7 +40,6 @@ public class UserController {
 
     @PostMapping(value = "/signup")
     public String registerUser(Model model, @Valid UserDto userDto, BindingResult result, HttpServletRequest request) {
-        System.out.println("called the shit");
         model.addAttribute(userDto);
         if (result.hasErrors()) {
             parseSignupErrors(result, model);
