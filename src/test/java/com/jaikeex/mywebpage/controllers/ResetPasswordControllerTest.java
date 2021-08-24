@@ -46,8 +46,7 @@ class ResetPasswordControllerTest {
 
     @Test
     public void shouldAddDtoToModel() throws Exception {
-        mockMvc.perform(get("/user/reset-password")
-                .with(csrf()))
+        mockMvc.perform(get("/user/reset-password"))
                 .andExpect(status().isOk())
                 .andExpect(model().attributeExists("resetPasswordDto"));
     }
