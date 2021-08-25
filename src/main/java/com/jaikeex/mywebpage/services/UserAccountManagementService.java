@@ -24,8 +24,8 @@ public class UserAccountManagementService {
     }
 
     public User registerUser (UserDto userDto, HttpServletRequest request, Model model) {
-        User user = loadDataFromDtoIntoUserObject(userDto);
         if (canBeRegisteredWithModelUpdate(userDto, model)) {
+            User user = loadDataFromDtoIntoUserObject(userDto);
             repository.save(user);
             loginUser(request, userDto.getUsername(), userDto.getPassword());
             return user;

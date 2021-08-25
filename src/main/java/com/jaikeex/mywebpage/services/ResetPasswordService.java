@@ -1,7 +1,6 @@
 package com.jaikeex.mywebpage.services;
 
 import com.jaikeex.mywebpage.dto.ResetPasswordDto;
-import com.jaikeex.mywebpage.dto.UserDto;
 import com.jaikeex.mywebpage.entity.User;
 import com.jaikeex.mywebpage.jpa.UserRepository;
 import com.jaikeex.mywebpage.services.security.MyPasswordEncoder;
@@ -54,7 +53,7 @@ public class ResetPasswordService extends MyEmailService {
 
     private boolean updatePasswordInDatabase(User user, ResetPasswordDto resetPasswordDto) {
         if (tokenMatches(user.getResetPasswordToken(), resetPasswordDto.getToken())) {
-            repository.updatePassword(resetPasswordDto.getPassword(), user.getUsername());
+            repository.updatePassword(encoder.encode(resetPasswordDto.getPassword()), user.getUsername());
             return true;
         }
         return false;

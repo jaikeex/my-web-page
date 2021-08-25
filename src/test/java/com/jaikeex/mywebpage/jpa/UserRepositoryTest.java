@@ -4,6 +4,7 @@ import com.jaikeex.mywebpage.entity.User;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.jdbc.Sql;
 
 import java.sql.Timestamp;
@@ -11,6 +12,7 @@ import java.sql.Timestamp;
 import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
+@DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 @Sql(scripts = {"classpath:userRepositoryDemo.sql"})
 class UserRepositoryTest {
 
@@ -28,6 +30,7 @@ class UserRepositoryTest {
         User user = repository.findByUsername("123");
         assertNull(user);
     }
+
 
     @Test
     public void shouldFindByEmail() {
@@ -56,5 +59,4 @@ class UserRepositoryTest {
         User user = repository.findByUsername("jaikeex");
         assertEquals(newPassword, user.getPassword());
     }
-
 }
