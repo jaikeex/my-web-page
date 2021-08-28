@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
+import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 
@@ -30,25 +31,39 @@ public class ResetPasswordController {
     }
 
     @PostMapping("/user/reset-password")
-    public String resetPasswordForm(Model model, @Valid ResetPasswordDto resetPasswordDto, BindingResult result) {
+    public String resetPasswordForm(@Valid ResetPasswordDto resetPasswordDto, BindingResult result) {
         resetPasswordService.sendConfirmationEmail(resetPasswordDto.getEmail());
         return "/user/reset-password";
     }
 
     @PostMapping("/user/reset-password-done")
     public String resetPasswordConfirm(Model model, @Valid ResetPasswordDto resetPasswordDto, BindingResult result) {
+        model.addAttribute("resetLink", resetPasswordDto.getResetLink());
         if (result.hasErrors()) {
-            model.addAttribute("passwordMatchErrorMessage", "The passwords didn't match.");
-            model.addAttribute("resetLink", resetPasswordDto.getResetLink());
+            parseSignupErrors(result, model);
             return "/user/reset-password-done";
         }
         if (resetPasswordService.resetPassword(resetPasswordDto)) {
             model.addAttribute("success", true);
             return "/user/reset-password-done";
         } else {
-            model.addAttribute("resetPasswordErrorMessage", "There was an error resetting your password");
+            model.addAttribute("errorMessage", "There was an error resetting your password");
         }
         return "/user/reset-password-done";
+    }
+
+    private void parseSignupErrors (BindingResult result, Model model) {
+        for (ObjectError error : result.getAllErrors()) {
+            if (error.toString().contains("Blank")) {
+                model.addAttribute("errorMessage", "Please fill in all the fields!");
+            }
+            if (error.toString().contains("Pattern.email")) {
+                model.addAttribute("errorMessage", "Wrong email!");
+            }
+            if (error.toString().contains("PasswordMatches")) {
+                model.addAttribute("errorMessage", "The passwords didn't match!");
+            }
+        }
     }
 
 

@@ -23,15 +23,16 @@ public class UserAccountManagementService {
         this.repository = repository;
     }
 
-    public boolean registerUser (UserDto userDto, HttpServletRequest request, Model model) {
-        User user = loadDataFromDtoIntoUserObject(userDto);
+    public User registerUser (UserDto userDto, HttpServletRequest request, Model model) {
         if (canBeRegisteredWithModelUpdate(userDto, model)) {
+            User user = loadDataFromDtoIntoUserObject(userDto);
             repository.save(user);
             loginUser(request, userDto.getUsername(), userDto.getPassword());
-            return true;
+            return user;
         }
-        return false;
+        return null;
     }
+
 
     private User loadDataFromDtoIntoUserObject(UserDto userDto) {
         Timestamp now = new Timestamp(System.currentTimeMillis());
@@ -69,7 +70,7 @@ public class UserAccountManagementService {
     }
 
     private boolean hasOriginalEmailWithModelUpdate(UserDto userDto, Model model) {
-        if (repository.findByEmail(userDto.getEmail()) != null && !userDto.getEmail().equals("")) {
+        if (repository.findByEmail(userDto.getEmail()) != null) {
             model.addAttribute("databaseError", true);
             model.addAttribute("databaseErrorMessage", "User with this email already exists.");
             return false;

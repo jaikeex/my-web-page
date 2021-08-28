@@ -3,15 +3,20 @@ package com.jaikeex.mywebpage.dto;
 import com.jaikeex.mywebpage.services.validators.PasswordMatches;
 import com.jaikeex.mywebpage.services.validators.ValidateEmail;
 
+import javax.validation.constraints.NotBlank;
+
 @PasswordMatches.List({@PasswordMatches(field = "password", fieldMatch = "passwordForValidation")})
 public class ResetPasswordDto implements MatchingPasswords {
 
     @ValidateEmail
+    @NotBlank
     private String email;
-    private String token;
+    @NotBlank
     private String password;
+    @NotBlank
     private String passwordForValidation;
     private String resetLink;
+    private String token;
 
     public ResetPasswordDto() {
     }

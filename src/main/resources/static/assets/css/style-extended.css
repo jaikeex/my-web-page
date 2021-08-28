@@ -60,3 +60,15 @@ body {
     cursor: pointer;
 }
 
+.card-links-box {
+    justify-content: space-between;
+}
+
+.card-bottom-space {
+    margin-bottom: 35px;
+}
+
+.projects-grid {
+    max-width: 60%;
+}
+

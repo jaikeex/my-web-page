@@ -1,6 +1,7 @@
 package com.jaikeex.mywebpage.services;
 
 import com.jaikeex.mywebpage.entity.User;
+import org.junit.jupiter.api.Test;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
@@ -9,11 +10,22 @@ import java.util.Collection;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+
 class MyUserDetailsTest {
 
-    private final User testUser1 = new User(1, "kuba", "$argon2id$v=19$m=65536,t=3,p=1$ZzXUj9kdYQm/s7lFErt4wQ$XPemiyn0Pb2Vl9QlD37hWhxn9t1H8vadVUpuE8FGmzM",
-            null, null, null, null, null, true, "ADMIN,USER");
+        private final User testUser1 = new User(
+                1,
+                "testuserfordbaccess",
+                "$argon2id$v=19$m=65536,t=3,p=1$peMkKGWTfioAQols1mso3A$dG2V75p0v6onSrFT9kOtMqhwmqOCsySt6la1QYtH2Jc",
+                "testuserfordbaccess@testuserfordbaccess.com",
+                "$argon2id$v=19$m=65536,t=3,p=1$ZRzpyukFgnnO1m6bkadOGA$2RxS99w4CBZVGQ/vXy8TMbr7VvXcifba2FCJePEyA/4",
+                null,
+                null,
+                null,
+                true,
+                "ADMIN,USER");
 
+    @Test
     void getAuthorities() {
         MyUserDetails myUserDetails = new MyUserDetails(testUser1);
         Collection<SimpleGrantedAuthority> expectedResult = new ArrayList<>();
@@ -22,6 +34,4 @@ class MyUserDetailsTest {
         Collection<? extends GrantedAuthority> actualResult = myUserDetails.getAuthorities();
         assertEquals(expectedResult, actualResult);
     }
-
-
 }

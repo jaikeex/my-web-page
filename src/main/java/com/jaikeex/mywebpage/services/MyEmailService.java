@@ -21,39 +21,14 @@ public class MyEmailService extends Authenticator{
     public MyEmailService() {
     }
 
-    protected PasswordAuthentication getPasswordAuthentication () {
-        return new PasswordAuthentication("kbhsmtp@gmail.com", "heslo789");
-    }
-
-    private Properties constructProperties() {
-        Properties properties = System.getProperties();
-        properties.put("mail.smtp.host", host);
-        properties.put("mail.smtp.port", "465");
-        properties.put("mail.smtp.ssl.enable", "true");
-        properties.put("mail.smtp.auth", "true");
-        properties.put("mail.smtp.user", from);
-        properties.put("mail.smtp.socketFactory.port", "465");
-        properties.put("mail.smtp.socketFactory.class", "javax.net.ssl.SSLSocketFactory");
-        properties.put("mail.smtp.socketFactory.fallback", "false");
-        return properties;
-    }
-
-    private MimeMessage constructMessage(Session session, String subject, String messageText) throws MessagingException{
-        MimeMessage message = new MimeMessage(session);
-        message.setFrom(new InternetAddress(from));
-        message.addRecipient(Message.RecipientType.TO, new InternetAddress(to));
-        message.setSubject(subject);
-        message.setText(messageText);
-        return message;
-    }
-
     public boolean sendMessage(String subject, String messageText) {
         Properties properties = constructProperties();
         if (session == null) {
-            session = Session.getInstance(properties, this);
+            setSession(Session.getInstance(properties, this));
         }
         try {
-            Transport.send(constructMessage(session, subject, messageText));
+            MimeMessage message = constructMessage(session, subject, messageText);
+            Transport.send(message);
             return true;
         } catch (MessagingException e) {
             e.printStackTrace();
@@ -91,5 +66,31 @@ public class MyEmailService extends Authenticator{
 
     public void setSession(Session session) {
         this.session = session;
+    }
+
+    protected PasswordAuthentication getPasswordAuthentication () {
+        return new PasswordAuthentication("kbhsmtp@gmail.com", "heslo789");
+    }
+
+    private Properties constructProperties() {
+        Properties properties = System.getProperties();
+        properties.put("mail.smtp.host", host);
+        properties.put("mail.smtp.port", "465");
+        properties.put("mail.smtp.ssl.enable", "true");
+        properties.put("mail.smtp.auth", "true");
+        properties.put("mail.smtp.user", from);
+        properties.put("mail.smtp.socketFactory.port", "465");
+        properties.put("mail.smtp.socketFactory.class", "javax.net.ssl.SSLSocketFactory");
+        properties.put("mail.smtp.socketFactory.fallback", "false");
+        return properties;
+    }
+
+    private MimeMessage constructMessage(Session session, String subject, String messageText) throws MessagingException {
+        MimeMessage message = new MimeMessage(session);
+        message.setFrom(new InternetAddress(from));
+        message.addRecipient(Message.RecipientType.TO, new InternetAddress(to));
+        message.setSubject(subject);
+        message.setText(messageText);
+        return message;
     }
 }

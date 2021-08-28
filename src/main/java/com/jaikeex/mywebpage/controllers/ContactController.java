@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
+import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 
@@ -31,12 +32,23 @@ public class ContactController {
     @PostMapping(value = "/contact/sendform")
     public String sendForm(Model model, @Valid ContactFormDto contactFormDto, BindingResult result) {
         if (result.hasErrors()) {
-            model.addAttribute("messageSent", false);
-            model.addAttribute("wrongEmailMessage", "Wrong email!");
+            parseSignupErrors(result, model);
             return "/contact";
         } else {
             contactService.sendContactFormAsEmail(contactFormDto, model);
         }
         return "/contact/sendform";
+    }
+
+    private void parseSignupErrors (BindingResult result, Model model) {
+        model.addAttribute("messageSent", false);
+        for (ObjectError error : result.getAllErrors()) {
+            if (error.toString().contains("Blank")) {
+                model.addAttribute("emptyFieldsMessage", "Please fill in all the fields!");
+            }
+            if (error.toString().contains("Pattern.email")) {
+                model.addAttribute("wrongEmailMessage", "Wrong email!");
+            }
+        }
     }
 }

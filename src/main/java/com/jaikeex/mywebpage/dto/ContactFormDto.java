@@ -2,14 +2,24 @@ package com.jaikeex.mywebpage.dto;
 
 import com.jaikeex.mywebpage.services.validators.ValidateEmail;
 
+import javax.validation.constraints.NotBlank;
+
 public class ContactFormDto {
 
     @ValidateEmail
     private String email;
+    @NotBlank
     private String subject;
+    @NotBlank
     private String messageText;
 
     public ContactFormDto() {
+    }
+
+    public ContactFormDto(String email, String subject, String messageText) {
+        this.email = email;
+        this.subject = subject;
+        this.messageText = messageText;
     }
 
     public String getEmail() {
