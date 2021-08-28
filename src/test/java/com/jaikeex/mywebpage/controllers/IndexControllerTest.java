@@ -29,12 +29,15 @@ class IndexControllerTest {
 
     @Test
     public void registerUserWithNoErrors() throws Exception {
-        this.mockMvc.perform(get("/")).andExpect(status().isOk());
+        this.mockMvc.perform(get("/"))
+                .andExpect(status().isOk());
     }
 
     @Test
     public void shouldReturnIndexWelcomeMessage() throws Exception {
-        mockMvc.perform(get("/")).andExpect(status().isOk()).andExpect(content().string(containsString("Welcome")));
+        mockMvc.perform(get("/"))
+                .andExpect(status().isOk())
+                .andExpect(content().string(containsString("Welcome")));
     }
 
 }
