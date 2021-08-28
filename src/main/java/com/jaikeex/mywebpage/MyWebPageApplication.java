@@ -34,5 +34,20 @@ public class MyWebPageApplication  implements CommandLineRunner {
 
 	@Override
 	public void run(String... args) throws Exception {
+		//Technology technology = new Technology();
+//
+		//Project project = new Project();
+		//Project project = projectRepository.findByName("some shit");
+		//project.setName("some better shit");
+		//project.setLanguage("Python");
+		//project.addTechnology(technology);
+		//project.setGithubLink("www.githubshit.com");
+//
+		//project.addTechnology(technology);
+		////technologyRepository.save(technology);
+		//System.out.println(project);
+		//technology.setName("Jpa");
+		//technologyRepository.save(technology);
+		//projectRepository.save(project);
 	}
 }
