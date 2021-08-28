@@ -12,7 +12,7 @@
 
 <main id="main"><!-- #main -->
   <div th:replace="/fragments/banner :: banner"></div>
-  <div th:replace="/fragments/breadcrumbs :: breadcrumbs"></div>
+  <div th:replace="/fragments/breadcrumbs :: breadcrumbs (title='Signup')"></div>
   <div class="container form-container">
     <div sec:authorize="isAuthenticated()">
       <h4>Registration was successful!!</h4>

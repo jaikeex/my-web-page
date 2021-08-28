@@ -16,11 +16,12 @@
 }
 
 body {
-    background: hsl(254, 99%, 95%);
+    background: hsl(243, 100%, 97%);
 }
 
 .breadcrumbs-link-fill {
     white-space: nowrap;
+    color: black;
 }
 
 .form-container {
@@ -65,10 +66,26 @@ body {
 }
 
 .card-bottom-space {
+    margin-left: 35px;
     margin-bottom: 35px;
+}
+
+.grit-testing {
+    overflow: auto;
+    display: inline-flex;
 }
 
 .projects-grid {
     max-width: 60%;
+}
+
+.bread-overflow {
+    overflow: hidden;
+}
+
+@media (min-width: 1900px) {
+    .breadcrumbs-margin {
+        margin-left: -5%;
+    }
 }
 

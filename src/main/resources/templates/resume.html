@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org"
-      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+>
 
 <head>
   <title>Resume</title>
@@ -13,7 +13,7 @@
   <main id="main">
 
     <div th:replace="fragments/banner :: banner"></div>
-    <div th:replace="fragments/breadcrumbs :: breadcrumbs"></div>
+    <div th:replace="fragments/breadcrumbs :: breadcrumbs (title='My resume')"></div>
 
     <section class="inner-page">
       <div class="container">

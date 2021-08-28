@@ -71,7 +71,8 @@ h1, h2, h3, h4, h5, h6 {
   width: 300px;
   z-index: 9;
   padding: 50px 15px;
-  background: #040b14;
+  /*background: #040b14;*/
+  background: hsl(179, 16%, 10%);
   overflow-y: auto;
 }
 
@@ -998,7 +999,7 @@ section {
 --------------------------------------------------------------*/
 .breadcrumbs {
   padding: 2px;
-  background: #f9f9f9;
+  background: rgb(252, 161, 0);
 }
 
 .breadcrumbs h2 {
