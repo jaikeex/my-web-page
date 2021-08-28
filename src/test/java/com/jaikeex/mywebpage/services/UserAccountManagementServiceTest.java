@@ -13,8 +13,8 @@ import org.springframework.ui.Model;
 
 import javax.servlet.http.HttpServletRequest;
 
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
@@ -56,7 +56,7 @@ class UserAccountManagementServiceTest {
         when(repository.save(any(User.class))).thenReturn(testUser1);
         when(repository.findByUsername(anyString())).thenReturn(null);
         when(repository.findByEmail(anyString())).thenReturn(null);
-        assertTrue(service.registerUser(userDto, request, model));
+        assertNotNull(service.registerUser(userDto, request, model));
     }
 
     @Test
@@ -66,7 +66,7 @@ class UserAccountManagementServiceTest {
         when(repository.save(any(User.class))).thenReturn(testUser1);
         when(repository.findByUsername(anyString())).thenReturn(testUser1);
         when(repository.findByEmail(anyString())).thenReturn(null);
-        assertFalse(service.registerUser(userDto, request, model));
+        assertNull(service.registerUser(userDto, request, model));
     }
 
     @Test
@@ -76,7 +76,7 @@ class UserAccountManagementServiceTest {
         when(repository.save(any(User.class))).thenReturn(testUser1);
         when(repository.findByUsername(anyString())).thenReturn(null);
         when(repository.findByEmail(anyString())).thenReturn(testUser1);
-        assertFalse(service.registerUser(userDto, request, model));
+        assertNull(service.registerUser(userDto, request, model));
     }
 
 
