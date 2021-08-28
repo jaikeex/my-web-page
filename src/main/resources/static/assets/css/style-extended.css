@@ -1,13 +1,19 @@
 .container-banner {
-    height: 150px;
+    height: 200px;
     width: 100%;
     overflow: hidden;
+    background: black;
 }
 
 .banner-img {
-    max-height: 150px;
+    max-height: 200px;
     width: 100%;
-    object-fit: cover;
+    object-fit: contain;
+}
+
+.container-banner-div {
+    background: black;
+    width: 100%;
 }
 
 .sticky {
@@ -66,17 +72,19 @@ body {
 }
 
 .card-bottom-space {
-    margin-left: 35px;
+    margin-right: 35px;
     margin-bottom: 35px;
+    width: 300px;
 }
 
 .grit-testing {
     overflow: auto;
-    display: inline-flex;
+    display: flex;
+    flex-wrap: wrap;
 }
 
 .projects-grid {
-    max-width: 60%;
+    max-width: 100%;
 }
 
 .bread-overflow {
@@ -85,7 +93,7 @@ body {
 
 @media (min-width: 1900px) {
     .breadcrumbs-margin {
-        margin-left: -5%;
+        margin-left: -8%;
     }
 }
 

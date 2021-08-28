@@ -15,7 +15,6 @@
       <div th:replace="fragments/banner :: banner"></div>
       <div th:replace="fragments/breadcrumbs :: breadcrumbs (title='Profile info')"></div>
 
-      <section class="inner-page">
         <div class="container">
           <div sec:authorize="isAuthenticated()">
             <div th:if="${passwordChanged == true}" class="password-changed-message">
@@ -28,7 +27,6 @@
 
           </div>
         </div>
-      </section>
 
     </main><!-- End #main -->
 
