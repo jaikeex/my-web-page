@@ -18,11 +18,10 @@
       <p>intro line 2</p>
     </div>
     <div class="container form-container projects-grid grit-testing">
-      <div class="col-md-4" style="width: 22rem;" th:each="project: ${projects}">
-          <div class="card card-bottom-space"> <!--style="width: 16rem;"-->
+          <div class="card card-bottom-space" th:each="project: ${projects}" style="width: 20rem;">
             <a href="#"><img class="card-img-top" src="/images/img.png" alt="Card image cap"></a>
             <div class="card-body">
-              <h5 class="card-title" th:text="${project.getName()}"></h5>
+              <h4 class="card-title" th:text="${project.getName()}"></h4>
               <p class="card-text" th:text="${project.getIntroduction()}"></p>
             </div>
             <ul class="list-group list-group-flush">
@@ -35,7 +34,6 @@
               <a class="card-link" th:href="@{/project/project-details(id=${project.getId()})}">Go to project</a>
               <a class="card-link" th:href="${project.getGithubLink()}">Github</a>
             </div>
-        </div>
       </div>
     </div>
   </main><!-- End #main -->

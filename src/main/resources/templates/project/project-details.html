@@ -14,8 +14,10 @@
   <div th:replace="fragments/breadcrumbs :: breadcrumbs (title=${project.getName()})"></div>
   <div class="container form-container">
     <div class="row">
-      <div class="col-md-6 col-md-offset-3">
-        <h3 th:text="${project.getName()}"></h3>
+      <div class="col-md-12">
+        <h3 th:text="${project.getName()}" style="margin-bottom: 20px;"></h3>
+        <p th:text="${project.getDetailedDescription()}"></p>
+
       </div>
     </div>
   </div>
