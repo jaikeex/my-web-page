@@ -23,7 +23,15 @@ public class UserAccountManagementService {
         this.repository = repository;
     }
 
+    /**
+     * Registers the user into database if the user does not already exist.
+     * @param userDto Dto containing user data necessary for registration.
+     * @param request Http request.
+     * @param model Model
+     * @return User object if the process was successful, null otherwise.
+     */
     public User registerUser (UserDto userDto, HttpServletRequest request, Model model) {
+
         if (canBeRegisteredWithModelUpdate(userDto, model)) {
             User user = loadDataFromDtoIntoUserObject(userDto);
             repository.save(user);
@@ -33,6 +41,10 @@ public class UserAccountManagementService {
         return null;
     }
 
+    public void updateUserStatsOnLogin(String username) {
+        Timestamp newLastAccessDate = new Timestamp(System.currentTimeMillis());
+        repository.updateLastAccessDate(newLastAccessDate, username);
+    }
 
     private User loadDataFromDtoIntoUserObject(UserDto userDto) {
         Timestamp now = new Timestamp(System.currentTimeMillis());

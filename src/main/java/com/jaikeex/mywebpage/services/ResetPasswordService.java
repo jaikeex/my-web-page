@@ -33,6 +33,12 @@ public class ResetPasswordService extends MyEmailService {
         this.encoder = encoder;
     }
 
+
+    /**
+     * Changes the user's password to a new value, sent in the Dto provided.
+     * @param resetPasswordDto Dto containing necessary data to complete the process.
+     * @return true if successful, false otherwise.
+     */
     public boolean resetPassword(ResetPasswordDto resetPasswordDto) {
         User user = repository.findByEmail(resetPasswordDto.getEmail());
         if (user != null) {
@@ -41,12 +47,17 @@ public class ResetPasswordService extends MyEmailService {
         return false;
     }
 
+
+    /**
+     * Constructs and sends an email containing the reset password link which the user needs to visit
+     * in order to reset his password.
+     * @param email email address to sent the message to.
+     */
     public void sendConfirmationEmail (String email) {
         User user = repository.findByEmail(email);
         if (user != null) {
             this.setTo(email);
-            String resetToken = generateTokenForUser(user);
-            String messageBody = constructEmail(constructResetLink(resetToken), email);
+            String messageBody = constructResetPasswordMessage(user);
             sendMessage(subject, messageBody);
         }
     }
@@ -59,12 +70,16 @@ public class ResetPasswordService extends MyEmailService {
         return false;
     }
 
-    private String constructResetLink(String token) {
-        return String.format("http://localhost:8080/user/reset-password?token=%s", token);
+    private String constructResetLink(User user) {
+        String resetToken = generateTokenForUser(user);
+        return String.format("http://localhost:8080/user/reset-password?token=%s", resetToken);
     }
 
-    private String constructEmail(String resetLink, String email) {
-        return emailBody + resetLink + String.format("&email=%s", email) + emailFooter;
+    private String constructResetPasswordMessage(User user) {
+        String email = user.getEmail();
+        String resetLink = constructResetLink(user);
+        String message = emailBody + resetLink + String.format("&email=%s", email) + emailFooter;
+        return message;
     }
 
     private String generateTokenForUser(User user) {

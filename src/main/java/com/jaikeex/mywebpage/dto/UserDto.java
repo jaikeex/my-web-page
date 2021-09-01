@@ -1,5 +1,6 @@
 package com.jaikeex.mywebpage.dto;
 
+import com.jaikeex.mywebpage.services.validators.MatchingPasswords;
 import com.jaikeex.mywebpage.services.validators.PasswordMatches;
 import com.jaikeex.mywebpage.services.validators.ValidateEmail;
 import org.springframework.stereotype.Component;

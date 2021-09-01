@@ -1,6 +1,5 @@
 package com.jaikeex.mywebpage.services.validators;
 
-import com.jaikeex.mywebpage.dto.MatchingPasswords;
 import org.springframework.beans.BeanWrapperImpl;
 
 import javax.validation.ConstraintValidator;
@@ -18,14 +17,12 @@ public class PasswordMatchesValidator implements ConstraintValidator<PasswordMat
 
     @Override
     public boolean isValid(MatchingPasswords matchingPasswords, ConstraintValidatorContext constraintValidatorContext) {
-
         Object fieldValue = new BeanWrapperImpl(matchingPasswords)
                 .getPropertyValue(field);
         Object fieldMatchValue = new BeanWrapperImpl(matchingPasswords)
                 .getPropertyValue(fieldMatch);
 
         boolean isValid;
-
         if (fieldValue != null) {
             isValid = fieldValue.equals(fieldMatchValue);
         } else {

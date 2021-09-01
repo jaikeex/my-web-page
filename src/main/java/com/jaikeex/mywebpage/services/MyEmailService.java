@@ -21,19 +21,22 @@ public class MyEmailService extends Authenticator{
     public MyEmailService() {
     }
 
-    public boolean sendMessage(String subject, String messageText) {
-        Properties properties = constructProperties();
-        if (session == null) {
-            setSession(Session.getInstance(properties, this));
-        }
+    /**
+     * Constructs and sends an email through an smtp server. The destination address is defined as a class field.
+     * @param subject email subject.
+     * @param messageBody email body.
+     * @return true if successful, false otherwise.
+     */
+    public boolean sendMessage(String subject, String messageBody) {
+        setActiveSession();
         try {
-            MimeMessage message = constructMessage(session, subject, messageText);
+            MimeMessage message = constructMessage(subject, messageBody);
             Transport.send(message);
             return true;
         } catch (MessagingException e) {
             e.printStackTrace();
+            return false;
         }
-        return false;
     }
 
     public String getTo() {
@@ -72,6 +75,13 @@ public class MyEmailService extends Authenticator{
         return new PasswordAuthentication("kbhsmtp@gmail.com", "heslo789");
     }
 
+    private void setActiveSession() {
+        if (session == null) {
+            Properties properties = constructProperties();
+            setSession(Session.getInstance(properties, this));
+        }
+    }
+
     private Properties constructProperties() {
         Properties properties = System.getProperties();
         properties.put("mail.smtp.host", host);
@@ -85,12 +95,12 @@ public class MyEmailService extends Authenticator{
         return properties;
     }
 
-    private MimeMessage constructMessage(Session session, String subject, String messageText) throws MessagingException {
+    private MimeMessage constructMessage(String subject, String messageBody) throws MessagingException {
         MimeMessage message = new MimeMessage(session);
         message.setFrom(new InternetAddress(from));
         message.addRecipient(Message.RecipientType.TO, new InternetAddress(to));
         message.setSubject(subject);
-        message.setText(messageText);
+        message.setText(messageBody);
         return message;
     }
 }

@@ -12,7 +12,7 @@
 <main id="main">
 
   <div th:replace="fragments/banner :: banner"></div>
-  <div th:replace="fragments/breadcrumbs :: breadcrumbs"></div>
+  <div th:replace="fragments/breadcrumbs :: breadcrumbs (title='Contact me')"></div>
 
     <div class="container form-container">
       <div th:if="${messageSent == true}">

@@ -78,7 +78,4 @@ class UserAccountManagementServiceTest {
         when(repository.findByEmail(anyString())).thenReturn(testUser1);
         assertNull(service.registerUser(userDto, request, model));
     }
-
-
-
 }
