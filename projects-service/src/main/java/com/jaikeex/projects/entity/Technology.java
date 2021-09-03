@@ -1,4 +1,9 @@
-package com.jaikeex.mywebpage.entity;
+package com.jaikeex.projects.entity;
+
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 import java.util.HashSet;
@@ -6,6 +11,9 @@ import java.util.Objects;
 import java.util.Set;
 
 @Entity
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
 public class Technology {
 
     @Id
@@ -14,34 +22,9 @@ public class Technology {
     private String name;
 
     @ManyToMany(mappedBy = "technologies")
+    @JsonBackReference
     Set<Project> projects = new HashSet<>();
 
-    public Technology() {
-    }
-
-    public int getId() {
-        return id;
-    }
-
-    public void setId(int id) {
-        this.id = id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public Set<Project> getProjects() {
-        return projects;
-    }
-
-    public void setProjects(Set<Project> projects) {
-        this.projects = projects;
-    }
 
     public void addProject(Project project) {
         if (projects.contains(project)) {
@@ -75,5 +58,5 @@ public class Technology {
         return "Technology{" +
         "name='" + name + '\'' +
         '}';
-        }
-        }
+    }
+}

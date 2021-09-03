@@ -9,15 +9,14 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import javax.persistence.criteria.CriteriaBuilder;
 import java.util.List;
 
 @RestController
-@RequestMapping("/projects")
+@RequestMapping("/projectsdb")
 @Slf4j
 public class ProjectController {
 
-    private ProjectService service;
+    private final ProjectService service;
 
     @Autowired
     public ProjectController(ProjectService service) {
@@ -31,9 +30,9 @@ public class ProjectController {
     }
 
     @GetMapping("/{id}")
-    public Project findProjectById(@PathVariable("id") Integer projectId) {
+    public Project findProjectWithTechnologiesById(@PathVariable("id") Integer projectId) {
         log.info("Fetching a project with id " + projectId + ".");
-        return service.findProjectById(projectId);
+        return service.findProjectWithTechnologiesById(projectId);
     }
 
 

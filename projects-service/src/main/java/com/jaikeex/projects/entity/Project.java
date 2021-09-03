@@ -1,5 +1,6 @@
 package com.jaikeex.projects.entity;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -25,11 +26,12 @@ public class Project {
     private String language;
     private String snapshot;
 
-    /*@ManyToMany(cascade = {CascadeType.MERGE}, fetch = FetchType.EAGER)
+    @ManyToMany(cascade = {CascadeType.MERGE}, fetch = FetchType.EAGER)
     @JoinTable(name = "project_technology",
             joinColumns = @JoinColumn(name = "project_id"),
             inverseJoinColumns = @JoinColumn(name = "technology_id")
     )
+    @JsonManagedReference
     private Set<Technology> technologies = new HashSet<>();
 
 
@@ -46,7 +48,7 @@ public class Project {
         }
         technologies.remove(technology);
     }
-    */
+
 
     @Override
     public String toString() {

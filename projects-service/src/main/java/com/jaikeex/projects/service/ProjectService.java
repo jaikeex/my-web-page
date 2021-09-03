@@ -21,7 +21,7 @@ public class ProjectService {
         return repository.findAll();
     }
 
-    public Project findProjectById(Integer projectId) {
+    public Project findProjectWithTechnologiesById(Integer projectId) {
         return repository.findProjectById(projectId);
     }
 }
