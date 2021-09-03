@@ -3,6 +3,7 @@ package com.jaikeex.mywebpage.services;
 import com.jaikeex.mywebpage.dto.UserDto;
 import com.jaikeex.mywebpage.entity.User;
 import com.jaikeex.mywebpage.jpa.UserRepository;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.ui.Model;
@@ -14,6 +15,7 @@ import java.sql.Timestamp;
 
 @Service
 @Transactional
+@Slf4j
 public class UserAccountManagementService {
 
     private final UserRepository repository;
@@ -36,6 +38,7 @@ public class UserAccountManagementService {
             User user = loadDataFromDtoIntoUserObject(userDto);
             repository.save(user);
             loginUser(request, userDto.getUsername(), userDto.getPassword());
+            log.info("Registered user: " + user);
             return user;
         }
         return null;
@@ -89,7 +92,4 @@ public class UserAccountManagementService {
         }
         return true;
     }
-
-
-
 }

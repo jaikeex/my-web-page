@@ -15,7 +15,7 @@
       <div th:replace="fragments/banner :: banner"></div>
       <div th:replace="fragments/breadcrumbs :: breadcrumbs (title='Profile info')"></div>
 
-        <div class="container">
+        <div class="container form-container">
           <div sec:authorize="isAuthenticated()">
             <div th:if="${passwordChanged == true}" class="password-changed-message">
               <h4>Password changed successfully!!</h4>
