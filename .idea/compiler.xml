@@ -10,7 +10,7 @@
         <module name="my-web-page" />
       </profile>
     </annotationProcessing>
-    <bytecodeTargetLevel>
+    <bytecodeTargetLevel target="13">
       <module name="my-web-page" target="13" />
     </bytecodeTargetLevel>
   </component>
