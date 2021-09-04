@@ -19,12 +19,12 @@ import java.util.List;
 
 @Service
 @Slf4j
-public class UserAccountManagementService {
+public class UserService {
 
     RestTemplate restTemplate;
 
     @Autowired
-    public UserAccountManagementService(RestTemplate restTemplate) {
+    public UserService(RestTemplate restTemplate) {
         this.restTemplate = restTemplate;
     }
 

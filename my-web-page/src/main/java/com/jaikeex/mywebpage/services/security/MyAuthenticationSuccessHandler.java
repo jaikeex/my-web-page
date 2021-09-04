@@ -1,6 +1,6 @@
 package com.jaikeex.mywebpage.services.security;
 
-import com.jaikeex.mywebpage.services.UserAccountManagementService;
+import com.jaikeex.mywebpage.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.web.DefaultRedirectStrategy;
@@ -17,11 +17,11 @@ import java.io.IOException;
 @Service
 public class MyAuthenticationSuccessHandler implements AuthenticationSuccessHandler {
 
-    UserAccountManagementService accountManagementService;
+    UserService accountManagementService;
     private final RedirectStrategy redirectStrategy = new DefaultRedirectStrategy();
 
     @Autowired
-    public MyAuthenticationSuccessHandler(UserAccountManagementService accountManagementService) {
+    public MyAuthenticationSuccessHandler(UserService accountManagementService) {
         this.accountManagementService = accountManagementService;
     }
 

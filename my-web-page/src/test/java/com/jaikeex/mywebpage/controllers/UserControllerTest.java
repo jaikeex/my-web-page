@@ -3,7 +3,7 @@ package com.jaikeex.mywebpage.controllers;
 import com.jaikeex.mywebpage.dto.UserDto;
 import com.jaikeex.mywebpage.entity.User;
 import com.jaikeex.mywebpage.jpa.UserRepository;
-import com.jaikeex.mywebpage.services.UserAccountManagementService;
+import com.jaikeex.mywebpage.services.UserService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,7 +29,7 @@ class UserControllerTest {
     @MockBean
     UserRepository repository;
     @MockBean
-    UserAccountManagementService service;
+    UserService service;
     @Autowired
     private MockMvc mockMvc;
     @Autowired

@@ -13,7 +13,6 @@ import org.springframework.web.client.RestTemplate;
 
 @SpringBootApplication
 @EnableEurekaClient
-@EnableJpaRepositories(basePackageClasses = {UserRepository.class})
 public class MyWebPageApplication  implements CommandLineRunner {
 
 	@Autowired

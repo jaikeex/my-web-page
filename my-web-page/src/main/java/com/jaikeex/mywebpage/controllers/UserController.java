@@ -3,7 +3,7 @@ package com.jaikeex.mywebpage.controllers;
 
 import com.jaikeex.mywebpage.dto.UserDto;
 import com.jaikeex.mywebpage.models.ModelAttribute;
-import com.jaikeex.mywebpage.services.UserAccountManagementService;
+import com.jaikeex.mywebpage.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -21,11 +21,11 @@ import java.util.List;
 @RequestMapping("/user")
 public class UserController {
 
-    UserAccountManagementService userAccountManagementService;
+    UserService userService;
 
     @Autowired
-    public UserController(UserAccountManagementService userAccountManagementService) {
-        this.userAccountManagementService = userAccountManagementService;
+    public UserController(UserService userService) {
+        this.userService = userService;
     }
 
     @RequestMapping(value = "/auth/info")
@@ -45,7 +45,7 @@ public class UserController {
         if (result.hasErrors()) {
             parseSignupErrors(result, model);
         } else {
-            List<ModelAttribute> attributes = userAccountManagementService.registerUser(userDto, request);
+            List<ModelAttribute> attributes = userService.registerUser(userDto, request);
             for (ModelAttribute attribute : attributes) {
                 model.addAttribute(attribute.getName(), attribute.getValue());
             }

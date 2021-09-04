@@ -36,7 +36,7 @@ class UserAccountManagementServiceTest {
     UserRepository repository;
 
     @InjectMocks
-    UserAccountManagementService service;
+    UserService service;
 /*
     @Test
     void registerUserWithValidInput() {
