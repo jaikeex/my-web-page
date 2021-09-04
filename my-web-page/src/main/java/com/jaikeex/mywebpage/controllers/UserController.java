@@ -2,6 +2,7 @@ package com.jaikeex.mywebpage.controllers;
 
 
 import com.jaikeex.mywebpage.dto.UserDto;
+import com.jaikeex.mywebpage.models.ModelAttribute;
 import com.jaikeex.mywebpage.services.UserAccountManagementService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -14,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
+import java.util.List;
 
 @Controller
 @RequestMapping("/user")
@@ -40,11 +42,13 @@ public class UserController {
 
     @PostMapping(value = "/signup")
     public String registerUser(Model model, @Valid UserDto userDto, BindingResult result, HttpServletRequest request) {
-        model.addAttribute(userDto);
         if (result.hasErrors()) {
             parseSignupErrors(result, model);
         } else {
-            userAccountManagementService.registerUser(userDto, request, model);
+            List<ModelAttribute> attributes = userAccountManagementService.registerUser(userDto, request);
+            for (ModelAttribute attribute : attributes) {
+                model.addAttribute(attribute.getName(), attribute.getValue());
+            }
         }
         return "user/signup";
     }

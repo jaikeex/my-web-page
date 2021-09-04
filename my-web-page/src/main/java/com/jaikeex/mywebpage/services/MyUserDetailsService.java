@@ -1,25 +1,25 @@
 package com.jaikeex.mywebpage.services;
 
 import com.jaikeex.mywebpage.entity.User;
-import com.jaikeex.mywebpage.jpa.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
 
 @Service
 public class MyUserDetailsService implements UserDetailsService {
 
-    UserRepository repository;
+    RestTemplate restTemplate;
 
     @Autowired
-    public MyUserDetailsService(UserRepository repository) {
-        this.repository = repository;
+    public MyUserDetailsService(RestTemplate restTemplate) {
+        this.restTemplate = restTemplate;
     }
 
     @Override
     public UserDetails loadUserByUsername(String username){
-        User user = repository.findByUsername(username);
+        User user = restTemplate.getForObject("https://USER-SERVICE/userdb?username=" + username, User.class);
         if (user != null) {
             return new MyUserDetails(user);
         } else {

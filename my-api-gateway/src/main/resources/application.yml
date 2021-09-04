@@ -10,6 +10,18 @@ spring:
           uri: lb://PROJECTS-SERVICE
           predicates:
             - Path=/projectsdb/**
+        - id: USER-SERVICE
+          uri: lb://USER-SERVICE
+          predicates:
+            - Path=/userdb/**
+        - id: FRONTEND
+          uri: lb://FRONTEND
+          predicates:
+            - Path=/**
+        - id: REGISTER-SERVICE
+          uri: lb://REGISTER-SERVICE
+          predicates:
+            - Path=/register/**
 
 
 eureka:

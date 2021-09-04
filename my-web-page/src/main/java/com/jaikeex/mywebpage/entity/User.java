@@ -1,10 +1,8 @@
 package com.jaikeex.mywebpage.entity;
 
-import com.jaikeex.mywebpage.services.security.MyPasswordEncoder;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.springframework.security.crypto.password.PasswordEncoder;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -31,11 +29,6 @@ public class User{
     private Timestamp updatedAt;
     private boolean enabled;
     private String role;
-
-    public void setPassword(String password) {
-        PasswordEncoder passwordEncoder = new MyPasswordEncoder();
-        this.password = passwordEncoder.encode(password);
-    }
 
     @Override
     public boolean equals(Object o) {

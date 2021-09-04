@@ -1,6 +1,5 @@
 package com.jaikeex.mywebpage.services.security;
 
-import com.jaikeex.mywebpage.jpa.UserRepository;
 import com.jaikeex.mywebpage.services.UserAccountManagementService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
@@ -19,12 +18,10 @@ import java.io.IOException;
 public class MyAuthenticationSuccessHandler implements AuthenticationSuccessHandler {
 
     UserAccountManagementService accountManagementService;
-    UserRepository repository;
     private final RedirectStrategy redirectStrategy = new DefaultRedirectStrategy();
 
     @Autowired
-    public MyAuthenticationSuccessHandler(UserRepository repository, UserAccountManagementService accountManagementService) {
-        this.repository = repository;
+    public MyAuthenticationSuccessHandler(UserAccountManagementService accountManagementService) {
         this.accountManagementService = accountManagementService;
     }
 
@@ -37,7 +34,6 @@ public class MyAuthenticationSuccessHandler implements AuthenticationSuccessHand
     public void onAuthenticationSuccess(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse, Authentication authentication) throws IOException, ServletException {
         String username = authentication.getName();
         accountManagementService.updateUserStatsOnLogin(username);
-        redirectStrategy.sendRedirect(httpServletRequest, httpServletResponse, "/");
+        redirectStrategy.sendRedirect(httpServletRequest, httpServletResponse, "http://localhost:9000/");
     }
-
 }

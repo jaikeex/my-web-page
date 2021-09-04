@@ -14,12 +14,14 @@
   <div th:replace="/fragments/banner :: banner"></div>
   <div th:replace="/fragments/breadcrumbs :: breadcrumbs (title='Signup')"></div>
   <div class="container form-container">
-    <div sec:authorize="isAuthenticated()">
+    <div th:if="${result} == true">
       <h4>Registration was successful!!</h4>
-      <p th:text="'You are now logged in as ' + ${#authentication.getPrincipal().getUsername()}"></p>
-      <a href="/user/auth/info">See account details</a>
+      <p>Registration was successful!</p>
+      <p>You can now
+        <a th:href="@{/login}">log in</a>
+      </p>
     </div>
-    <div sec:authorize="isAnonymous()">
+    <div sec:authorize="isAnonymous()" th:if="${result} != true">
       <div class="row">
         <div class="col-md-6 col-md-offset-3">
           <h4>Registration</h4>

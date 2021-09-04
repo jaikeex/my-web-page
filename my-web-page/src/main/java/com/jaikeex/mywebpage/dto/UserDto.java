@@ -1,5 +1,6 @@
 package com.jaikeex.mywebpage.dto;
 
+import com.jaikeex.mywebpage.services.security.MyPasswordEncoder;
 import com.jaikeex.mywebpage.services.validators.MatchingPasswords;
 import com.jaikeex.mywebpage.services.validators.PasswordMatches;
 import com.jaikeex.mywebpage.services.validators.ValidateEmail;
@@ -11,6 +12,7 @@ import javax.validation.constraints.NotBlank;
 @PasswordMatches.List({@PasswordMatches(field = "password", fieldMatch = "passwordForValidation")})
 public class UserDto implements MatchingPasswords {
 
+    MyPasswordEncoder encoder = new MyPasswordEncoder();
 
     @ValidateEmail
     protected String email;
@@ -34,6 +36,10 @@ public class UserDto implements MatchingPasswords {
         this.passwordForValidation = passwordForValidation;
     }
 
+    public void encodePassword() {
+        this.password = encoder.encode(password);
+    }
+
     public String getEmail() {
         return email;
     }
@@ -44,20 +50,20 @@ public class UserDto implements MatchingPasswords {
         }
     }
 
-    public String getUsername() {
-        return username;
-    }
-
-    public void setUsername(String username) {
-        this.username = username;
-    }
-
     public String getPassword() {
         return password;
     }
 
     public void setPassword(String password) {
         this.password = password;
+    }
+
+    public String getUsername() {
+        return username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
     }
 
     public String getPasswordForValidation() {
