@@ -9,19 +9,11 @@ spring:
         - id: PROJECTS-SERVICE
           uri: lb://PROJECTS-SERVICE
           predicates:
-            - Path=/projectsdb/**
+            - Path=/projects/**
         - id: USER-SERVICE
           uri: lb://USER-SERVICE
           predicates:
-            - Path=/userdb/**
-        - id: FRONTEND
-          uri: lb://FRONTEND
-          predicates:
-            - Path=/**
-        - id: REGISTER-SERVICE
-          uri: lb://REGISTER-SERVICE
-          predicates:
-            - Path=/register/**
+            - Path=/users/**
 
 
 eureka:

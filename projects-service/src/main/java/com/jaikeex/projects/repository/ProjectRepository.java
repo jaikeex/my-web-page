@@ -10,7 +10,7 @@ import org.springframework.stereotype.Repository;
 public interface ProjectRepository extends JpaRepository<Project, Integer> {
 
     @Query("select p from Project p where p.name = :name")
-    Project findByName(
+    Project findProjectByName(
             @Param("name") String name);
 
     @Query("select p from Project p where p.id = :projectId")

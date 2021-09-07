@@ -2,7 +2,6 @@ package com.jaikeex.mywebpage.controllers;
 
 
 import com.jaikeex.mywebpage.dto.UserDto;
-import com.jaikeex.mywebpage.models.ModelAttribute;
 import com.jaikeex.mywebpage.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -13,9 +12,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
-import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
-import java.util.List;
 
 @Controller
 @RequestMapping("/user")
@@ -26,6 +23,11 @@ public class UserController {
     @Autowired
     public UserController(UserService userService) {
         this.userService = userService;
+    }
+
+    @GetMapping(value = "/login")
+    public String about () {
+        return "/user/login";
     }
 
     @RequestMapping(value = "/auth/info")
@@ -41,20 +43,15 @@ public class UserController {
     }
 
     @PostMapping(value = "/signup")
-    public String registerUser(Model model, @Valid UserDto userDto, BindingResult result, HttpServletRequest request) {
-        if (result.hasErrors()) {
-            parseSignupErrors(result, model);
-        } else {
-            List<ModelAttribute> attributes = userService.registerUser(userDto, request);
-            for (ModelAttribute attribute : attributes) {
-                model.addAttribute(attribute.getName(), attribute.getValue());
-            }
+    public String registerUser(Model model, @Valid UserDto userDto, BindingResult result) {
+        parseSignupFormErrors(result, model);
+        if (!result.hasErrors()) {
+            userService.registerUser(userDto, model);
         }
         return "user/signup";
     }
 
-
-    private void parseSignupErrors (BindingResult result, Model model) {
+    private void parseSignupFormErrors(BindingResult result, Model model) {
         for (ObjectError error : result.getAllErrors()) {
             if (error.toString().contains("Blank")) {
                 model.addAttribute("passwordMatchErrorMessage", "Please fill in all the fields!");

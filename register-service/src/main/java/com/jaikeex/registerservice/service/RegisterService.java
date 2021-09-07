@@ -1,20 +1,17 @@
 package com.jaikeex.registerservice.service;
 
-import com.jaikeex.registerservice.VO.User;
-import com.jaikeex.registerservice.dto.ModelAttributeDto;
+import com.jaikeex.registerservice.jsonvo.User;
 import com.jaikeex.registerservice.dto.UserDto;
 import com.jaikeex.registerservice.models.ModelAttribute;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Scope;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import org.springframework.ui.ExtendedModelMap;
-import org.springframework.ui.Model;
 import org.springframework.web.client.RestTemplate;
 
 import java.sql.Timestamp;
-import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -24,27 +21,23 @@ import java.util.List;
 public class RegisterService {
 
     RestTemplate restTemplate;
-    private List<ModelAttribute> attributes = new LinkedList<>();
+    private final List<ModelAttribute> modelAttributes = new LinkedList<>();
 
     @Autowired
     public RegisterService(RestTemplate restTemplate) {
         this.restTemplate = restTemplate;
     }
 
-    /**
-     * Registers the user into database if the user does not already exist.
-     * @param userDto Dto containing user data necessary for registration.
-     */
     public List<ModelAttribute> registerUser(UserDto userDto) {
         User user = loadDataFromDtoIntoUserObject(userDto);
         if (canBeRegisteredWithModelUpdate(user)) {
             restTemplate.postForObject("https://USER-SERVICE/userdb/register", user, User.class);
-            attributes.add(new ModelAttribute("result", true));
+            modelAttributes.add(new ModelAttribute("result", true));
         }
-        for (Object attribute : attributes) {
+        for (Object attribute : modelAttributes) {
             log.info(attribute.toString());
         }
-        return attributes;
+        return modelAttributes;
     }
 
     private User loadDataFromDtoIntoUserObject(UserDto userDto) {
@@ -66,23 +59,28 @@ public class RegisterService {
     }
 
     private boolean hasOriginalUsernameWithModelUpdate(User user) {
+
         User responseFromDb = restTemplate.getForObject("https://USER-SERVICE/userdb?username=" + user.getUsername(), User.class);
         if (responseFromDb != null) {
-            attributes.add(new ModelAttribute("databaseError", true));
-            attributes.add(new ModelAttribute("databaseErrorMessage", "User already exists."));
+            modelAttributes.add(new ModelAttribute("databaseError", true));
+            modelAttributes.add(new ModelAttribute("databaseErrorMessage", "User already exists."));
             return false;
         }
         return true;
     }
 
     private boolean hasOriginalEmailWithModelUpdate(User user) {
+        ResponseEntity<User> responseEntity = restTemplate.getForEntity("https://USER-SERVICE/userdb?email=" + user.getEmail(), User.class);
+        System.out.println(responseEntity.getStatusCode());
         User responseFromDb = restTemplate.getForObject("https://USER-SERVICE/userdb?email=" + user.getEmail(), User.class);
         if (responseFromDb != null) {
-            attributes.add(new ModelAttribute("databaseError", true));
-            attributes.add(new ModelAttribute("databaseErrorMessage", "User with this email already exists."));
+            modelAttributes.add(new ModelAttribute("databaseError", true));
+            modelAttributes.add(new ModelAttribute("databaseErrorMessage", "User with this email already exists."));
             return false;
         }
         return true;
     }
+
+
 
 }

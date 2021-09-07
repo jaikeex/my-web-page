@@ -34,6 +34,6 @@ public class MyAuthenticationSuccessHandler implements AuthenticationSuccessHand
     public void onAuthenticationSuccess(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse, Authentication authentication) throws IOException, ServletException {
         String username = authentication.getName();
         accountManagementService.updateUserStatsOnLogin(username);
-        redirectStrategy.sendRedirect(httpServletRequest, httpServletResponse, "http://localhost:9000/");
+        redirectStrategy.sendRedirect(httpServletRequest, httpServletResponse, "http://localhost:8080/");
     }
 }

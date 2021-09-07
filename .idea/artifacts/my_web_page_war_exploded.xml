@@ -149,7 +149,7 @@
           <element id="library" level="project" name="Maven: org.springframework.boot:spring-boot-starter-cache:2.5.3" />
           <element id="library" level="project" name="Maven: org.springframework:spring-context-support:5.3.9" />
           <element id="library" level="project" name="Maven: com.stoyanr:evictor:1.0.0" />
-          <element id="library" level="project" name="Maven: org.json:json:20210307" />
+          <element id="library" level="project" name="Maven: org.json:json:20180130" />
         </element>
       </element>
       <element id="directory" name="META-INF">

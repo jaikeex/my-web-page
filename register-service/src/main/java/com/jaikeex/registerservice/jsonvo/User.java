@@ -1,4 +1,4 @@
-package com.jaikeex.registerservice.VO;
+package com.jaikeex.registerservice.jsonvo;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
