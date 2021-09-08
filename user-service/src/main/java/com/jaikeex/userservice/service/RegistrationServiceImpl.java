@@ -1,14 +1,14 @@
 package com.jaikeex.userservice.service;
 
-import com.jaikeex.userservice.dto.UserDto;
 import com.jaikeex.userservice.entity.User;
 import com.jaikeex.userservice.repository.UserRepository;
+import com.jaikeex.userservice.service.exception.UserAlreadyExistsException;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.sql.Timestamp;
-
 @Service
+@Slf4j
 public class RegistrationServiceImpl implements RegistrationService{
 
     UserRepository repository;
@@ -18,37 +18,41 @@ public class RegistrationServiceImpl implements RegistrationService{
         this.repository = repository;
     }
 
+
     @Override
-    public User registerUser(User user) throws Exception {
+    public User registerUser(User user) throws UserAlreadyExistsException {
         if (canBeRegistered(user)) {
+            log.info("Registering new user: username = " + user.getUsername());
             repository.save(user);
-            return user;
         }
-        else {
-            return null;
-        }
+        return user;
     }
 
-    private boolean canBeRegistered(User user) throws Exception{
+
+    private boolean canBeRegistered(User user) throws UserAlreadyExistsException{
         return hasOriginalUsername(user) && hasOriginalEmail(user);
     }
 
-    private boolean hasOriginalEmail(User user) throws Exception {
+
+    private boolean hasOriginalEmail(User user) throws UserAlreadyExistsException {
         User dbResponse = repository.findByEmail(user.getEmail());
         if (dbResponse != null) {
-            throw new Exception("User with this email already exists");
+            throw new UserAlreadyExistsException("User with this email already exists");
         } else {
             return true;
         }
     }
 
-    private boolean hasOriginalUsername(User user) throws Exception{
+
+    private boolean hasOriginalUsername(User user) throws UserAlreadyExistsException{
         User dbResponse = repository.findByUsername(user.getUsername());
         if (dbResponse != null) {
-            throw new Exception("User with this name already exists");
+            throw new UserAlreadyExistsException("User with this name already exists");
         } else {
             return true;
         }
     }
+
+
 
 }
