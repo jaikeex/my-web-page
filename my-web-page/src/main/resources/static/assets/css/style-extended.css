@@ -1,0 +1,99 @@
+.container-banner {
+    height: 200px;
+    width: 100%;
+    overflow: hidden;
+    background: black;
+}
+
+.banner-img {
+    max-height: 200px;
+    width: 100%;
+    object-fit: contain;
+}
+
+.container-banner-div {
+    background: black;
+    width: 100%;
+}
+
+.sticky {
+    top: 0;
+    position: sticky;
+}
+
+body {
+    background: hsl(243, 100%, 97%);
+}
+
+.breadcrumbs-link-fill {
+    white-space: nowrap;
+    color: black;
+}
+
+.form-container {
+    padding-top: 35px;
+    margin-left: 50px;
+}
+
+.form-container textarea {
+    max-width: 80%;
+    margin-bottom: 15px;
+}
+
+.form-container input {
+    max-width: 80%;
+    margin-bottom: 15px;
+}
+
+.password-error-message {
+    margin-bottom: 10px;
+    margin-top: 10px;
+}
+
+.password-changed-message {
+    margin-bottom: 30px;
+}
+
+.breadcrumbs-link-group{
+    display: inline-block;
+
+}
+
+.button-as-text {
+    background: none!important;
+    border: none;
+    padding: 0!important;
+    color: #069;
+    cursor: pointer;
+}
+
+.card-links-box {
+    justify-content: space-between;
+}
+
+.card-bottom-space {
+    margin-right: 80px;
+    margin-bottom: 80px;
+    width: 300px;
+}
+
+.grit-testing {
+    overflow: auto;
+    display: flex;
+    flex-wrap: wrap;
+}
+
+.projects-grid {
+    max-width: 100%;
+}
+
+.bread-overflow {
+    overflow: hidden;
+}
+
+@media (min-width: 1900px) {
+    .breadcrumbs-margin {
+        margin-left: -8%;
+    }
+}
+

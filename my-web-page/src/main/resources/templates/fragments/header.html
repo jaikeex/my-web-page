@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<div th:fragment="headertemplate(currentpage)">
+        <!-- ======= Header ======= -->
+        <header id="header">
+            <div class="d-flex flex-column">
+
+                <div class="profile">
+                    <!--img src="assets/img/profile-img.jpg" alt="" class="img-fluid rounded-circle"-->
+                    <h1 class="text-light"><a href="/">Kubík</a></h1>
+                    <div class="social-links mt-3 text-center">
+                        <a href="https://github.com/jaikeex" class="google-plus"><i class="bx bxl-github"></i></a>
+                        <a href="https://www.linkedin.com/in/jakub-hrubý-a4107b204/" class="linkedin"><i class="bx bxl-linkedin"></i></a>
+                    </div>
+                </div>
+                <nav id="navbar" class="nav-menu navbar">
+                    <ul th:if="${currentpage == 'home'}">
+                        <li><a href="/" class="nav-link active"><i class="bx bx-home"></i> <span>Home</span></a></li>
+                        <li><a href="/about" class="nav-link"><i class="bx bx-user"></i> <span>About me</span></a></li>
+                        <li><a href="/resume" class="nav-link"><i class="bx bx-file-blank"></i> <span>Resume</span></a></li>
+                        <li><a href="/projects/" class="nav-link"><i class="bx bx-book-content"></i> <span>Projects</span></a></li>
+                        <li><a href="/contact" class="nav-link"><i class="bx bx-envelope"></i> <span>Contact</span></a></li>
+                    </ul>
+                    <ul th:if="${currentpage == 'about'}">
+                        <li><a href="/" class="nav-link"><i class="bx bx-home"></i> <span>Home</span></a></li>
+                        <li><a href="/about" class="nav-link active"><i class="bx bx-user"></i> <span>About me</span></a></li>
+                        <li><a href="/resume" class="nav-link"><i class="bx bx-file-blank"></i> <span>Resume</span></a></li>
+                        <li><a href="/projects/" class="nav-link"><i class="bx bx-book-content"></i> <span>Projects</span></a></li>
+                        <li><a href="/contact" class="nav-link"><i class="bx bx-envelope"></i> <span>Contact</span></a></li>
+                    </ul>
+                    <ul th:if="${currentpage == 'resume'}">
+                        <li><a href="/" class="nav-link"><i class="bx bx-home"></i> <span>Home</span></a></li>
+                        <li><a href="/about" class="nav-link"><i class="bx bx-user"></i> <span>About me</span></a></li>
+                        <li><a href="/resume" class="nav-link active"><i class="bx bx-file-blank"></i> <span>Resume</span></a></li>
+                        <li><a href="/projects/" class="nav-link"><i class="bx bx-book-content"></i> <span>Projects</span></a></li>
+                        <li><a href="/contact" class="nav-link"><i class="bx bx-envelope"></i> <span>Contact</span></a></li>
+                    </ul>
+                    <ul th:if="${currentpage == 'projects'}">
+                        <li><a href="/" class="nav-link"><i class="bx bx-home"></i> <span>Home</span></a></li>
+                        <li><a href="/about" class="nav-link"><i class="bx bx-user"></i> <span>About me</span></a></li>
+                        <li><a href="/resume" class="nav-link"><i class="bx bx-file-blank"></i> <span>Resume</span></a></li>
+                        <li><a href="/projects/" class="nav-link active"><i class="bx bx-book-content"></i> <span>Projects</span></a></li>
+                        <li><a href="/contact" class="nav-link"><i class="bx bx-envelope"></i> <span>Contact</span></a></li>
+                    </ul>
+                    <ul th:if="${currentpage == 'contact'}">
+                        <li><a href="/" class="nav-link"><i class="bx bx-home"></i> <span>Home</span></a></li>
+                        <li><a href="/about" class="nav-link"><i class="bx bx-user"></i> <span>About me</span></a></li>
+                        <li><a href="/resume" class="nav-link"><i class="bx bx-file-blank"></i> <span>Resume</span></a></li>
+                        <li><a href="/projects/" class="nav-link"><i class="bx bx-book-content"></i> <span>Projects</span></a></li>
+                        <li><a href="/contact" class="nav-link active"><i class="bx bx-envelope"></i> <span>Contact</span></a></li>
+                    </ul>
+                    <ul th:if="${currentpage == 'extra'}">
+                        <li><a href="/" class="nav-link"><i class="bx bx-home"></i> <span>Home</span></a></li>
+                        <li><a href="/about" class="nav-link"><i class="bx bx-user"></i> <span>About me</span></a></li>
+                        <li><a href="/resume" class="nav-link"><i class="bx bx-file-blank"></i> <span>Resume</span></a></li>
+                        <li><a href="/projects/" class="nav-link"><i class="bx bx-book-content"></i> <span>Projects</span></a></li>
+                        <li><a href="/contact" class="nav-link active"><i class="bx bx-envelope"></i> <span>Contact</span></a></li>
+                    </ul>
+
+                </nav><!-- .nav-menu -->
+            </div>
+        </header><!-- End Header -->
+    </div>
+</html>
