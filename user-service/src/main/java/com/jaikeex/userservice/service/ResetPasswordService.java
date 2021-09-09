@@ -58,7 +58,7 @@ public class ResetPasswordService {
 
         try {
             log.info("Sending reset password confirmation email to " + email);
-            restTemplate.postForEntity(API_GATEWAY_URL + "/emails/", emailObject, Email.class);
+            restTemplate.postForEntity("https://EMAIL-SERVICE/emails/", emailObject, Email.class);
         } catch (HttpServerErrorException exception) {
             log.info("Sending reset password confirmation email failed");
             throw new EmailServiceDownException(exception.getResponseBodyAsString());
