@@ -1,5 +1,13 @@
-package com.jaikeex.mywebpage.services;
+package com.jaikeex.emailservice.service;
 
+import com.jaikeex.emailservice.dto.EmailDto;
+import com.jaikeex.emailservice.entity.Email;
+import com.jaikeex.emailservice.repository.EmailRepository;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
@@ -7,69 +15,37 @@ import org.springframework.stereotype.Service;
 import javax.mail.*;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
+import java.sql.Timestamp;
 import java.util.Properties;
 
+@EqualsAndHashCode(callSuper = true)
 @Service
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
 @Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
-public class MyEmailService extends Authenticator{
+public class MyEmailService extends Authenticator {
+
+    EmailRepository repository;
 
     private String from = "kbhsmtp@gmail.com";
     private String host = "smtp.gmail.com";
     private String to;
     private Session session = null;
 
-    public MyEmailService() {
+    @Autowired
+    public MyEmailService(EmailRepository repository) {
+        this.repository = repository;
     }
 
-    /**
-     * Constructs and sends an email through an smtp server. The destination address is defined as a class field.
-     * @param subject email subject.
-     * @param messageBody email body.
-     * @return true if successful, false otherwise.
-     */
-    public boolean sendMessage(String subject, String messageBody) {
+    public void sendMessage(Email email) throws MessagingException {
+        this.to = email.getRecipient();
         setActiveSession();
-        try {
-            MimeMessage message = constructMessage(subject, messageBody);
-            Transport.send(message);
-            return true;
-        } catch (MessagingException e) {
-            e.printStackTrace();
-            return false;
-        }
+        MimeMessage message = constructMessage(email.getSubject(), email.getMessage());
+        Transport.send(message);
+        repository.save(email);
     }
 
-    public String getTo() {
-        return to;
-    }
-
-    public void setTo(String to) {
-        this.to = to;
-    }
-
-    public String getFrom() {
-        return from;
-    }
-
-    public void setFrom(String from) {
-        this.from = from;
-    }
-
-    public String getHost() {
-        return host;
-    }
-
-    public void setHost(String host) {
-        this.host = host;
-    }
-
-    public Session getSession() {
-        return session;
-    }
-
-    public void setSession(Session session) {
-        this.session = session;
-    }
 
     protected PasswordAuthentication getPasswordAuthentication () {
         return new PasswordAuthentication("kbhsmtp@gmail.com", "heslo789");
