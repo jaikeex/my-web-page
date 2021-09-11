@@ -1,21 +1,21 @@
 package com.jaikeex.emailservice.controller;
 
-import com.jaikeex.emailservice.dto.EmailDto;
 import com.jaikeex.emailservice.entity.Email;
 import com.jaikeex.emailservice.service.MyEmailService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.AutoConfigureBefore;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import javax.mail.MessagingException;
 
 @RestController
 @RequestMapping("/emails")
 public class EmailController {
+
 
     MyEmailService emailService;
 
@@ -31,7 +31,7 @@ public class EmailController {
             emailService.sendMessage(email);
             return getOkEmailResponseEntity(email);
         } catch (MessagingException exception) {
-            return getEmailNotSendResponseEntity();
+            return getEmailNotSendResponseEntity(exception.getMessage());
         }
     }
 
@@ -39,8 +39,8 @@ public class EmailController {
         return new ResponseEntity<>(email, HttpStatus.OK);
     }
 
-    private ResponseEntity<Object> getEmailNotSendResponseEntity() {
-        return new ResponseEntity<>("There was an error sending the email", HttpStatus.INTERNAL_SERVER_ERROR);
+    private ResponseEntity<Object> getEmailNotSendResponseEntity(String errorMessage) {
+        return new ResponseEntity<>(errorMessage, HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
 
