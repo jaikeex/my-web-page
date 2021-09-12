@@ -14,12 +14,12 @@ import java.sql.Timestamp;
 public interface UserRepository extends JpaRepository<User, Integer> {
 
     @Query("select u from User u where u.username = :username")
-    User findByUsername(
+    User findUserByUsername(
             @Param("username") String username);
 
 
     @Query("select u from User u where u.email = :email")
-    User findByEmail(
+    User findUserByEmail(
             @Param("email") String email);
 
     @Query("select u from User u where u.id = :id")
@@ -29,28 +29,28 @@ public interface UserRepository extends JpaRepository<User, Integer> {
     @Modifying
     @Transactional
     @Query("update User set lastAccessDate = :newLastAccessDate where username = :username")
-    void updateLastAccessDate(
+    void updateLastAccessDateByUsername(
             @Param("newLastAccessDate") Timestamp newLastAccessDate,
             @Param("username") String username);
 
     @Modifying
     @Transactional
     @Query("update User set lastAccessDate = :newLastAccessDate where id = :id")
-    void updateLastAccessDate(
+    void updateLastAccessDateById(
             @Param("newLastAccessDate") Timestamp newLastAccessDate,
             @Param("id") Integer id);
 
     @Modifying
     @Transactional
     @Query("update User set password = :password where email = :email")
-    void updatePassword(
+    void updatePasswordByEmail(
             @Param("email") String email,
             @Param("password") String password);
 
     @Modifying
     @Transactional
     @Query("update User set password = :password where id = :id")
-    void updatePassword(
+    void updatePasswordById(
             @Param("id") Integer id,
             @Param("password") String password);
 }

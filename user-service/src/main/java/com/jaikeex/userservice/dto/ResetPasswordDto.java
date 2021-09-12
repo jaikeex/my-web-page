@@ -1,14 +1,13 @@
-package com.jaikeex.mywebpage.models;
+package com.jaikeex.userservice.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class ModelAttribute {
-    private String name;
-    private Object value;
+public class ResetPasswordDto {
+    private String password;
+    private String resetToken;
 }
