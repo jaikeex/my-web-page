@@ -1,7 +1,6 @@
 package com.jaikeex.mywebpage.services;
 
-import com.jaikeex.mywebpage.VO.Project;
-import org.springframework.beans.factory.annotation.Autowired;
+import com.jaikeex.mywebpage.model.Project;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;

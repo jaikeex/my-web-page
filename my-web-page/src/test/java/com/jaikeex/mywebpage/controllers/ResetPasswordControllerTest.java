@@ -1,7 +1,10 @@
 package com.jaikeex.mywebpage.controllers;
 
 import com.jaikeex.mywebpage.dto.ResetPasswordDto;
+import com.jaikeex.mywebpage.dto.ResetPasswordEmailDto;
 import com.jaikeex.mywebpage.services.ResetPasswordService;
+import com.jaikeex.mywebpage.utility.exception.ResetPasswordProcessFailureException;
+import com.jaikeex.mywebpage.utility.exception.SendingResetPasswordEmailFailureException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,9 +17,7 @@ import org.springframework.web.context.WebApplicationContext;
 
 import static org.hamcrest.Matchers.containsString;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -39,42 +40,57 @@ class ResetPasswordControllerTest {
             "testuserfordbaccess",
             "testuserfordbaccess");
 
+    private final ResetPasswordEmailDto resetPasswordEmailDto =
+            new ResetPasswordEmailDto("email@email.com");
+
     @BeforeEach
     public void beforeEach() {
         mockMvc = MockMvcBuilders.webAppContextSetup(context).apply(springSecurity()).build();
     }
 
     @Test
-    public void shouldAddDtoToModel() throws Exception {
+    public void getResetPasswordPage_shouldAddDtosToModel() throws Exception {
         mockMvc.perform(get("/user/reset-password"))
                 .andExpect(status().isOk())
-                .andExpect(model().attributeExists("resetPasswordDto"));
+                .andExpect(model().attributeExists("resetPasswordDto"))
+                .andExpect(model().attributeExists("resetPasswordEmailDto"));
     }
 
     @Test
-    public void shouldSendConfirmationEmail() throws Exception {
+    public void postResetPasswordForm_givenAllOk_shouldSendConfirmationEmail() throws Exception {
         mockMvc.perform(post("/user/reset-password")
                 .with(csrf())
-                .flashAttr("resetPasswordDto", resetPasswordDto))
+                .flashAttr("resetPasswordEmailDto", resetPasswordEmailDto))
                 .andExpect(status().isOk());
-        verify(service).sendConfirmationEmail(anyString());
+                verify(service).sendConfirmationEmail(anyString());
     }
 
     @Test
-    public void shouldResetPasswordWithValidInput() throws Exception {
-        when(service.resetPassword(any(ResetPasswordDto.class))).thenReturn(true);
-        mockMvc.perform(post("/user/reset-password-done")
+    public void postResetPasswordForm_givenAllOk_shouldAddSuccessAttributeToModel() throws Exception {
+        mockMvc.perform(post("/user/reset-password")
                 .with(csrf())
-                .flashAttr("resetPasswordDto", resetPasswordDto))
+                .flashAttr("resetPasswordEmailDto", resetPasswordEmailDto))
                 .andExpect(status().isOk())
-                .andExpect(model().attributeExists("success"))
-                .andExpect(content().string(containsString("Your password was changed successfully.")));
+                .andExpect(model().attribute("success", true));
     }
 
     @Test
-    public void shouldFailWithInvalidEmail() throws Exception {
+    public void postResetPasswordForm_givenSendingError_shouldAddSuccessAttributeToModel() throws Exception {
+        SendingResetPasswordEmailFailureException exception =
+                new SendingResetPasswordEmailFailureException("exception");
+        doThrow(exception)
+                .when(service).sendConfirmationEmail(anyString());
+        mockMvc.perform(post("/user/reset-password")
+                .with(csrf())
+                .flashAttr("resetPasswordEmailDto", resetPasswordEmailDto))
+                .andExpect(status().isOk())
+                .andExpect(model().attribute("success", false))
+                .andExpect(model().attributeExists("message"));
+    }
+
+    @Test
+    public void resetPasswordConfirmationPage_givenInvalidEmail_shouldDisplayWarning() throws Exception {
         resetPasswordDto.setEmail("testuserfordbaccess@testuserfordbaccess");
-        when(service.resetPassword(any(ResetPasswordDto.class))).thenReturn(true);
         mockMvc.perform(post("/user/reset-password-done")
                 .with(csrf())
                 .flashAttr("resetPasswordDto", resetPasswordDto))
@@ -83,9 +99,8 @@ class ResetPasswordControllerTest {
     }
 
     @Test
-    public void shouldFailWithNoMatchingPasswords() throws Exception {
+    public void resetPasswordConfirmationPage_givenNotMatchingPasswords_shouldDisplayWarning() throws Exception {
         resetPasswordDto.setPasswordForValidation("testuserfordbaccess123");
-        when(service.resetPassword(any(ResetPasswordDto.class))).thenReturn(true);
         mockMvc.perform(post("/user/reset-password-done")
                 .with(csrf())
                 .flashAttr("resetPasswordDto", resetPasswordDto))
@@ -93,21 +108,11 @@ class ResetPasswordControllerTest {
                 .andExpect(content().string(containsString("The passwords")));
     }
 
-    @Test
-    public void shouldFailWithNoSuchUserInDb() throws Exception {
-        when(service.resetPassword(any(ResetPasswordDto.class))).thenReturn(false);
-        mockMvc.perform(post("/user/reset-password-done")
-                .with(csrf())
-                .flashAttr("resetPasswordDto", resetPasswordDto))
-                .andExpect(status().isOk())
-                .andExpect(content().string(containsString("There was an error resetting your password")));
-    }
 
     @Test
-    public void shouldFailWithBlankPasswords() throws Exception {
+    public void resetPasswordConfirmationPage_givenNotFilledPasswords_shouldDisplayWarning() throws Exception {
         resetPasswordDto.setPasswordForValidation("");
         resetPasswordDto.setPassword("");
-        when(service.resetPassword(any(ResetPasswordDto.class))).thenReturn(false);
         mockMvc.perform(post("/user/reset-password-done")
                 .with(csrf())
                 .flashAttr("resetPasswordDto", resetPasswordDto))
@@ -116,15 +121,57 @@ class ResetPasswordControllerTest {
     }
 
     @Test
-    public void shouldFailWithBlankEmail() throws Exception {
+    public void resetPasswordConfirmationPage_givenNotFilledEmail_shouldDisplayWarning() throws Exception {
         resetPasswordDto.setEmail("");
-        when(service.resetPassword(any(ResetPasswordDto.class))).thenReturn(false);
         mockMvc.perform(post("/user/reset-password-done")
                 .with(csrf())
                 .flashAttr("resetPasswordDto", resetPasswordDto))
                 .andExpect(status().isOk())
                 .andExpect(content().string(containsString("Please fill in")));
     }
+
+    @Test
+    public void resetPasswordConfirmationPage_givenAllOk_shouldCallServiceToResetPassword() throws Exception {
+        mockMvc.perform(post("/user/reset-password-done")
+                .with(csrf())
+                .flashAttr("resetPasswordDto", resetPasswordDto))
+                .andExpect(status().isOk());
+        verify(service, times(1)).resetPassword(any(ResetPasswordDto.class));
+    }
+
+    @Test
+    public void resetPasswordConfirmationPage_givenAllOk_shouldAddSuccessAttributeToModel() throws Exception {
+        mockMvc.perform(post("/user/reset-password-done")
+                .with(csrf())
+                .flashAttr("resetPasswordDto", resetPasswordDto))
+                .andExpect(status().isOk())
+                .andExpect(model().attribute("success", true));
+    }
+
+    @Test
+    public void resetPasswordConfirmationPage_givenProcessFailed_shouldAddSuccessAttributeToModel() throws Exception {
+        ResetPasswordProcessFailureException exception =
+                new ResetPasswordProcessFailureException("exception");
+        doThrow(exception)
+                .when(service).resetPassword(any(ResetPasswordDto.class));
+        mockMvc.perform(post("/user/reset-password-done")
+                .with(csrf())
+                .flashAttr("resetPasswordDto", resetPasswordDto))
+                .andExpect(status().isOk())
+                .andExpect(model().attribute("success", false))
+                .andExpect(model().attributeExists("formErrorMessage"));
+
+    }
+
+    @Test
+    public void resetPasswordConfirmationPage_shouldAddResetLinkAttributeToModel() throws Exception {
+        mockMvc.perform(post("/user/reset-password-done")
+                .with(csrf())
+                .flashAttr("resetPasswordDto", resetPasswordDto))
+                .andExpect(status().isOk())
+                .andExpect(model().attribute("resetLink", resetPasswordDto.getResetLink()));
+    }
+
 
 
 }

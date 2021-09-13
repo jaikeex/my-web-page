@@ -1,6 +1,6 @@
 package com.jaikeex.mywebpage.dto;
 
-import com.jaikeex.mywebpage.services.validators.ValidateEmail;
+import com.jaikeex.mywebpage.utility.validators.ValidateEmail;
 
 import javax.validation.constraints.NotBlank;
 

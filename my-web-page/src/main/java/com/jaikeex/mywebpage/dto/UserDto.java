@@ -1,9 +1,9 @@
 package com.jaikeex.mywebpage.dto;
 
-import com.jaikeex.mywebpage.services.security.MyPasswordEncoder;
-import com.jaikeex.mywebpage.services.validators.MatchingPasswords;
-import com.jaikeex.mywebpage.services.validators.PasswordMatches;
-import com.jaikeex.mywebpage.services.validators.ValidateEmail;
+import com.jaikeex.mywebpage.utility.security.MyPasswordEncoder;
+import com.jaikeex.mywebpage.utility.validators.MatchingPasswords;
+import com.jaikeex.mywebpage.utility.validators.PasswordMatches;
+import com.jaikeex.mywebpage.utility.validators.ValidateEmail;
 import org.springframework.stereotype.Component;
 
 import javax.validation.constraints.NotBlank;

@@ -1,4 +1,4 @@
-package com.jaikeex.mywebpage.VO;
+package com.jaikeex.mywebpage.model;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

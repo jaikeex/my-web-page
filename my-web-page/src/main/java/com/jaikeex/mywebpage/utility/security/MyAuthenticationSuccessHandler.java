@@ -1,4 +1,4 @@
-package com.jaikeex.mywebpage.services.security;
+package com.jaikeex.mywebpage.utility.security;
 
 import com.jaikeex.mywebpage.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;

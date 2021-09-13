@@ -1,6 +1,6 @@
-package com.jaikeex.mywebpage.services;
+package com.jaikeex.mywebpage.utility.security;
 
-import com.jaikeex.mywebpage.entity.User;
+import com.jaikeex.mywebpage.model.User;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -13,6 +13,7 @@ import java.util.Collection;
 import java.util.Objects;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+
 
 public class MyUserDetails implements UserDetails {
 

@@ -2,12 +2,15 @@ package com.jaikeex.mywebpage.controllers;
 
 
 import com.jaikeex.mywebpage.dto.ResetPasswordDto;
+import com.jaikeex.mywebpage.dto.ResetPasswordEmailDto;
 import com.jaikeex.mywebpage.services.ResetPasswordService;
+import com.jaikeex.mywebpage.utility.BindingResultErrorParser;
+import com.jaikeex.mywebpage.utility.exception.ResetPasswordProcessFailureException;
+import com.jaikeex.mywebpage.utility.exception.SendingResetPasswordEmailFailureException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
-import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 
@@ -15,6 +18,9 @@ import javax.validation.Valid;
 
 @Controller
 public class ResetPasswordController {
+
+    private static final String FORM_ERROR_MESSAGE_ATTRIBUTE_NAME = "formErrorMessage";
+
 
     ResetPasswordService resetPasswordService;
 
@@ -24,47 +30,63 @@ public class ResetPasswordController {
     }
 
     @GetMapping("/user/reset-password")
-    public String resetPassword(Model model) {
-        ResetPasswordDto resetPasswordDto = new ResetPasswordDto();
-        model.addAttribute("resetPasswordDto", resetPasswordDto);
-        return "/user/reset-password";
+    public String getResetPasswordPage(Model model) {
+        addDtoObjectsToModel(model);
+        return "user/reset-password";
     }
 
+
     @PostMapping("/user/reset-password")
-    public String resetPasswordForm(@Valid ResetPasswordDto resetPasswordDto, BindingResult result) {
-        resetPasswordService.sendConfirmationEmail(resetPasswordDto.getEmail());
-        return "/user/reset-password";
+    public String postResetPasswordForm(@Valid ResetPasswordEmailDto resetPasswordEmailDto, BindingResult result, Model model) {
+        if (isResultOk(result, model)) {
+            try {
+                resetPasswordService.sendConfirmationEmail(resetPasswordEmailDto.getEmail());
+                model.addAttribute("success", true);
+                model.addAttribute("message", "The email was sent successfully.");
+            } catch (SendingResetPasswordEmailFailureException exception) {
+                model.addAttribute("message", exception.getMessage());
+                model.addAttribute("success", false);
+            }
+        }
+        return "user/reset-password";
     }
 
     @PostMapping("/user/reset-password-done")
-    public String resetPasswordConfirm(Model model, @Valid ResetPasswordDto resetPasswordDto, BindingResult result) {
+    public String resetPasswordConfirmationPage(Model model, @Valid ResetPasswordDto resetPasswordDto, BindingResult result) {
         model.addAttribute("resetLink", resetPasswordDto.getResetLink());
-        if (result.hasErrors()) {
-            parseSignupErrors(result, model);
-            return "/user/reset-password-done";
+        if (isResultOk(result, model)) {
+            try {
+                resetPasswordService.resetPassword(resetPasswordDto);
+                model.addAttribute("success", true);
+            } catch (ResetPasswordProcessFailureException exception) {
+                model.addAttribute("success", false);
+                model.addAttribute("formErrorMessage", exception.getMessage());
+            }
         }
-        if (resetPasswordService.resetPassword(resetPasswordDto)) {
-            model.addAttribute("success", true);
-            return "/user/reset-password-done";
-        } else {
-            model.addAttribute("errorMessage", "There was an error resetting your password");
-        }
-        return "/user/reset-password-done";
+        return "user/reset-password-done";
     }
 
-    private void parseSignupErrors (BindingResult result, Model model) {
-        for (ObjectError error : result.getAllErrors()) {
-            if (error.toString().contains("Blank")) {
-                model.addAttribute("errorMessage", "Please fill in all the fields!");
-            }
-            if (error.toString().contains("Pattern.email")) {
-                model.addAttribute("errorMessage", "Wrong email!");
-            }
-            if (error.toString().contains("PasswordMatches")) {
-                model.addAttribute("errorMessage", "The passwords didn't match!");
-            }
-        }
+
+    private boolean isResultOk(BindingResult result, Model model) {
+        BindingResultErrorParser errorParser =
+                new BindingResultErrorParser(result, model);
+        return errorParser.isResultOk();
     }
 
+
+    private void addDtoObjectsToModel(Model model) {
+        addResetPasswordDtoToModel(model);
+        addResetPasswordEmailDtoToModel(model);
+    }
+
+    private void addResetPasswordEmailDtoToModel(Model model) {
+        ResetPasswordEmailDto resetPasswordEmailDto = new ResetPasswordEmailDto();
+        model.addAttribute("resetPasswordEmailDto", resetPasswordEmailDto);
+    }
+
+    private void addResetPasswordDtoToModel(Model model) {
+        ResetPasswordDto resetPasswordDto = new ResetPasswordDto();
+        model.addAttribute("resetPasswordDto", resetPasswordDto);
+    }
 
 }

@@ -1,7 +1,8 @@
 package com.jaikeex.mywebpage.config;
 
-import com.jaikeex.mywebpage.services.security.MyAuthenticationSuccessHandler;
-import com.jaikeex.mywebpage.services.security.MyPasswordEncoder;
+import com.jaikeex.mywebpage.utility.security.MyAuthenticationSuccessHandler;
+import com.jaikeex.mywebpage.utility.security.MyPasswordEncoder;
+import com.jaikeex.mywebpage.utility.security.MyUserDetailsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -22,7 +23,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 
 
     @Autowired
-    public SecurityConfiguration(UserDetailsService userDetailsService, MyAuthenticationSuccessHandler successHandler) {
+    public SecurityConfiguration(MyUserDetailsService userDetailsService, MyAuthenticationSuccessHandler successHandler) {
         this.userDetailsService = userDetailsService;
         this.successHandler = successHandler;
     }
@@ -44,13 +45,13 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                 .formLogin()
                 .loginPage("/login")
                 .permitAll()
-                .successHandler(successHandler)
-        ;
+                .successHandler(successHandler);
     }
 
     @Bean
     public PasswordEncoder getPasswordEncoder() {
         return new MyPasswordEncoder();
     }
+
 
 }

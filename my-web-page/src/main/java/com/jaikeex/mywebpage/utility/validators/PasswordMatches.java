@@ -1,4 +1,4 @@
-package com.jaikeex.mywebpage.services.validators;
+package com.jaikeex.mywebpage.utility.validators;
 
 
 import javax.validation.Constraint;

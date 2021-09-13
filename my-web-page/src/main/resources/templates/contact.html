@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+<!--This is the contact view-->
 <!--suppress ThymeleafVariablesResolveInspection -->
 <html lang="en" xmlns:th="http://www.thymeleaf.org"
 >
@@ -22,8 +23,7 @@
               <form th:action="@{/contact/sendform}" th:object="${contactFormDto}" method="post">
               <div class="form-group">
                 <div class="password-error-message">
-                  <span class="error-message" style="color:red" th:text="${wrongEmailMessage}"></span>
-                  <span class="error-message" style="color:red" th:text="${emptyFieldsMessage}"></span>
+                  <span class="error-message" style="color:red" th:text="${errorMessage}"></span>
 
                 </div>
                 <label for="exampleFormControlInput1" class="control-label">Your email address</label>

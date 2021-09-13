@@ -1,9 +1,9 @@
 package com.jaikeex.mywebpage.controllers;
 
 import com.jaikeex.mywebpage.dto.UserDto;
-import com.jaikeex.mywebpage.entity.User;
-import com.jaikeex.mywebpage.jpa.UserRepository;
+import com.jaikeex.mywebpage.model.User;
 import com.jaikeex.mywebpage.services.UserService;
+import com.jaikeex.mywebpage.utility.exception.RegistrationProcessFailedException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,23 +11,26 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
 import static org.hamcrest.Matchers.containsString;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.*;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
-import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
 import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
+
 @SpringBootTest
 @AutoConfigureMockMvc
 class UserControllerTest {
-
-    @MockBean
-    UserRepository repository;
+    public static final String INVALID_EMAIL = "testuserfordbaccess@testuserfordbaccess";
+    public static final String USER_SIGNUP_ENDPOINT = "/user/signup";
+    public static final String INVALID_VALIDATION_PASSWORD = "testuserfordbaccess123";
     @MockBean
     UserService service;
     @Autowired
@@ -55,38 +58,78 @@ class UserControllerTest {
 
     @BeforeEach
     public void beforeEach() {
-        mockMvc = MockMvcBuilders.webAppContextSetup(context).apply(springSecurity()).build();
-        //when(service.registerUser(any(UserDto.class), any(HttpServletRequest.class), any(Model.class))).thenReturn(testUser1);
+        mockMvc = MockMvcBuilders
+                .webAppContextSetup(context)
+                .apply(springSecurity())
+                .build();
     }
 
     @Test
-    public void shouldReturnWarningThatFormIsNotFilled() throws Exception {
-        mockMvc.perform(post("/user/signup").with(csrf())).andExpect(status().isOk()).andExpect(content().string(containsString("Please fill in all the fields!")));
+    public void postRegistrationForm_givenFormNotFilled_shouldDisplayWarning() throws Exception {
+        mockMvc.perform(post(USER_SIGNUP_ENDPOINT)
+                .with(csrf()))
+                .andExpect(status().isOk())
+                .andExpect(content().string(containsString("Please fill in all the fields!")));
+    }
+
+
+    @Test
+    public void postRegistrationForm_givenInvalidEmail_shouldDisplayWarning() throws Exception {
+        userDto.setEmail(INVALID_EMAIL);
+        postUserDtoToSignupEndpoint(userDto)
+                .andExpect(content().string(containsString("Wrong email")));
     }
 
     @Test
-    public void shouldRegisterUserAndLogHimIn() throws Exception {
-        mockMvc.perform(post("/user/signup").with(csrf()).with(user("user").password("pass").roles("USER")))
-                .andExpect(status().isOk()).andExpect(content().string(containsString("Registration was successful")));
+    public void postRegistrationForm_givenPasswordsDontMatch_shouldDisplayWarning() throws Exception {
+        userDto.setPasswordForValidation(INVALID_VALIDATION_PASSWORD);
+        postUserDtoToSignupEndpoint(userDto)
+                .andExpect(status().isOk())
+                .andExpect(content().string(containsString("The passwords")));
     }
 
     @Test
-    public void shouldFailWithInvalidEmail() throws Exception {
-        userDto.setEmail("testuserfordbaccess@testuserfordbaccess");
-        mockMvc.perform(post("/user/signup").with(csrf()).flashAttr("userDto", userDto))
-                .andExpect(status().isOk()).andExpect(content().string(containsString("Wrong email")));
+    public void postRegistrationForm_givenUsernameTaken_shouldDisplayWarning() throws Exception {
+        RegistrationProcessFailedException exception = new RegistrationProcessFailedException("fail");
+        doThrow(exception).when(service).registerUser(userDto);
+        postUserDtoToSignupEndpoint(userDto)
+                .andExpect(status().isOk())
+                .andExpect(model().attributeExists("databaseErrorMessage"));
     }
 
     @Test
-    public void shouldFailWithNoMatchingPassword() throws Exception {
-        userDto.setPasswordForValidation("testuserfordbaccess123");
-        mockMvc.perform(post("/user/signup").with(csrf()).flashAttr("userDto", userDto))
-                .andExpect(status().isOk()).andExpect(content().string(containsString("The passwords")));
+    public void postRegistrationForm_givenAllOk_shouldCallUserService() throws Exception {
+        postUserDtoToSignupEndpoint(userDto)
+                .andExpect(status().isOk());
+        verify(service, times(1)).registerUser(any(UserDto.class));
     }
 
     @Test
-    public void userDtoIsCreatedInGetToSignup() throws Exception {
-        mockMvc.perform(get("/user/signup"))
-                .andExpect(status().isOk()).andExpect(model().attributeExists("userDto"));
+    public void postRegistrationForm_givenAllOk_shouldHaveModelAttributeRegistered() throws Exception {
+        postUserDtoToSignupEndpoint(userDto)
+                .andExpect(status().isOk())
+                .andExpect(model().attribute("registered", true));
+    }
+
+
+    @Test
+    public void getRegistrationPage_shouldAddEmptyDtoToModel() throws Exception {
+        mockMvc.perform(get(USER_SIGNUP_ENDPOINT))
+                .andExpect(status().isOk())
+                .andExpect(model().attributeExists("userDto"));
+    }
+
+    @Test
+    public void getLoginPage_shouldReturnCorrectView() throws Exception {
+        mockMvc.perform(get("/login"))
+                .andExpect(status().isOk())
+                .andExpect(content().string(containsString("This is the login view")));
+
+    }
+
+    private ResultActions postUserDtoToSignupEndpoint(UserDto userDto) throws Exception {
+        return mockMvc.perform(post(USER_SIGNUP_ENDPOINT)
+                .with(csrf())
+                .flashAttr("userDto", userDto));
     }
 }
