@@ -148,4 +148,14 @@ class UserServiceTest {
         service.updateLastAccessDateOfUser(1, new Timestamp(0));
         verify(repository, times(1)).updateLastAccessDateById(any(Timestamp.class), anyInt());
     }
+/*
+    @Test
+    public void sendResetPasswordConfirmationEmail_shouldSaveUserWithEncodedToken()
+            throws Exception {
+        String encodedToken = "encodedToken";
+        //when(userService.saveUserWithEncodedResetTokenToDatabase(anyString(), anyString()));
+        resetPasswordEmailService.sendResetPasswordConfirmationEmail("email");
+        assertEquals(encodedToken, testUser.getResetPasswordToken());
+    }
+*/
 }

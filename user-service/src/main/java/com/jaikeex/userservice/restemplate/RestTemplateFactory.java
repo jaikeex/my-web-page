@@ -9,8 +9,15 @@ import org.springframework.web.client.RestTemplate;
 public class RestTemplateFactory {
     //Just a workaround; LoadBalanced does not work with eureka when autowired from main
 
+    private static RestTemplate restTemplate;
+
+    private RestTemplateFactory () {}
+
     @LoadBalanced
     public RestTemplate getRestTemplate() {
-        return new RestTemplate(new HttpComponentsClientHttpRequestFactory());
+        if (restTemplate == null) {
+            restTemplate = new RestTemplate(new HttpComponentsClientHttpRequestFactory());
+        }
+        return restTemplate;
     }
 }

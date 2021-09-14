@@ -1,8 +1,6 @@
 package com.jaikeex.userservice.service;
 
 import com.jaikeex.userservice.dto.Email;
-import com.jaikeex.userservice.entity.User;
-import com.jaikeex.userservice.repository.UserRepository;
 import com.jaikeex.userservice.restemplate.RestTemplateFactory;
 import com.jaikeex.userservice.service.exception.EmailServiceDownException;
 import com.jaikeex.userservice.service.exception.NoSuchUserException;
@@ -10,12 +8,10 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Scope;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.client.RestTemplate;
 
-import java.sql.Timestamp;
 import java.util.Random;
 
 @Service
@@ -23,89 +19,86 @@ import java.util.Random;
 @Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
 public class ResetPasswordEmailService {
 
-    UserRepository repository;
-    PasswordEncoder encoder;
-    RestTemplateFactory restTemplateFactory;
+    private static final String SUBJECT = "Password reset requested";
+    private static final String EMAIL_FOOTER = "\nIf you have not requested " +
+            "this email, please ignore it.\n" +
+            "Best wishes, Jakub Hrubý.";
+    private static final String EMAIL_BODY = "Hello!\nYou requested to reset " +
+            "your password for www.kubahruby.com.\n " +
+            "Please follow this link:\n";
+    private static final String EMAIL_SERVICE_HTTP_ADDRESS = "http://email-service:8004/emails/";
+    private static final String RESET_LINK_BASE = "https://www.kubahruby.com/user/reset-password";
 
-    String email;
-    String resetToken;
+    private final UserService userService;
+    private final RestTemplateFactory restTemplateFactory;
+
+    private String email;
+    private String resetToken;
 
     @Autowired
-    public ResetPasswordEmailService(UserRepository repository,
-                                     MyPasswordEncoder encoder,
+    public ResetPasswordEmailService(UserService service,
                                      RestTemplateFactory restTemplateFactory) {
-        this.repository = repository;
-        this.encoder = encoder;
+        this.userService = service;
         this.restTemplateFactory = restTemplateFactory;
     }
 
 
-    public void sendResetPasswordConfirmationEmail(String emailAddressArgument) throws Exception {
+    public void sendResetPasswordConfirmationEmail(String emailAddress) throws Exception {
         log.debug("entering sendResetPasswordConfirmationEmail");
+        setupProperties(emailAddress);
+        Email emailObject = getEmailObjectWithResetPasswordData();
+        saveUserWithEncodedTokenToDatabase();
+        sendDataToEmailService(emailObject);
+        log.debug("exiting sendResetPasswordConfirmationEmail");
+    }
+
+    private void setupProperties(String emailAddressArgument) {
+        // Always call before creating emailObject.
         this.email = emailAddressArgument;
         this.resetToken = generateResetPasswordToken();
-        saveUserWithEncodedTokenToDatabase(email);
-        Email emailObject = getEmailObjectWithResetPasswordData();
+    }
+
+    private void sendDataToEmailService(Email emailObject) {
         try {
-            postEmailObjectToEmailService(emailObject);
+            postHttpRequestToEmailService(emailObject);
         } catch (HttpServerErrorException exception) {
             log.error("Sending reset password confirmation email failed", exception);
             throw new EmailServiceDownException(exception.getResponseBodyAsString());
         }
-        log.debug("exiting sendResetPasswordConfirmationEmail");
     }
 
 
     private Email getEmailObjectWithResetPasswordData() {
         log.debug("Loading data into Email object");
-        Email emailObject = new Email();
-        String subject = "Password reset requested";
-        Timestamp now = new Timestamp(System.currentTimeMillis());
-        emailObject.setRecipient(email);
-        emailObject.setSubject(subject);
-        emailObject.setMessage(constructResetPasswordMessage());
-        emailObject.setDate(now);
-        return emailObject;
+        return new Email.Builder(email).subject(SUBJECT)
+                .message(constructResetPasswordMessage()).build();
     }
 
 
     private String constructResetPasswordMessage() {
         log.debug("Constructing reset password message");
         String resetLink = constructResetLink();
-        String emailFooter = "\nIf you have not requested " +
-                "this email, please ignore it.\n" +
-                "Best wishes, Jakub Hrubý.";
-        String emailBody = "Hello!\nYou requested to reset " +
-                "your password for www.kubahruby.com.\n " +
-                "Please follow this link:\n";
-        return (emailBody + resetLink + emailFooter);
+        return (EMAIL_BODY + resetLink + EMAIL_FOOTER);
     }
 
 
     private String constructResetLink() {
         log.debug("Creating reset password link");
         return String.format(
-                "https://www.kubahruby.com/user/reset-password?token=%s&email=%s",
-                resetToken, email);
+                RESET_LINK_BASE + "?token=%s&email=%s", resetToken, email);
     }
 
 
-    private void saveUserWithEncodedTokenToDatabase(String email) throws NoSuchUserException {
-        User user = repository.findUserByEmail(email);
-        if (user == null) {
-            log.warn("Email provided does not exist in database");
-            throw new NoSuchUserException("No user with this email exists");
-        }
-        user.setResetPasswordToken(encoder.encode(resetToken));
-        repository.save(user);
+    private void saveUserWithEncodedTokenToDatabase() throws NoSuchUserException {
+        userService.saveUserWithEncodedResetTokenToDatabase(email, resetToken);
     }
 
 
-    private void postEmailObjectToEmailService(Email emailObject) throws HttpServerErrorException{
+    private void postHttpRequestToEmailService(Email emailObject) throws HttpServerErrorException{
         log.info("Sending reset password confirmation email to {}", email);
         RestTemplate restTemplate = restTemplateFactory.getRestTemplate();
         restTemplate.postForEntity(
-                "http://email-service:8004/emails/",
+                EMAIL_SERVICE_HTTP_ADDRESS,
                 emailObject,
                 Email.class);
     }

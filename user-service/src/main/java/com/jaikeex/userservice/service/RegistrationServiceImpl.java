@@ -34,7 +34,7 @@ public class RegistrationServiceImpl implements RegistrationService{
     }
 
 
-    private boolean hasOriginalEmail(User user) throws UserAlreadyExistsException {
+    private boolean hasOriginalEmail(User user) {
         User dbResponse = repository.findUserByEmail(user.getEmail());
         if (dbResponse != null) {
             throw new UserAlreadyExistsException("User with this email already exists");
@@ -44,7 +44,7 @@ public class RegistrationServiceImpl implements RegistrationService{
     }
 
 
-    private boolean hasOriginalUsername(User user) throws UserAlreadyExistsException{
+    private boolean hasOriginalUsername(User user) {
         User dbResponse = repository.findUserByUsername(user.getUsername());
         if (dbResponse != null) {
             throw new UserAlreadyExistsException("User with this name already exists");

@@ -74,7 +74,7 @@ public class UserService {
 
 
     public User updatePasswordOfUser(String email, ResetPasswordDto resetPasswordDto)
-            throws InvalidResetTokenException, NoSuchUserException {
+            throws InvalidResetTokenException {
         log.debug("entering updatePasswordOfUser by email");
         User user = findUserByEmail(email);
         checkIfUserIsNull(user);
@@ -82,9 +82,17 @@ public class UserService {
         log.debug("exiting updatePasswordOfUser by email");
         return findUserByEmail(email);
     }
+    
+
+    public void saveUserWithEncodedResetTokenToDatabase(String email, String resetToken) {
+        User user = repository.findUserByEmail(email);
+        checkIfUserIsNull(user);
+        user.setResetPasswordToken(encoder.encode(resetToken));
+        repository.save(user);
+    }
 
 
-    private void checkIfUserIsNull(User user) throws NoSuchUserException {
+    private void checkIfUserIsNull(User user) {
         if (user == null) {
             log.warn("Email provided does not exist in database");
             throw new NoSuchUserException("No user with this email exists");
@@ -92,8 +100,7 @@ public class UserService {
     }
 
 
-    private void changePasswordInDatabase(User user, ResetPasswordDto resetPasswordDto)
-            throws InvalidResetTokenException {
+    private void changePasswordInDatabase(User user, ResetPasswordDto resetPasswordDto) {
         String resetToken = resetPasswordDto.getResetToken();
         String newPassword = resetPasswordDto.getPassword();
         if (encoder.matches(resetToken, user.getResetPasswordToken())) {
