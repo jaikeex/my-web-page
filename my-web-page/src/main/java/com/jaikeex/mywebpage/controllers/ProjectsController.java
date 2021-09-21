@@ -9,6 +9,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.client.HttpClientErrorException;
 
 import java.util.List;
 
@@ -16,7 +17,7 @@ import java.util.List;
 @NoArgsConstructor
 public class ProjectsController {
 
-    public static final String PROJECTS_ENDPOINT = "/projects/";
+    public static final String PROJECTS_ENDPOINT = "/projects";
     public static final String PROJECTS_DETAILS_ENDPOINT = "/projects/details";
     public static final String PROJECTS_VIEW = "projects";
     public static final String PROJECTS_DETAILS_VIEW = "projects/details";
@@ -41,13 +42,22 @@ public class ProjectsController {
     }
 
     private void addProjectByIdToModel(Integer id, Model model) {
-        Project project = service.getProjectById(id);
-        model.addAttribute("project", project);
+        try {
+            Project project = service.getProjectById(id);
+            model.addAttribute("projectName", project.getName());
+            model.addAttribute("projectDescriptionText", project.getDetailedDescription());
+        } catch (HttpClientErrorException exception) {
+            model.addAttribute("errorMessage", "This project does not exist");
+        }
     }
 
     private void addListOfProjectsToModel(Model model) {
-        List<Project> projects = service.getProjectsList();
-        model.addAttribute("projects", projects);
+        try {
+            List<Project> projects = service.getProjectsList();
+            model.addAttribute("projects", projects);
+        }catch (HttpClientErrorException exception) {
+            model.addAttribute("errorMessage", "No projects found");
+        }
     }
 
 }

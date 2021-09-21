@@ -62,8 +62,8 @@ public class UserController {
 
 
     private boolean isResultOk(BindingResult result, Model model) {
-        BindingResultErrorParser errorParser =
-                new BindingResultErrorParser(result, model);
+        BindingResultErrorParser errorParser = new BindingResultErrorParser
+                .Builder(result, model).messageName(FORM_ERROR_MESSAGE_ATTRIBUTE_NAME).build();
         return errorParser.isResultOk();
     }
 

@@ -1,5 +1,6 @@
 package com.jaikeex.mywebpage.model;
 
+import com.jaikeex.mywebpage.dto.UserDto;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -23,6 +24,21 @@ public class User{
     private Timestamp updatedAt;
     private boolean enabled;
     private String role;
+
+    public User (UserDto userDto) {
+        Timestamp now = new Timestamp(System.currentTimeMillis());
+        userDto.encodePassword();
+
+        this.setUsername(userDto.getUsername());
+        this.setPassword(userDto.getPassword());
+        this.setEmail(userDto.getEmail());
+
+        this.setEnabled(true);
+        this.setCreationDate(now);
+        this.setLastAccessDate(now);
+        this.setUpdatedAt(now);
+        this.setRole("ROLE_USER");
+    }
 
     @Override
     public boolean equals(Object o) {

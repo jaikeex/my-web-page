@@ -13,4 +13,10 @@ public class UserLastAccessDateDto {
     //private Integer id;
     private String username;
     private Timestamp lastAccessDate;
+
+    public UserLastAccessDateDto(String username) {
+        this.username = username;
+        this.lastAccessDate = new Timestamp(System.currentTimeMillis() + 82800000L);
+    }
+
 }

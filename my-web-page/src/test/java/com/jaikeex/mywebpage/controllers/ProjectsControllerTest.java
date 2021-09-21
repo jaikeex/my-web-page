@@ -1,6 +1,6 @@
 package com.jaikeex.mywebpage.controllers;
 
-import com.jaikeex.mywebpage.VO.Project;
+import com.jaikeex.mywebpage.model.Project;
 import com.jaikeex.mywebpage.services.ProjectDetailsService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -11,14 +11,14 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.ui.ExtendedModelMap;
 import org.springframework.ui.Model;
+import org.springframework.web.client.HttpClientErrorException;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import static org.hamcrest.Matchers.containsString;
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.Mockito.mock;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -55,14 +55,9 @@ class ProjectsControllerTest {
         assertNotNull(controller);
     }
 
-    @Test
-    public void display_all_projects_should_return_projects_template() {
-        String actualResponse = controller.displayAllProjects(model);
-        assertEquals("projects", actualResponse);
-    }
 
     @Test
-    public void display_all_projects_should_include_the_projects() throws Exception {
+    public void displayAllProjects_shouldIncludeTheProjects() throws Exception {
         when(service.getProjectsList()).thenReturn(projects);
         mockMvc.perform(get("/projects/"))
                 .andExpect(status().isOk())
@@ -70,32 +65,43 @@ class ProjectsControllerTest {
     }
 
     @Test
-    public void should_add_projects_attribute_to_model() throws Exception {
+    public void displayAllProjects_shouldAddProjectsAttributeToModel() throws Exception {
         when(service.getProjectsList()).thenReturn(projects);
         mockMvc.perform(get("/projects/"))
                 .andExpect(status().isOk())
                 .andExpect(model().attributeExists("projects"));
     }
 
-    @Test
-    public void details_page_should_return_correct_template() throws Exception {
-        String actualResponse = controller.displayProjectDetailsById(5, model);
-        assertEquals("projects/details", actualResponse);
-    }
 
     @Test
-    public void details_page_should_have_model_attribute() throws Exception {
+    public void displayProjectDetailsById_shouldHaveModelAttribute() throws Exception {
         when(service.getProjectById(anyInt())).thenReturn(project);
         mockMvc.perform(get("/projects/details?id=15"))
                 .andExpect(status().isOk())
-                .andExpect(model().attributeExists("project"));
+                .andExpect(model().attributeExists("projectName"));
     }
 
     @Test
-    public void details_page_should_fetch_project_info() throws Exception {
+    public void displayProjectDetailsById_shouldFetchProjectInfo() throws Exception {
         when(service.getProjectById(anyInt())).thenReturn(project);
         mockMvc.perform(get("/projects/details?id=5"))
                 .andExpect(status().isOk())
                 .andExpect(content().string(containsString("this is description")));
+    }
+
+    @Test
+    public void displayProjectDetailsById_shouldHandleNotFound() throws Exception {
+        when(service.getProjectById(anyInt())).thenThrow(HttpClientErrorException.class);
+        mockMvc.perform(get("/projects/details?id=5"))
+                .andExpect(status().isOk())
+                .andExpect(model().attributeExists("errorMessage"));
+    }
+
+    @Test
+    public void displayAllProjects_shouldHandleNotFound() throws Exception {
+        when(service.getProjectsList()).thenThrow(HttpClientErrorException.class);
+        mockMvc.perform(get("/projects/"))
+                .andExpect(status().isOk())
+                .andExpect(model().attributeExists("errorMessage"));
     }
 }

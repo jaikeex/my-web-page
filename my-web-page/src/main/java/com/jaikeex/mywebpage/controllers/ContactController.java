@@ -2,13 +2,15 @@ package com.jaikeex.mywebpage.controllers;
 
 import com.jaikeex.mywebpage.dto.ContactFormDto;
 import com.jaikeex.mywebpage.services.ContactService;
+import com.jaikeex.mywebpage.utility.BindingResultErrorParser;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
-import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.client.HttpServerErrorException;
 
 import javax.validation.Valid;
 
@@ -36,14 +38,24 @@ public class ContactController {
         return CONTACT_VIEW;
     }
 
+
     @PostMapping(value = CONTACT_SENDFORM_ENDPOINT)
     public String sendForm(@Valid ContactFormDto contactFormDto, BindingResult result, Model model) {
-        if (result.hasErrors()) {
-            parseBindingResultErrors(result, model);
-            return CONTACT_VIEW;
-        } else {
-            contactService.sendContactFormAsEmail(contactFormDto, model);
+        if (isResultOk(result, model)) {
+            passEmailDataToContactService(contactFormDto, model);
             return CONTACT_SENDFORM_VIEW;
+        }
+        return CONTACT_VIEW;
+    }
+
+    private void passEmailDataToContactService(ContactFormDto contactFormDto, Model model) {
+        try {
+            contactService.sendContactFormAsEmail(contactFormDto);
+            model.addAttribute(MESSAGE_SENT_ATTRIBUTE_NAME, true);
+            model.addAttribute("message", "Message sent successfully!");
+        } catch (HttpServerErrorException | HttpClientErrorException exception) {
+            model.addAttribute(MESSAGE_SENT_ATTRIBUTE_NAME, false);
+            model.addAttribute("message", exception.getResponseBodyAsString());
         }
     }
 
@@ -52,15 +64,9 @@ public class ContactController {
         model.addAttribute(CONTACT_FORM_DTO_ATTRIBUTE_NAME, contactFormDto);
     }
 
-    private void parseBindingResultErrors(BindingResult result, Model model) {
-        model.addAttribute(MESSAGE_SENT_ATTRIBUTE_NAME, false);
-        for (ObjectError error : result.getAllErrors()) {
-            if (error.toString().contains("Blank")) {
-                model.addAttribute(ERROR_MESSAGE_ATTRIBUTE_NAME, "Please fill in all the fields!");
-            }
-            if (error.toString().contains("Pattern.email")) {
-                model.addAttribute(ERROR_MESSAGE_ATTRIBUTE_NAME, "Wrong email!");
-            }
-        }
+    private boolean isResultOk(BindingResult result, Model model) {
+        BindingResultErrorParser errorParser = new BindingResultErrorParser
+                .Builder(result, model).messageName(ERROR_MESSAGE_ATTRIBUTE_NAME).build();
+        return errorParser.isResultOk();
     }
 }

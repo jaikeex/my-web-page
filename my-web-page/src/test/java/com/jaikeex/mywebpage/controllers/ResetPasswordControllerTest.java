@@ -3,16 +3,17 @@ package com.jaikeex.mywebpage.controllers;
 import com.jaikeex.mywebpage.dto.ResetPasswordDto;
 import com.jaikeex.mywebpage.dto.ResetPasswordEmailDto;
 import com.jaikeex.mywebpage.services.ResetPasswordService;
-import com.jaikeex.mywebpage.utility.exception.ResetPasswordProcessFailureException;
-import com.jaikeex.mywebpage.utility.exception.SendingResetPasswordEmailFailureException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.http.HttpStatus;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.context.WebApplicationContext;
 
 import static org.hamcrest.Matchers.containsString;
@@ -75,9 +76,9 @@ class ResetPasswordControllerTest {
     }
 
     @Test
-    public void postResetPasswordForm_givenSendingError_shouldAddSuccessAttributeToModel() throws Exception {
-        SendingResetPasswordEmailFailureException exception =
-                new SendingResetPasswordEmailFailureException("exception");
+    public void postResetPasswordForm_givenSendingError_shouldCatchHttpServerErrorException() throws Exception {
+        HttpServerErrorException exception =
+                new HttpServerErrorException(HttpStatus.INTERNAL_SERVER_ERROR, "testException");
         doThrow(exception)
                 .when(service).sendConfirmationEmail(anyString());
         mockMvc.perform(post("/user/reset-password")
@@ -87,6 +88,21 @@ class ResetPasswordControllerTest {
                 .andExpect(model().attribute("success", false))
                 .andExpect(model().attributeExists("message"));
     }
+
+    @Test
+    public void postResetPasswordForm_givenSendingError_shouldCatchHttpClientErrorException() throws Exception {
+        HttpClientErrorException exception =
+                new HttpClientErrorException(HttpStatus.BAD_REQUEST, "testException");
+        doThrow(exception)
+                .when(service).sendConfirmationEmail(anyString());
+        mockMvc.perform(post("/user/reset-password")
+                .with(csrf())
+                .flashAttr("resetPasswordEmailDto", resetPasswordEmailDto))
+                .andExpect(status().isOk())
+                .andExpect(model().attribute("success", false))
+                .andExpect(model().attributeExists("message"));
+    }
+
 
     @Test
     public void resetPasswordConfirmationPage_givenInvalidEmail_shouldDisplayWarning() throws Exception {
@@ -149,11 +165,24 @@ class ResetPasswordControllerTest {
     }
 
     @Test
-    public void resetPasswordConfirmationPage_givenProcessFailed_shouldAddSuccessAttributeToModel() throws Exception {
-        ResetPasswordProcessFailureException exception =
-                new ResetPasswordProcessFailureException("exception");
-        doThrow(exception)
-                .when(service).resetPassword(any(ResetPasswordDto.class));
+    public void resetPasswordConfirmationPage_givenProcessFailed_shouldCatchHttpServerErrorException() throws Exception {
+        HttpServerErrorException exception =
+                new HttpServerErrorException(HttpStatus.INTERNAL_SERVER_ERROR, "testException");
+        doThrow(exception).when(service).resetPassword(resetPasswordDto);
+        mockMvc.perform(post("/user/reset-password-done")
+                .with(csrf())
+                .flashAttr("resetPasswordDto", resetPasswordDto))
+                .andExpect(status().isOk())
+                .andExpect(model().attribute("success", false))
+                .andExpect(model().attributeExists("formErrorMessage"));
+
+    }
+
+    @Test
+    public void resetPasswordConfirmationPage_givenProcessFailed_shouldCatchHttpClientErrorException() throws Exception {
+        HttpClientErrorException exception =
+                new HttpClientErrorException(HttpStatus.BAD_REQUEST, "testException");
+        doThrow(exception).when(service).resetPassword(resetPasswordDto);
         mockMvc.perform(post("/user/reset-password-done")
                 .with(csrf())
                 .flashAttr("resetPasswordDto", resetPasswordDto))
@@ -171,7 +200,4 @@ class ResetPasswordControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(model().attribute("resetLink", resetPasswordDto.getResetLink()));
     }
-
-
-
 }

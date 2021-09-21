@@ -12,8 +12,8 @@ import org.springframework.web.client.RestTemplate;
 @EnableEurekaClient
 public class MyWebPageApplication  implements CommandLineRunner {
 
-	public static final String API_GATEWAY_URL = "http://localhost:9000/";
-
+	public static final String API_GATEWAY_URL = "http://api-gateway:9000/";
+	//public static final String API_GATEWAY_URL = "http://localhost:9000/";
 	@Autowired
 	public MyWebPageApplication() {
 	}

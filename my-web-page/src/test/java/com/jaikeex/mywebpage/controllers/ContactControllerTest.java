@@ -8,14 +8,20 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.http.HttpStatus;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
+import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.context.WebApplicationContext;
+
+import java.util.LinkedList;
 
 import static org.hamcrest.Matchers.containsString;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.*;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -26,6 +32,13 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringBootTest
 @AutoConfigureMockMvc
 class ContactControllerTest {
+
+    public static final String CONTACT_VIEW_ID_COMMENT = "This is the contact view";
+    public static final String CONTACT_SENDFORM_VIEW_ID_COMMENT = "This is the contact/sendform view";
+    public static final String CONTACT_FORM_DTO_ATTRIBUTE_NAME = "contactFormDto";
+    public static final String CONTACT_SENDFORM_ENDPOINT = "/contact/sendform";
+    public static final String CONTACT_ENDPOINT = "/contact";
+
 
     @MockBean
     ContactService service;
@@ -39,55 +52,107 @@ class ContactControllerTest {
             "test subject",
             "test body");
 
+    private final ContactFormDto emptyContactFormDto = new ContactFormDto();
+
 
     @BeforeEach
     public void beforeEach() {
-        mockMvc = MockMvcBuilders.webAppContextSetup(context).apply(springSecurity()).build();
+        mockMvc = MockMvcBuilders
+                .webAppContextSetup(context)
+                .apply(springSecurity())
+                .build();
     }
 
     @Test
-    public void shouldAddDtoToModel() throws Exception {
-        mockMvc.perform(get("/contact"))
+    public void contact_shouldAddDtoToModel() throws Exception {
+        mockMvc.perform(get(CONTACT_ENDPOINT))
                 .andExpect(status().isOk())
-                .andExpect(model().attributeExists("contactFormDto"));
+                .andExpect(model().attributeExists(CONTACT_FORM_DTO_ATTRIBUTE_NAME));
     }
 
     @Test
-    public void shouldSendConfirmationEmail() throws Exception {
-        mockMvc.perform(post("/contact/sendform")
-                .with(csrf())
-                .flashAttr("contactFormDto", contactFormDto))
+    public void contact_shouldReturnCorrectView() throws Exception {
+        mockMvc.perform(get(CONTACT_ENDPOINT))
+                .andExpect(content().string(containsString(CONTACT_VIEW_ID_COMMENT)));
+    }
+
+    @Test
+    public void sendForm_shouldSendConfirmationEmail() throws Exception {
+        postContactFormDtoToSendformEndpoint(contactFormDto)
                 .andExpect(status().isOk());
-        verify(service).sendContactFormAsEmail(any(ContactFormDto.class), any(Model.class));
+        verify(service).sendContactFormAsEmail(any(ContactFormDto.class));
     }
 
     @Test
-    public void shouldFailWithInvalidEmail() throws Exception {
+    public void sendForm_shouldFailWithInvalidEmail() throws Exception {
         contactFormDto.setEmail("bar@example");
-        mockMvc.perform(post("/contact/sendform")
-                .with(csrf())
-                .flashAttr("contactFormDto", contactFormDto))
+        postContactFormDtoToSendformEndpoint(contactFormDto)
                 .andExpect(status().isOk())
                 .andExpect(content().string(containsString("Wrong email")));
     }
 
     @Test
-    public void shouldFailWithNoMessage() throws Exception {
+    public void sendForm_shouldFailWithNoMessage() throws Exception {
         contactFormDto.setMessageText("");
-        mockMvc.perform(post("/contact/sendform")
-                .with(csrf())
-                .flashAttr("contactFormDto", contactFormDto))
+        postContactFormDtoToSendformEndpoint(contactFormDto)
                 .andExpect(status().isOk())
                 .andExpect(content().string(containsString("Please fill in")));
     }
 
     @Test
-    public void shouldFailWithNoSubject() throws Exception {
+    public void sendForm_shouldFailWithNoSubject() throws Exception {
         contactFormDto.setSubject("");
-        mockMvc.perform(post("/contact/sendform")
-                .with(csrf())
-                .flashAttr("contactFormDto", contactFormDto))
+        postContactFormDtoToSendformEndpoint(contactFormDto)
                 .andExpect(status().isOk())
                 .andExpect(content().string(containsString("Please fill in")));
     }
+
+    @Test
+    public void sendForm_givenResultError_shouldReturnCorrectView() throws Exception {
+        getBindingResultMock();
+        postContactFormDtoToSendformEndpoint(emptyContactFormDto)
+                .andExpect(content().string(containsString(CONTACT_VIEW_ID_COMMENT)));
+    }
+
+    @Test
+    public void sendForm_givenNoErrors_shouldReturnCorrectView() throws Exception {
+        getBindingResultMock();
+        postContactFormDtoToSendformEndpoint(contactFormDto)
+                .andExpect(content().string(containsString(CONTACT_SENDFORM_VIEW_ID_COMMENT)));
+    }
+
+    @Test
+    public void sendForm_shouldCatchHttpServerErrorException() throws Exception {
+        HttpServerErrorException exception =
+                new HttpServerErrorException(HttpStatus.INTERNAL_SERVER_ERROR, "testException");
+        doThrow(exception).when(service).sendContactFormAsEmail(contactFormDto);
+        postContactFormDtoToSendformEndpoint(contactFormDto)
+                .andExpect(status().isOk())
+                .andExpect(model().attributeExists("message"));
+    }
+
+    @Test
+    public void sendForm_shouldCatchHttpClientErrorException() throws Exception {
+        HttpClientErrorException exception =
+                new HttpClientErrorException(HttpStatus.BAD_REQUEST, "testException");
+        doThrow(exception).when(service).sendContactFormAsEmail(contactFormDto);
+        postContactFormDtoToSendformEndpoint(contactFormDto)
+                .andExpect(status().isOk())
+                .andExpect(model().attributeExists("message"));
+    }
+
+    private void getBindingResultMock() {
+        BindingResult resultMock = mock(BindingResult.class);
+        when(resultMock.hasErrors()).thenReturn(true);
+        when(resultMock.getAllErrors()).thenReturn(new LinkedList<>());
+
+    }
+
+    private ResultActions postContactFormDtoToSendformEndpoint(ContactFormDto contactFormDto) throws Exception {
+        return mockMvc.perform(post(CONTACT_SENDFORM_ENDPOINT)
+                .with(csrf())
+                .flashAttr(CONTACT_FORM_DTO_ATTRIBUTE_NAME, contactFormDto));
+    }
+
+
 }

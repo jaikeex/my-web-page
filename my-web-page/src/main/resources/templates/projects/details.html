@@ -2,25 +2,29 @@
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 
 <head>
-  <title th:text="${project.getName()}"></title>
+  <title th:text="${projectName}"></title>
   <div th:replace="fragments/head :: head"></div>
 </head>
 <body>
-<div th:replace="fragments/mobile-nav :: mobile-nav"></div>
-<div th:replace="fragments/header :: headertemplate (currentpage='projects')"></div>
+  <div th:replace="fragments/mobile-nav :: mobile-nav"></div>
+  <div th:replace="fragments/header :: headertemplate (currentpage='projects')"></div>
 <main id="main">
 
   <div th:replace="fragments/banner :: banner"></div>
-  <div th:replace="fragments/breadcrumbs :: breadcrumbs (title=${project.getName()})"></div>
-  <div class="container form-container">
+  <div th:replace="fragments/breadcrumbs :: breadcrumbs (title=${projectName})"></div>
+  <section id="details" class="resume">
+  <div class="container">
     <div class="row">
-      <div class="col-md-12">
-        <h3 th:text="${project.getName()}" style="margin-bottom: 20px;"></h3>
-        <p th:text="${project.getDetailedDescription()}"></p>
-
+      <div class="col-md-11">
+        <div class="password-error-message">
+          <h5 class="error-message" style="color:red" th:text="${errorMessage}"></h5>
+        </div>
+        <h3 th:text="${projectName}" style="margin-bottom: 20px;"></h3>
+        <p th:utext="${projectDescriptionText}"></p>
       </div>
     </div>
   </div>
+  </section>
 </main><!-- End #main -->
 
 <div th:replace="fragments/footer :: footer"></div>

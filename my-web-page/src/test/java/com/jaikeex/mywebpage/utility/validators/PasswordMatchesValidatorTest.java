@@ -1,4 +1,4 @@
-package com.jaikeex.mywebpage.services.validators;
+package com.jaikeex.mywebpage.utility.validators;
 
 import com.jaikeex.mywebpage.dto.UserDto;
 import org.junit.jupiter.api.BeforeEach;
