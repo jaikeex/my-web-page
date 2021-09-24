@@ -1,0 +1,208 @@
+body {
+    background: #1f1f1f;
+}
+
+p, h1, h2, h3, h4, h5, span, label {
+    color: hsl(243, 100%, 95%);
+}
+
+.list-of-issues-container {
+    padding: 1rem;
+    height: 35rem;
+    width: 50%;
+}
+
+.issue-details-container {
+    padding: 1rem;
+    height: 35rem;
+    width: 50%;
+}
+
+.list-of-issues-box {
+    border: 2px solid hsl(243, 100%, 97%);
+    padding: 1rem;
+    height: 90%;
+    width: 95%;
+    overflow: auto;
+    background: #1f1f1f;
+}
+
+.issue-details-box {
+    border: 2px solid hsl(243, 100%, 97%);
+    padding: 1rem;
+    height: 90%;
+    width: 95%;
+    overflow: auto;
+}
+
+.issue-details-box p {
+    font-weight: 400;
+}
+
+.issue-container {
+    padding-bottom: 1rem;
+    overflow: auto;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    height: 100%;
+}
+
+.history-container {
+    overflow: auto;
+    display: flex;
+    flex-wrap: wrap;
+}
+
+.issue-card-header-custom {
+    display: inline;
+    border-bottom: 0.1em solid #5d686e;
+}
+
+.issue-card-header-custom h5 {
+    padding-left: 1rem;
+    font-weight: 600;
+    color: hsl(243, 100%, 97%)
+}
+
+.issue-card-custom {
+    background: #28373e;
+    padding: 0;
+    margin-bottom: 0.5rem;
+    border: 0.1em solid hsl(243, 0%, 50%);
+
+}
+
+.issue-card-body {
+    padding-top: 0.5rem;
+    padding-bottom: 0.5rem;
+
+}
+
+.issue-description-text {
+    font-size: 95%;
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    margin-bottom: 0.2rem;
+    font-weight: 350;
+}
+
+.issue-details-button {
+    max-height: 3rem;
+    float: right;
+}
+
+.issue-card-button-details {
+    margin-right: 0.5rem;
+    background: hsl(243, 100%, 97%);
+    font-weight: 450;
+    color: black
+}
+
+.issue-card-button-details:hover {
+    background: hsl(243, 100%, 97%);
+    color: darkgreen;
+}
+
+.issue-card-hr-separator {
+    margin: 0.5rem -1rem 0.5rem;
+    color: white;
+}
+
+.issue-card-properties {
+    float: left;
+    font-size: 90%;
+}
+
+.issue-card-properties p {
+    margin-bottom: 0;
+}
+
+.issue-card-properties span {
+    font-weight: 550;
+}
+
+.history-box {
+    border: 1px solid hsl(243, 100%, 97%);
+    padding: 1rem;
+    width: 95%;
+    height: 7rem;
+    margin-left: 20px;
+    margin-right: 10px;
+    overflow: auto;
+
+}
+
+.new-issue-button-box {
+    padding: 1rem;
+    min-height: 100%;
+    max-height: 10rem;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.nav-bar-custom {
+    justify-content: center;
+    flex-direction:row;
+    margin-left: auto;
+    margin-right: auto;
+    height: 3rem;
+}
+
+.nav-bar-links-custom {
+    margin-right: 5rem;
+}
+
+.issue-filter-form {
+    padding-bottom: 0.2rem;
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+}
+
+.issue-search-form {
+    margin-bottom: 0.2rem;
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+}
+
+.filter-form-org {
+    float: left;
+}
+
+.filter-button {
+    margin-bottom: -0.5rem;
+}
+
+.mw-90 {
+    max-width: 90%;
+}
+
+.search-button {
+    margin-left: 1rem;
+    background: hsl(243, 100%, 97%);
+    font-weight: 550;
+    color: black;
+}
+
+.search-button:hover {
+    background: hsl(243, 100%, 97%);
+    color: darkgreen;
+}
+
+.submit-button {
+    background: hsl(243, 100%, 97%);
+    font-weight: 550;
+    color: black;
+}
+
+.submit-button:hover {
+    background: hsl(243, 100%, 97%);
+    color: darkgreen;
+}
+
+
+

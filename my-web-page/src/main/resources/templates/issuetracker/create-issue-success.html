@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <title>New report</title>
+    <div th:replace="issuetracker/fragments/head :: head"></div>
+</head>
+
+<body>
+<div th:replace="fragments/navbar :: navbar"></div>
+
+<div class="row justify-content-center">
+    <div class="col-md-6" style="margin-top: 2rem">
+        <div style="display: flex; justify-content: center">
+            <div th:if="${success} == false" class="password-error-message">
+                <h4 class="error-message" style="color:red" th:text="${errorMessage}"></h4>
+            </div>
+            <div th:if="${success} == true" class="password-error-message">
+                <h5 class="error-message" style="color:olive" th:text="${'Report successfully created'}"></h5>
+            </div>
+        </div>
+        <div style="display: flex; justify-content: center">
+            <p th:if="${success} == false" ><a href="/create">try again</a></p>
+        </div>
+        <div style="display: flex; justify-content: center">
+            <p><a href="/tracker/dashboard">return to dashboard</a></p>
+        </div>
+
+    </div>
+</div>
+
+
+
+<script type="text/javascript" th:src="@{/assets/js/main.js}"></script>
+</body>
+</html>
