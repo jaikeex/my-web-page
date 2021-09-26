@@ -6,7 +6,6 @@ import com.jaikeex.mywebpage.issuetracker.dto.IssueDto;
 import com.jaikeex.mywebpage.issuetracker.entity.Issue;
 import com.jaikeex.mywebpage.issuetracker.service.IssueService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -14,15 +13,17 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.HttpServerErrorException;
-import org.springframework.web.client.RestTemplate;
 
-import java.util.Arrays;
 import java.util.List;
 
 @Controller
 @RequestMapping("/tracker")
 public class DashboardController {
 
+    public static final String ERROR_MESSAGE_ATTRIBUTE_NAME = "errorMessage";
+    public static final String SUCCESS_ATTRIBUTE_NAME = "success";
+    public static final String ISSUE_DTO_ATTRIBUTE_NAME = "issueDto";
+    public static final String DESCRIPTION_DTO_ATTRIBUTE_NAME = "descriptionDto";
     IssueService service;
 
     @Autowired
@@ -30,31 +31,18 @@ public class DashboardController {
         this.service = service;
     }
 
-
     @GetMapping("/dashboard")
     public String displayDashboard (Model model) {
-
-        //-------------
-        RestTemplate restTemplate = new RestTemplate();
-        ResponseEntity<Issue[]> responseEntity = restTemplate.getForEntity("http://issue-tracker-service:9091/issue/all", Issue[].class);
-        Issue[] issuesArray = responseEntity.getBody();
-        List<Issue> issues = Arrays.asList(issuesArray);
-
-        Gson gson = new Gson();
-        String issuesAsJson = gson.toJson(issues);
-
+        List<Issue> issues = service.getAllIssues();
         model.addAttribute("issues", issues);
-        model.addAttribute("issuesAsJson", issuesAsJson);
-
-        //-------------
-
+        model.addAttribute("issuesAsJson", convertListOfIssuesToJson(issues));
         return "issuetracker/dashboard";
     }
 
     @GetMapping("/create")
     public String createNewReport (Model model) {
         IssueDto issueDto = new IssueDto();
-        model.addAttribute("issueDto", issueDto);
+        model.addAttribute(ISSUE_DTO_ATTRIBUTE_NAME, issueDto);
         return "issuetracker/create-issue";
     }
 
@@ -62,10 +50,10 @@ public class DashboardController {
     public String postNewReport (IssueDto issueDto, Model model) {
         try {
             service.createNewReport(issueDto);
-            model.addAttribute("success", true);
+            model.addAttribute(SUCCESS_ATTRIBUTE_NAME, true);
         } catch (HttpClientErrorException | HttpServerErrorException exception) {
-            model.addAttribute("success", false);
-            model.addAttribute("errorMessage", exception.getResponseBodyAsString());
+            model.addAttribute(SUCCESS_ATTRIBUTE_NAME, false);
+            model.addAttribute(ERROR_MESSAGE_ATTRIBUTE_NAME, exception.getResponseBodyAsString());
         }
         return "issuetracker/create-issue-success";
     }
@@ -73,7 +61,7 @@ public class DashboardController {
     @GetMapping("/update")
     public String updateDescription (Model model) {
         DescriptionDto descriptionDto = new DescriptionDto();
-        model.addAttribute("descriptionDto", descriptionDto);
+        model.addAttribute(DESCRIPTION_DTO_ATTRIBUTE_NAME, descriptionDto);
         return "issuetracker/update-description";
     }
 
@@ -81,12 +69,20 @@ public class DashboardController {
     public String postUpdateDescription (DescriptionDto descriptionDto, Model model) {
         try {
             service.updateDescription(descriptionDto);
-            model.addAttribute("success", true);
+            model.addAttribute(SUCCESS_ATTRIBUTE_NAME, true);
         } catch (HttpClientErrorException | HttpServerErrorException exception) {
-            model.addAttribute("success", false);
-            model.addAttribute("errorMessage", exception.getResponseBodyAsString());
+            model.addAttribute(SUCCESS_ATTRIBUTE_NAME, false);
+            model.addAttribute(ERROR_MESSAGE_ATTRIBUTE_NAME, exception.getResponseBodyAsString());
         }
         return "issuetracker/update-description-success";
     }
 
+    private String convertListOfIssuesToJson(List<Issue> issues) {
+        Gson gson = new Gson();
+        return gson.toJson(issues);
+    }
+
 }
+
+
+

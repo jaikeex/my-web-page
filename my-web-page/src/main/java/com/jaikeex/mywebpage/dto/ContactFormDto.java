@@ -1,9 +1,15 @@
 package com.jaikeex.mywebpage.dto;
 
 import com.jaikeex.mywebpage.utility.validators.ValidateEmail;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import javax.validation.constraints.NotBlank;
 
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
 public class ContactFormDto {
 
     @ValidateEmail
@@ -12,37 +18,4 @@ public class ContactFormDto {
     private String subject;
     @NotBlank
     private String messageText;
-
-    public ContactFormDto() {
-    }
-
-    public ContactFormDto(String email, String subject, String messageText) {
-        this.email = email;
-        this.subject = subject;
-        this.messageText = messageText;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
-    }
-
-    public String getSubject() {
-        return subject;
-    }
-
-    public void setSubject(String subject) {
-        this.subject = subject;
-    }
-
-    public String getMessageText() {
-        return messageText;
-    }
-
-    public void setMessageText(String messageText) {
-        this.messageText = messageText;
-    }
 }

@@ -4,7 +4,6 @@ import com.jaikeex.mywebpage.dto.UserDto;
 import com.jaikeex.mywebpage.dto.UserLastAccessDateDto;
 import com.jaikeex.mywebpage.model.User;
 import com.jaikeex.mywebpage.restemplate.RestTemplateFactory;
-import com.jaikeex.mywebpage.utility.exception.RegistrationProcessFailedException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -12,14 +11,15 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.springframework.boot.test.context.TestComponent;
-import org.springframework.http.*;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.MediaType;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
-import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 
 import static com.jaikeex.mywebpage.MyWebPageApplication.API_GATEWAY_URL;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.*;
@@ -54,25 +54,14 @@ class UserServiceTest {
     }
 
     @Test
-    public void registerUser_givenValidData_shouldCallUserServiceWithCorrectArguments() throws RegistrationProcessFailedException {
+    public void registerUser_givenValidData_shouldCallUserServiceWithCorrectArguments(){
         service.registerUser(userDto);
         verify(restTemplate, times(1)).exchange(
                 API_GATEWAY_URL + "users/", HttpMethod.POST, entity, User.class);
     }
 
     @Test
-    public void registerUser_givenUserServiceFails_shouldThrowException() throws RegistrationProcessFailedException {
-        HttpClientErrorException exception = new HttpClientErrorException(
-                HttpStatus.BAD_REQUEST);
-        when(restTemplate.exchange(
-                API_GATEWAY_URL + "users/", HttpMethod.POST, entity, User.class))
-                .thenThrow(exception);
-        assertThrows(RegistrationProcessFailedException.class,
-                () -> service.registerUser(userDto));
-    }
-
-    @Test
-    public void updateUserStatsOnLogin_givenValidData_shouldCallUserServiceWithCorrectArguments() throws RegistrationProcessFailedException {
+    public void updateUserStatsOnLogin_givenValidData_shouldCallUserServiceWithCorrectArguments(){
         ArgumentCaptor<UserLastAccessDateDto> argument =
                 ArgumentCaptor.forClass(UserLastAccessDateDto.class);
         service.updateUserStatsOnLogin("testUsername");

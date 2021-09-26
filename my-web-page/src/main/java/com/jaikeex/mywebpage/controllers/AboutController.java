@@ -7,10 +7,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 @Controller
 public class AboutController {
 
-    public static final String ABOUT_ENDPOINT = "/about";
     public static final String ABOUT_VIEW = "about";
 
-    @RequestMapping(value = ABOUT_ENDPOINT)
+    @RequestMapping(value = "/about")
     public String about () {
         return ABOUT_VIEW;
     }

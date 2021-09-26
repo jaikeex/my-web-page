@@ -13,7 +13,6 @@ import java.util.Objects;
 @NoArgsConstructor
 public class User{
 
-
     private int id;
     private String username;
     private String password;

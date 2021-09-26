@@ -3,16 +3,17 @@ package com.jaikeex.mywebpage.controllers;
 import com.jaikeex.mywebpage.dto.UserDto;
 import com.jaikeex.mywebpage.model.User;
 import com.jaikeex.mywebpage.services.UserService;
-import com.jaikeex.mywebpage.utility.exception.RegistrationProcessFailedException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.http.HttpStatus;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.context.WebApplicationContext;
 
 import static org.hamcrest.Matchers.containsString;
@@ -90,7 +91,7 @@ class UserControllerTest {
 
     @Test
     public void postRegistrationForm_givenUsernameTaken_shouldDisplayWarning() throws Exception {
-        RegistrationProcessFailedException exception = new RegistrationProcessFailedException("fail");
+        HttpServerErrorException exception = new HttpServerErrorException(HttpStatus.INTERNAL_SERVER_ERROR);
         doThrow(exception).when(service).registerUser(userDto);
         postUserDtoToSignupEndpoint(userDto)
                 .andExpect(status().isOk())

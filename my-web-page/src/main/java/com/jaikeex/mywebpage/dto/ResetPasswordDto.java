@@ -4,12 +4,16 @@ import com.jaikeex.mywebpage.utility.security.MyPasswordEncoder;
 import com.jaikeex.mywebpage.utility.validators.MatchingPasswords;
 import com.jaikeex.mywebpage.utility.validators.PasswordMatches;
 import com.jaikeex.mywebpage.utility.validators.ValidateEmail;
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import javax.validation.constraints.NotBlank;
 
 @Data
+@NoArgsConstructor
+@AllArgsConstructor
 @PasswordMatches.List({@PasswordMatches(field = "password", fieldMatch = "passwordForValidation")})
 public class ResetPasswordDto implements MatchingPasswords {
 
@@ -26,8 +30,6 @@ public class ResetPasswordDto implements MatchingPasswords {
     private String resetLink;
     private String token;
 
-    public ResetPasswordDto() {
-    }
 
     public ResetPasswordDto(String email, String token, String password, String passwordForValidation) {
         this.email = email;

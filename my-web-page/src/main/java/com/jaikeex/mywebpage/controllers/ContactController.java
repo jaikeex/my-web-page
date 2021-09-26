@@ -17,13 +17,12 @@ import javax.validation.Valid;
 @Controller
 public class ContactController {
 
-    private static final String CONTACT_SENDFORM_ENDPOINT = "/contact/sendform";
-    private static final String CONTACT_ENDPOINT = "/contact";
     private static final String ERROR_MESSAGE_ATTRIBUTE_NAME = "errorMessage";
     private static final String MESSAGE_SENT_ATTRIBUTE_NAME = "messageSent";
     private static final String CONTACT_VIEW = "contact";
     private static final String CONTACT_SENDFORM_VIEW = "contact/sendform";
     private static final String CONTACT_FORM_DTO_ATTRIBUTE_NAME = "contactFormDto";
+    private static final String MESSAGE_SENT_STATUS_ATTRIBUTE_NAME = "message";
 
     private final ContactService contactService;
 
@@ -32,15 +31,14 @@ public class ContactController {
         this.contactService = contactService;
     }
 
-    @GetMapping(value = CONTACT_ENDPOINT)
-    public String contact (Model model) {
+    @GetMapping(value = "/contact")
+    public String displayContactPage (Model model) {
         addEmptyDtoIntoModel(model);
         return CONTACT_VIEW;
     }
 
-
-    @PostMapping(value = CONTACT_SENDFORM_ENDPOINT)
-    public String sendForm(@Valid ContactFormDto contactFormDto, BindingResult result, Model model) {
+    @PostMapping(value = "/contact/sendform")
+    public String postContactFormData(@Valid ContactFormDto contactFormDto, BindingResult result, Model model) {
         if (isResultOk(result, model)) {
             passEmailDataToContactService(contactFormDto, model);
             return CONTACT_SENDFORM_VIEW;
@@ -52,10 +50,10 @@ public class ContactController {
         try {
             contactService.sendContactFormAsEmail(contactFormDto);
             model.addAttribute(MESSAGE_SENT_ATTRIBUTE_NAME, true);
-            model.addAttribute("message", "Message sent successfully!");
+            model.addAttribute(MESSAGE_SENT_STATUS_ATTRIBUTE_NAME, "Message sent successfully!");
         } catch (HttpServerErrorException | HttpClientErrorException exception) {
             model.addAttribute(MESSAGE_SENT_ATTRIBUTE_NAME, false);
-            model.addAttribute("message", exception.getResponseBodyAsString());
+            model.addAttribute(MESSAGE_SENT_STATUS_ATTRIBUTE_NAME, exception.getResponseBodyAsString());
         }
     }
 

@@ -17,10 +17,12 @@ import java.util.List;
 @NoArgsConstructor
 public class ProjectsController {
 
-    public static final String PROJECTS_ENDPOINT = "/projects";
-    public static final String PROJECTS_DETAILS_ENDPOINT = "/projects/details";
     public static final String PROJECTS_VIEW = "projects";
     public static final String PROJECTS_DETAILS_VIEW = "projects/details";
+    private static final String PROJECT_TITLE_ATTRIBUTE_NAME = "projectName";
+    private static final String PROJECT_DESCRIPTION_ATTRIBUTE_NAME = "projectDescriptionText";
+    private static final String ERROR_MESSAGE_ATTRIBUTE_NAME = "errorMessage";
+    private static final String PROJECTS_LIST_ATTRIBUTE_NAME = "projects";
 
     ProjectDetailsService service;
 
@@ -29,13 +31,13 @@ public class ProjectsController {
         this.service = service;
     }
 
-    @GetMapping(value = PROJECTS_ENDPOINT)
+    @GetMapping(value = "/projects")
     public String displayAllProjects (Model model) {
         addListOfProjectsToModel(model);
         return PROJECTS_VIEW;
     }
 
-    @GetMapping(value = PROJECTS_DETAILS_ENDPOINT)
+    @GetMapping(value = "/projects/details")
     public String displayProjectDetailsById(@RequestParam Integer id, Model model) {
         addProjectByIdToModel(id, model);
         return PROJECTS_DETAILS_VIEW;
@@ -44,20 +46,32 @@ public class ProjectsController {
     private void addProjectByIdToModel(Integer id, Model model) {
         try {
             Project project = service.getProjectById(id);
-            model.addAttribute("projectName", project.getName());
-            model.addAttribute("projectDescriptionText", project.getDetailedDescription());
+            appendModelWithProjectDataAttributes(model, project);
         } catch (HttpClientErrorException exception) {
-            model.addAttribute("errorMessage", "This project does not exist");
+            appendModelWithProjectNotFoundAttributes(model);
         }
     }
 
     private void addListOfProjectsToModel(Model model) {
         try {
             List<Project> projects = service.getProjectsList();
-            model.addAttribute("projects", projects);
+            appendModelWithListOfProjectsAttribute(model, projects);
         }catch (HttpClientErrorException exception) {
-            model.addAttribute("errorMessage", "No projects found");
+            appendModelWithProjectNotFoundAttributes(model);
         }
+    }
+
+    private void appendModelWithListOfProjectsAttribute(Model model, List<Project> projects) {
+        model.addAttribute(PROJECTS_LIST_ATTRIBUTE_NAME, projects);
+    }
+
+    private void appendModelWithProjectNotFoundAttributes(Model model) {
+        model.addAttribute(ERROR_MESSAGE_ATTRIBUTE_NAME, "This project does not exist");
+    }
+
+    private void appendModelWithProjectDataAttributes(Model model, Project project) {
+        model.addAttribute(PROJECT_TITLE_ATTRIBUTE_NAME, project.getName());
+        model.addAttribute(PROJECT_DESCRIPTION_ATTRIBUTE_NAME, project.getDetailedDescription());
     }
 
 }

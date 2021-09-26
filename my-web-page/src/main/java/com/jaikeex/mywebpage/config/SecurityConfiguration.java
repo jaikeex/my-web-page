@@ -6,6 +6,7 @@ import com.jaikeex.mywebpage.utility.security.MyUserDetailsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -21,7 +22,6 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
     UserDetailsService userDetailsService;
     AuthenticationSuccessHandler successHandler;
 
-
     @Autowired
     public SecurityConfiguration(MyUserDetailsService userDetailsService, MyAuthenticationSuccessHandler successHandler) {
         this.userDetailsService = userDetailsService;
@@ -35,9 +35,22 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
+        setAdminPageRules(http);
+        setUserInfoRules(http);
+        setOptionsRequestsRules(http);
+    }
 
-        http.authorizeRequests().antMatchers("/admin/**").hasRole("ADMIN").and().formLogin();
+    @Bean
+    public PasswordEncoder getPasswordEncoder() {
+        return new MyPasswordEncoder();
+    }
 
+    private void setOptionsRequestsRules(HttpSecurity http) throws Exception {
+        http.authorizeRequests()
+                .antMatchers(HttpMethod.OPTIONS, "/**").permitAll();
+    }
+
+    private void setUserInfoRules(HttpSecurity http) throws Exception {
         http.authorizeRequests()
                 .antMatchers("/user/auth/**")
                 .hasAnyRole("USER", "ADMIN")
@@ -48,10 +61,10 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                 .successHandler(successHandler);
     }
 
-    @Bean
-    public PasswordEncoder getPasswordEncoder() {
-        return new MyPasswordEncoder();
+    private void setAdminPageRules(HttpSecurity http) throws Exception {
+        http.authorizeRequests().antMatchers("/admin/**").hasRole("ADMIN").and().formLogin();
     }
+
 
 
 }
