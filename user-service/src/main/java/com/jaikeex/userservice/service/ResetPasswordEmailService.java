@@ -42,7 +42,6 @@ public class ResetPasswordEmailService {
         this.restTemplateFactory = restTemplateFactory;
     }
 
-
     public void sendResetPasswordConfirmationEmail(String emailAddress) throws Exception {
         log.debug("entering sendResetPasswordConfirmationEmail");
         setupProperties(emailAddress);
@@ -67,13 +66,11 @@ public class ResetPasswordEmailService {
         }
     }
 
-
     private Email getEmailObjectWithResetPasswordData() {
         log.debug("Loading data into Email object");
         return new Email.Builder(email).subject(SUBJECT)
                 .message(constructResetPasswordMessage()).build();
     }
-
 
     private String constructResetPasswordMessage() {
         log.debug("Constructing reset password message");
@@ -81,18 +78,15 @@ public class ResetPasswordEmailService {
         return (EMAIL_BODY + resetLink + EMAIL_FOOTER);
     }
 
-
     private String constructResetLink() {
         log.debug("Creating reset password link");
         return String.format(
                 RESET_LINK_BASE + "?token=%s&email=%s", resetToken, email);
     }
 
-
     private void saveUserWithEncodedTokenToDatabase() throws NoSuchUserException {
         userService.saveUserWithEncodedResetTokenToDatabase(email, resetToken);
     }
-
 
     private void postHttpRequestToEmailService(Email emailObject) throws HttpServerErrorException{
         log.info("Sending reset password confirmation email to {}", email);
@@ -102,7 +96,6 @@ public class ResetPasswordEmailService {
                 emailObject,
                 Email.class);
     }
-
 
     private String generateResetPasswordToken() {
         int leftLimit = 48; // numeral '0'

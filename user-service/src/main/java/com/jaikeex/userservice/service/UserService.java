@@ -29,24 +29,20 @@ public class UserService {
         this.encoder = encoder;
     }
 
-
     public User findUserByEmail(String email) {
         log.info("Fetching user by email {} ", email);
         return repository.findUserByEmail(email);
     }
-
 
     public User findUserById(Integer id) {
         log.info("Fetching user by id {} ", id);
         return repository.findUserById(id);
     }
 
-
     public User findUserByUsername(String username) {
         log.info("Fetching user by username {} ", username);
         return repository.findUserByUsername(username);
     }
-
 
     public User updateLastAccessDateOfUser(String username, Timestamp newLastAccessDate) {
         log.debug("Updating last access date of user {}", username);
@@ -54,13 +50,11 @@ public class UserService {
         return findUserByUsername(username);
     }
 
-
     public User updateLastAccessDateOfUser(Integer id, Timestamp newLastAccessDate) {
         log.debug("Updating last access date of user {}", id);
         repository.updateLastAccessDateById(newLastAccessDate, id);
         return findUserById(id);
     }
-
 
     public User updatePasswordOfUser(Integer id, ResetPasswordDto resetPasswordDto)
             throws InvalidResetTokenException, NoSuchUserException {
@@ -72,7 +66,6 @@ public class UserService {
         return findUserById(id);
     }
 
-
     public User updatePasswordOfUser(String email, ResetPasswordDto resetPasswordDto)
             throws InvalidResetTokenException {
         log.debug("entering updatePasswordOfUser by email");
@@ -82,7 +75,6 @@ public class UserService {
         log.debug("exiting updatePasswordOfUser by email");
         return findUserByEmail(email);
     }
-    
 
     public void saveUserWithEncodedResetTokenToDatabase(String email, String resetToken) {
         User user = repository.findUserByEmail(email);
@@ -91,14 +83,12 @@ public class UserService {
         repository.save(user);
     }
 
-
     private void checkIfUserIsNull(User user) {
         if (user == null) {
             log.warn("Email provided does not exist in database");
             throw new NoSuchUserException("No user with this email exists");
         }
     }
-
 
     private void changePasswordInDatabase(User user, ResetPasswordDto resetPasswordDto) {
         String resetToken = resetPasswordDto.getResetToken();

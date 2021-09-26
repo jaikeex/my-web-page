@@ -28,7 +28,7 @@ public class Email {
 
     public static class Builder {
 
-        private String recipient;
+        private final String recipient;
 
         private String subject = "";
         private String message = "";
@@ -48,7 +48,7 @@ public class Email {
             return this;
         }
 
-        public Builder message(Timestamp date) {
+        public Builder date(Timestamp date) {
             this.date = date;
             return this;
         }

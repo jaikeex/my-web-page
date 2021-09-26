@@ -34,14 +34,12 @@ public class UserController {
         this.resetPasswordEmailService = resetPasswordEmailService;
     }
 
-
     @GetMapping("/id/{userId}")
     public ResponseEntity<Object> findUserById(@PathVariable Integer userId) {
         log.debug("entering /users/id endpoint");
         User user = userService.findUserById(userId);
         return getFindUserResponseEntity(user);
     }
-
 
     @GetMapping("/username/{username}")
     public ResponseEntity<Object> findUserByUsername(@PathVariable String username) {
@@ -50,14 +48,12 @@ public class UserController {
         return getFindUserResponseEntity(user);
     }
 
-
     @GetMapping("/email/{email}")
     public ResponseEntity<Object> findUserByEmail(@PathVariable String email) {
         log.debug("entering /users/email/ endpoint");
         User user = userService.findUserByEmail(email);
         return getFindUserResponseEntity(user);
     }
-
 
     @PostMapping("/")
     public ResponseEntity<Object> registerUser(@RequestBody User user) {
@@ -69,7 +65,6 @@ public class UserController {
             return getRegisterUserResponseEntity(exception.getMessage());
         }
     }
-
 
     @PatchMapping("/password/id/{userId}/token/{token}")
     public ResponseEntity<Object> updatePasswordOfUser(@PathVariable String token,
@@ -85,7 +80,6 @@ public class UserController {
         }
     }
 
-
     @PatchMapping("/password/email/{email}/token/{token}")
     public ResponseEntity<Object> updatePasswordOfUser(@PathVariable String email,
                                                      @PathVariable String token,
@@ -99,18 +93,18 @@ public class UserController {
             return getInvalidResetTokenResponseEntity(exception.getMessage());
         }
     }
-
     @PatchMapping("/last-access/")
-    public ResponseEntity<Object> updateLastAccessDateOfUser(@RequestBody UserLastAccessDateDto userLastAccessDateDto) {
+    public ResponseEntity<Object> updateLastAccessDateOfUser(
+            @RequestBody UserLastAccessDateDto userLastAccessDateDto) {
         log.debug("entering /users/last-access/ endpoint");
         Timestamp newLastAccessDate = userLastAccessDateDto.getLastAccessDate();
         User user = userService.updateLastAccessDateOfUser(userLastAccessDateDto.getUsername(), newLastAccessDate);
         return getLastAccessUpdateResponseEntity(user);
     }
 
-
     @GetMapping("/reset-password/email/{email}")
-    public ResponseEntity<Object> sendResetPasswordConfirmationEmail(@PathVariable String email) {
+    public ResponseEntity<Object> sendResetPasswordConfirmationEmail(
+            @PathVariable String email) {
         log.debug("entering /users/reset-password/email/ endpoint");
         try {
             resetPasswordEmailService.sendResetPasswordConfirmationEmail(email);
@@ -122,11 +116,9 @@ public class UserController {
         }
     }
 
-
     private ResponseEntity<Object> getEmailNotSendResponseEntity(String errorMessage) {
         return new ResponseEntity<>(errorMessage, HttpStatus.INTERNAL_SERVER_ERROR);
     }
-
 
     private ResponseEntity<Object> getFindUserResponseEntity(User user) {
         if (user != null) {
@@ -137,11 +129,9 @@ public class UserController {
         }
     }
 
-
     private ResponseEntity<Object> getUserNotFoundResponseEntity() {
         return new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
-
 
     private ResponseEntity<Object> getRegisterUserResponseEntity(User user) {
         return new ResponseEntity<>(user, HttpStatus.CREATED);
@@ -155,11 +145,9 @@ public class UserController {
         return getOkUserResponseEntity(user);
     }
 
-
     private ResponseEntity<Object> getLastAccessUpdateResponseEntity(User user) {
         return getOkUserResponseEntity(user);
     }
-
 
     private ResponseEntity<Object> getOkUserResponseEntity(Object user) {
         return new ResponseEntity<>(user, HttpStatus.OK);
