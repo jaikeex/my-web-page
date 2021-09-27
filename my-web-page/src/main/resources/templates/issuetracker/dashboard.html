@@ -1,5 +1,7 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<html lang="en"
+      xmlns:th="http://www.thymeleaf.org"
+>
 
 <head>
     <title>Dashboard</title>
@@ -8,6 +10,7 @@
 
 <body>
 <div th:replace="fragments/navbar :: navbar"></div>
+<input type="hidden" id="principal-authority" name="principal-authority" th:value="${#authentication.getAuthorities()}">
 
     <div class="container" style="height: 100%">
         <div class="row" style="height: 70%">
@@ -67,7 +70,7 @@
                             </div>
                         </form>
                     <div class="list-of-issues-box">
-                        <form class="issue-search-form" action="javascript:void(0);">
+                        <form class="issue-search-form" action="javascript:void(0);" autocomplete="off">
                                 <input id="search-bar" class="form-control mw-90" type="search" placeholder="Search" aria-label="Search">
                                 <button id="search-button" class="btn btn-outline-success search-button" type="submit" onclick="searchIssues()">Search</button>
                         </form>
@@ -146,9 +149,8 @@
 
                             <div style="float: right; padding-top: 0.8rem;">
 
-                                <button class="btn btn-success filter-button" style="margin-left: 1rem; min-width: 90%" onclick="updateIssue()">Save</button>
+                                <button th:disabled="${#authorization.expression('!hasAuthority(''ROLE_ADMIN'')')}" class="btn btn-success filter-button" style="margin-left: 1rem; min-width: 90%" onclick="updateIssue()">Save</button>
                             </div>
-
                         </div>
                     </form>
                     <div id="issue-details-box" class="issue-details-box" style="background: #28373e">

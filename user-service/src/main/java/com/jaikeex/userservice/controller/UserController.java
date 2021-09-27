@@ -28,7 +28,10 @@ public class UserController {
     ResetPasswordEmailService resetPasswordEmailService;
 
     @Autowired
-    public UserController(UserService userService, RegistrationServiceImpl registrationService, ResetPasswordEmailService resetPasswordEmailService) {
+    public UserController(
+            UserService userService,
+            RegistrationServiceImpl registrationService,
+            ResetPasswordEmailService resetPasswordEmailService) {
         this.userService = userService;
         this.registrationService = registrationService;
         this.resetPasswordEmailService = resetPasswordEmailService;

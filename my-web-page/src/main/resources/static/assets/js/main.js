@@ -9,9 +9,12 @@ const statusSaveSelect = document.getElementById("status-save");
 const projectSaveSelect = document.getElementById("project-save");
 const detailsElement = document.getElementById("issue-details-box");
 const searchBar = document.getElementById("search-bar");
+const principalAuthoritiesElement = document.getElementById("principal-authority")
 
 //const mainDomain = "https://www.kubahruby.com"
 const mainDomain = "http://localhost:9091"
+
+displaySuggestions();
 
 function filterIssues() {
     let type = typeFilter.options[typeFilter.selectedIndex]
@@ -126,6 +129,52 @@ function searchIssues() {
     });
 }
 
+function displaySuggestions() {
+    searchBar.addEventListener('keyup', () => {
+        let postBody = searchBar.value;
+        let resultsToHtml = ``;
+
+        fetch(`${mainDomain}/issue/search?query=${postBody}`, {
+            method: 'GET'
+        })
+            .then(response => response.json())
+            .then(results => {
+                results.forEach(issue => {
+                    resultsToHtml +=`
+                        <div class="card issue-card-custom">
+                            <div class="issue-card-header-custom">
+                                <h5 class="card-header" style="float:left">${issue.title}</h5>
+                                <h5 class="card-header" style="float:right" >#${issue.id}</h5>
+                            </div>
+                            <div class="card-body issue-card-body">
+                                <p class="card-text issue-description-text">${issue.description}</p>
+                                <hr class="issue-card-hr-separator">
+                                <div style="display: inline">
+                                    <div class="issue-card-properties" style="margin-right: 1rem">
+                                        <p>Type: <span>${issue.type}</span></p>
+                                        <p>Severity: <span>${issue.severity}</span></p>
+                                    </div>
+                                    <div class="issue-card-properties">
+                                        <p>Status: <span>${issue.status}</span></p>
+                                        <p>Project: <span>${issue.project}</span></p>
+                                    </div>
+                                    <a class="btn btn-primary issue-details-button btn-danger" onclick="deleteIssue(${issue.id}, '${issue.title}')">
+                                        Delete
+                                    </a>
+                                    <a class="btn btn-primary issue-details-button issue-card-button-details" onclick="displayIssueDetails(${issue.id})">
+                                        Details
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                `;
+                });
+                resultsElement.innerHTML = resultsToHtml;
+                resetFilters();
+            });
+    })
+}
+
 function resetFilters() {
     setSelectElement("type", "all");
     setSelectElement("severity", "all");
@@ -147,8 +196,9 @@ function displayIssueDetails(id) {
     })
         .then(response => response.json())
         .then(issue => {
-            resultsToHtml +=
-                `
+            if (principalAuthoritiesElement.value.includes('ROLE_ADMIN')) {
+                resultsToHtml +=
+                    `
                     <input type="text" id="displayed-issue-id" style="display: none" value='${JSON.stringify(issue).replace(/[\/\(\)\']/g, "&apos;")}'>
                     <h5>${issue.title}</h5>
                     <p style="margin-bottom: 0">Author: ${issue.author}</p>
@@ -163,10 +213,34 @@ function displayIssueDetails(id) {
                         <a id="update-description-button" href="/tracker/update"><button class="btn btn-primary btn-lg btn-block submit-button" style="max-height: 3rem">Update description</button></a>
                     </div>
                     `;
-            detailsElement.innerHTML = resultsToHtml;
-            let updateButton = document.getElementById("update-description-button")
-            updateButton.setAttribute("href", "/tracker/update?title=" + issue['title'] + "&description=" + issue['description'])
-            setSaveFormToIssueProperties(issue);
+                detailsElement.innerHTML = resultsToHtml;
+                let updateButton = document.getElementById("update-description-button")
+                updateButton.setAttribute("href", "/tracker/update?title=" + issue['title'] + "&description=" + issue['description'])
+                setSaveFormToIssueProperties(issue);
+
+            } else {
+                resultsToHtml +=
+                    `
+                    <input type="text" id="displayed-issue-id" style="display: none" value='${JSON.stringify(issue).replace(/[\/\(\)\']/g, "&apos;")}'>
+                    <h5>${issue.title}</h5>
+                    <p style="margin-bottom: 0">Author: ${issue.author}</p>
+                    <p>Created: ${issue.date}</p>
+                    <p style="margin-bottom: 0">Type: <span style="font-weight: bold">${issue.type}</span></p>
+                    <p style="margin-bottom: 0">Severity: <span style="font-weight: bold">${issue.severity}</span></p>
+                    <p style="margin-bottom: 0">Status: <span style="font-weight: bold">${issue.status}</span></p>
+                    <p >Project: <span style="font-weight: bold">${issue.project}</span></p>
+                    <hr style="margin: 0.5rem -1rem 0.5rem;color: white">
+                    <p>${issue.description}</p>
+                    
+                    <div style="display: flex; justify-content: center">
+                        <button type="submit" disabled class="btn btn-primary btn-lg btn-block submit-button" style="max-height: 3rem">Update description</button>
+                    </div>
+                    `;
+                detailsElement.innerHTML = resultsToHtml;
+                let updateButton = document.getElementById("update-description-button")
+                updateButton.setAttribute("href", "/tracker/update?title=" + issue['title'] + "&description=" + issue['description'])
+                setSaveFormToIssueProperties(issue);
+            }
         });
 }
 
@@ -234,3 +308,4 @@ function updateIssue() {
     setTimeout(() => {filterIssues()}, 1000);
     setTimeout(() => {displayIssueDetails(issue['id'])}, 1000);
 }
+
