@@ -5,14 +5,13 @@ import com.jaikeex.mywebpage.issuetracker.dto.DescriptionDto;
 import com.jaikeex.mywebpage.issuetracker.dto.IssueDto;
 import com.jaikeex.mywebpage.issuetracker.entity.Issue;
 import com.jaikeex.mywebpage.issuetracker.service.IssueService;
+import com.jaikeex.mywebpage.issuetracker.utility.IssueServiceDownException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.client.HttpClientErrorException;
-import org.springframework.web.client.HttpServerErrorException;
 
 import java.util.List;
 
@@ -51,9 +50,9 @@ public class DashboardController {
         try {
             service.createNewReport(issueDto);
             model.addAttribute(SUCCESS_ATTRIBUTE_NAME, true);
-        } catch (HttpClientErrorException | HttpServerErrorException exception) {
+        } catch (IssueServiceDownException exception) {
             model.addAttribute(SUCCESS_ATTRIBUTE_NAME, false);
-            model.addAttribute(ERROR_MESSAGE_ATTRIBUTE_NAME, exception.getResponseBodyAsString());
+            model.addAttribute(ERROR_MESSAGE_ATTRIBUTE_NAME, exception.getMessage());
         }
         return "issuetracker/create-issue-success";
     }
@@ -70,9 +69,9 @@ public class DashboardController {
         try {
             service.updateDescription(descriptionDto);
             model.addAttribute(SUCCESS_ATTRIBUTE_NAME, true);
-        } catch (HttpClientErrorException | HttpServerErrorException exception) {
+        } catch (IssueServiceDownException exception) {
             model.addAttribute(SUCCESS_ATTRIBUTE_NAME, false);
-            model.addAttribute(ERROR_MESSAGE_ATTRIBUTE_NAME, exception.getResponseBodyAsString());
+            model.addAttribute(ERROR_MESSAGE_ATTRIBUTE_NAME, exception.getMessage());
         }
         return "issuetracker/update-description-success";
     }

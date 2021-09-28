@@ -38,6 +38,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
         setAdminPageRules(http);
         setUserInfoRules(http);
         setOptionsRequestsRules(http);
+        setTrackerRules(http);
     }
 
     @Bean
@@ -48,6 +49,17 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
     private void setOptionsRequestsRules(HttpSecurity http) throws Exception {
         http.authorizeRequests()
                 .antMatchers(HttpMethod.OPTIONS, "/**").permitAll();
+    }
+
+    private void setTrackerRules(HttpSecurity http) throws Exception {
+        http.authorizeRequests()
+                .antMatchers("/tracker/update")
+                .hasRole("ADMIN")
+                .and()
+                .formLogin()
+                .loginPage("/login")
+                .permitAll()
+                .successHandler(successHandler);
     }
 
     private void setUserInfoRules(HttpSecurity http) throws Exception {

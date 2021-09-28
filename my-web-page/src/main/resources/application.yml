@@ -9,13 +9,28 @@ spring:
     name: my-web-page
 
 management:
+  health:
+    circuitbreakers:
+      enabled: true
   endpoints:
     web:
       exposure:
         include: "*"
-      base-path: "/act"
+      base-path: "/actuator"
 
-
+resilience4j:
+  circuitbreaker:
+    instances:
+      ISSUE_SERVICE_CB:
+        registerHealthIndicator: true
+        eventConsumerBufferSize: 10
+        automaticTransitionFromOpenToHalfOpenEnabled: true
+        failureRateThreshold: 10
+        minimumNumberOfCalls: 5
+        waitDurationOpenState: 5s
+        slidingWindowType: COUNT_BASED
+        slidingWindowSize: 10
+        permittedNumberOfCallsInHalfOpenState: 3
 
 eureka:
   client:
