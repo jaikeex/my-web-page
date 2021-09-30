@@ -13,8 +13,9 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.web.client.RestTemplate;
 
@@ -24,16 +25,17 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(SpringExtension.class)
+@SpringBootTest
 class IssueServiceTest {
 
-    @Mock
+    @MockBean
     RestTemplateFactory restTemplateFactory;
-    @Mock
     RestTemplate restTemplate;
 
-    @InjectMocks
+    @Autowired
     IssueService service;
 
+    private static final String ISSUE_TRACKER_SERVICE_URL = "http://issue-tracker-service:9091/issue/";
     public static final String NEW_DESCRIPTION = "new description";
     public static final String NEW_TITLE = "new title";
 
@@ -42,6 +44,7 @@ class IssueServiceTest {
 
     @BeforeEach
     public void beforeEach() {
+        restTemplate = mock(RestTemplate.class);
         when(restTemplateFactory.getRestTemplate()).thenReturn(restTemplate);
         initDescriptionDto();
 
@@ -82,5 +85,14 @@ class IssueServiceTest {
         service.updateDescription(descriptionDto);
         verify(restTemplate, times(1))
                 .postForEntity(anyString(), any(DescriptionDto.class), any());
+    }
+
+    @Test
+    public void getAllIssues_shouldPostHttpRequest() {
+        String url = ISSUE_TRACKER_SERVICE_URL + "all";
+        service.getAllIssues();
+        verify(restTemplate, times(1))
+                .getForEntity(url, Issue[].class);
+
     }
 }

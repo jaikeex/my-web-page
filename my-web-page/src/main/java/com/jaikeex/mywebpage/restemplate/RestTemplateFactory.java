@@ -8,7 +8,7 @@ import org.springframework.web.client.RestTemplate;
 
 @Component
 public class RestTemplateFactory {
-    //Just a workaround; LoadBalanced does not work with eureka when autowired from main
+    //Just a workaround; LoadBalanced does not work with eureka when autowired directly
     private RestTemplateFactory() {}
 
     @Bean
