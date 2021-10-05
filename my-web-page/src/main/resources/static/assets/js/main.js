@@ -1,256 +1,311 @@
-/**
-* Template Name: iPortfolio - v3.3.0
-* Template URL: https://bootstrapmade.com/iportfolio-bootstrap-portfolio-websites-template/
-* Author: BootstrapMade.com
-* License: https://bootstrapmade.com/license/
-*/
-(function() {
-  "use strict";
+const typeFilter = document.getElementById("type");
+const severityFilter = document.getElementById("severity");
+const statusFilter = document.getElementById("status");
+const projectFilter = document.getElementById("project");
+const resultsElement = document.getElementById("filter-results");
+const typeSaveSelect = document.getElementById("type-save");
+const severitySaveSelect = document.getElementById("severity-save");
+const statusSaveSelect = document.getElementById("status-save");
+const projectSaveSelect = document.getElementById("project-save");
+const detailsElement = document.getElementById("issue-details-box");
+const searchBar = document.getElementById("search-bar");
+const principalAuthoritiesElement = document.getElementById("principal-authority")
 
-  /**
-   * Easy selector helper function
-   */
-  const select = (el, all = false) => {
-    el = el.trim()
-    if (all) {
-      return [...document.querySelectorAll(el)]
-    } else {
-      return document.querySelector(el)
+//const mainDomain = "https://www.kubahruby.com"
+const mainDomain = "http://localhost:9091"
+
+displaySuggestions();
+
+function filterIssues() {
+    let type = typeFilter.options[typeFilter.selectedIndex]
+    let severity = severityFilter.options[severityFilter.selectedIndex]
+    let status = statusFilter.options[statusFilter.selectedIndex]
+    let project = projectFilter.options[projectFilter.selectedIndex]
+
+    let resultsToHtml = ``;
+    let postData = {
+    };
+
+    if (type.value !== 'all') {
+        postData.type = type.value
     }
-  }
-
-  /**
-   * Easy event listener function
-   */
-  const on = (type, el, listener, all = false) => {
-    let selectEl = select(el, all)
-    if (selectEl) {
-      if (all) {
-        selectEl.forEach(e => e.addEventListener(type, listener))
-      } else {
-        selectEl.addEventListener(type, listener)
-      }
+    if (severity.value !== 'all') {
+        postData.severity = severity.value
     }
-  }
+    if (status.value !== 'all') {
+        postData.status = status.value
+    }
+    if (project.value !== 'all') {
+        postData.project = project.value
+    }
 
-  /**
-   * Easy on scroll event listener 
-   */
-  const onscroll = (el, listener) => {
-    el.addEventListener('scroll', listener)
-  }
+    const postBody = JSON.stringify(postData);
 
-  /**
-   * Navbar links active state on scroll
-   */
-  let navbarlinks = select('#navbar .scrollto', true)
-  const navbarlinksActive = () => {
-    let position = window.scrollY + 200
-    navbarlinks.forEach(navbarlink => {
-      if (!navbarlink.hash) return
-      let section = select(navbarlink.hash)
-      if (!section) return
-      if (position >= section.offsetTop && position <= (section.offsetTop + section.offsetHeight)) {
-        navbarlink.classList.add('active')
-      } else {
-        navbarlink.classList.remove('active')
-      }
+    fetch(`${mainDomain}/issue/filter`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: postBody
     })
-  }
-  window.addEventListener('load', navbarlinksActive)
-  onscroll(document, navbarlinksActive)
-
-  /**
-   * Scrolls to an element with header offset
-   */
-  const scrollto = (el) => {
-    let elementPos = select(el).offsetTop
-    window.scrollTo({
-      top: elementPos,
-      behavior: 'smooth'
-    })
-  }
-
-  /**
-   * Back to top button
-   */
-  let backtotop = select('.back-to-top')
-  if (backtotop) {
-    const toggleBacktotop = () => {
-      if (window.scrollY > 100) {
-        backtotop.classList.add('active')
-      } else {
-        backtotop.classList.remove('active')
-      }
-    }
-    window.addEventListener('load', toggleBacktotop)
-    onscroll(document, toggleBacktotop)
-  }
-
-  /**
-   * Mobile nav toggle
-   */
-  on('click', '.mobile-nav-toggle', function(e) {
-    select('body').classList.toggle('mobile-nav-active')
-    this.classList.toggle('bi-list')
-    this.classList.toggle('bi-x')
-  })
-
-  /**
-   * Scrool with ofset on links with a class name .scrollto
-   */
-  on('click', '.scrollto', function(e) {
-    if (select(this.hash)) {
-      e.preventDefault()
-
-      let body = select('body')
-      if (body.classList.contains('mobile-nav-active')) {
-        body.classList.remove('mobile-nav-active')
-        let navbarToggle = select('.mobile-nav-toggle')
-        navbarToggle.classList.toggle('bi-list')
-        navbarToggle.classList.toggle('bi-x')
-      }
-      scrollto(this.hash)
-    }
-  }, true)
-
-  /**
-   * Scroll with ofset on page load with hash links in the url
-   */
-  window.addEventListener('load', () => {
-    if (window.location.hash) {
-      if (select(window.location.hash)) {
-        scrollto(window.location.hash)
-      }
-    }
-  });
-
-  /**
-   * Hero type effect
-   */
-  const typed = select('.typed')
-  if (typed) {
-    let typed_strings = typed.getAttribute('data-typed-items')
-    typed_strings = typed_strings.split(',')
-    new Typed('.typed', {
-      strings: typed_strings,
-      loop: true,
-      typeSpeed: 100,
-      backSpeed: 50,
-      backDelay: 2000
+    .then(response => response.json())
+    .then(results => {
+        results.forEach(issue => {
+            resultsToHtml +=`
+                    <div class="card issue-card-custom">
+                        <div class="issue-card-header-custom">
+                            <h5 class="card-header" style="float:left">${issue.title}</h5>
+                            <h5 class="card-header" style="float:right" >#${issue.id}</h5>
+                        </div>
+                        <div class="card-body issue-card-body">
+                            <p class="card-text issue-description-text">${issue.description}</p>
+                            <hr class="issue-card-hr-separator">
+                            <div style="display: inline">
+                                <div class="issue-card-properties" style="margin-right: 1rem">
+                                    <p>Type: <span>${issue.type}</span></p>
+                                    <p>Severity: <span>${issue.severity}</span></p>
+                                </div>
+                                <div class="issue-card-properties">
+                                    <p>Status: <span>${issue.status}</span></p>
+                                    <p>Project: <span>${issue.project}</span></p>
+                                </div>
+                                <a class="btn btn-primary issue-details-button btn-danger" onclick="deleteIssue(${issue.id}, '${issue.title}')">
+                                    Delete
+                                </a>
+                                <a class="btn btn-primary issue-details-button issue-card-button-details" onclick="displayIssueDetails(${issue.id})">
+                                    Details
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                `;
+        });
+        resultsElement.innerHTML = resultsToHtml;
     });
-  }
+}
 
-  /**
-   * Skills animation
-   */
-  let skilsContent = select('.skills-content');
-  if (skilsContent) {
-    new Waypoint({
-      element: skilsContent,
-      offset: '80%',
-      handler: function(direction) {
-        let progress = select('.progress .progress-bar', true);
-        progress.forEach((el) => {
-          el.style.width = el.getAttribute('aria-valuenow') + '%'
-        });
-      }
+function searchIssues() {
+
+    let postBody = searchBar.value;
+    let resultsToHtml = ``;
+
+    fetch(`${mainDomain}/issue/search?query=${postBody}`, {
+        method: 'GET'
     })
-  }
-
-  /**
-   * Porfolio isotope and filter
-   */
-  window.addEventListener('load', () => {
-    let portfolioContainer = select('.portfolio-container');
-    if (portfolioContainer) {
-      let portfolioIsotope = new Isotope(portfolioContainer, {
-        itemSelector: '.portfolio-item'
-      });
-
-      let portfolioFilters = select('#portfolio-flters li', true);
-
-      on('click', '#portfolio-flters li', function(e) {
-        e.preventDefault();
-        portfolioFilters.forEach(function(el) {
-          el.classList.remove('filter-active');
+    .then(response => response.json())
+    .then(results => {
+        results.forEach(issue => {
+            resultsToHtml +=`
+                        <div class="card issue-card-custom">
+                            <div class="issue-card-header-custom">
+                                <h5 class="card-header" style="float:left">${issue.title}</h5>
+                                <h5 class="card-header" style="float:right" >#${issue.id}</h5>
+                            </div>
+                            <div class="card-body issue-card-body">
+                                <p class="card-text issue-description-text">${issue.description}</p>
+                                <hr class="issue-card-hr-separator">
+                                <div style="display: inline">
+                                    <div class="issue-card-properties" style="margin-right: 1rem">
+                                        <p>Type: <span>${issue.type}</span></p>
+                                        <p>Severity: <span>${issue.severity}</span></p>
+                                    </div>
+                                    <div class="issue-card-properties">
+                                        <p>Status: <span>${issue.status}</span></p>
+                                        <p>Project: <span>${issue.project}</span></p>
+                                    </div>
+                                    <a class="btn btn-primary issue-details-button btn-danger" onclick="deleteIssue(${issue.id}, '${issue.title}')">
+                                        Delete
+                                    </a>
+                                    <a class="btn btn-primary issue-details-button issue-card-button-details" onclick="displayIssueDetails(${issue.id})">
+                                        Details
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                `;
         });
-        this.classList.add('filter-active');
+        resultsElement.innerHTML = resultsToHtml;
+        resetFilters();
+    });
+}
 
-        portfolioIsotope.arrange({
-          filter: this.getAttribute('data-filter')
-        });
-        portfolioIsotope.on('arrangeComplete', function() {
-          AOS.refresh()
-        });
-      }, true);
-    }
+function displaySuggestions() {
+    searchBar.addEventListener('keyup', () => {
+        let postBody = searchBar.value;
+        let resultsToHtml = ``;
 
-  });
-
-  /**
-   * Initiate portfolio lightbox 
-   */
-  const portfolioLightbox = GLightbox({
-    selector: '.portfolio-lightbox'
-  });
-
-  /**
-   * Portfolio details slider
-   */
-  new Swiper('.portfolio-details-slider', {
-    speed: 400,
-    loop: true,
-    autoplay: {
-      delay: 5000,
-      disableOnInteraction: false
-    },
-    pagination: {
-      el: '.swiper-pagination',
-      type: 'bullets',
-      clickable: true
-    }
-  });
-
-  /**
-   * Testimonials slider
-   */
-  new Swiper('.testimonials-slider', {
-    speed: 600,
-    loop: true,
-    autoplay: {
-      delay: 5000,
-      disableOnInteraction: false
-    },
-    slidesPerView: 'auto',
-    pagination: {
-      el: '.swiper-pagination',
-      type: 'bullets',
-      clickable: true
-    },
-    breakpoints: {
-      320: {
-        slidesPerView: 1,
-        spaceBetween: 20
-      },
-
-      1200: {
-        slidesPerView: 3,
-        spaceBetween: 20
-      }
-    }
-  });
-
-  /**
-   * Animation on scroll
-   */
-  window.addEventListener('load', () => {
-    AOS.init({
-      duration: 1000,
-      easing: 'ease-in-out',
-      once: true,
-      mirror: false
+        fetch(`${mainDomain}/issue/search?query=${postBody}`, {
+            method: 'GET'
+        })
+            .then(response => response.json())
+            .then(results => {
+                results.forEach(issue => {
+                    resultsToHtml +=`
+                        <div class="card issue-card-custom">
+                            <div class="issue-card-header-custom">
+                                <h5 class="card-header" style="float:left">${issue.title}</h5>
+                                <h5 class="card-header" style="float:right" >#${issue.id}</h5>
+                            </div>
+                            <div class="card-body issue-card-body">
+                                <p class="card-text issue-description-text">${issue.description}</p>
+                                <hr class="issue-card-hr-separator">
+                                <div style="display: inline">
+                                    <div class="issue-card-properties" style="margin-right: 1rem">
+                                        <p>Type: <span>${issue.type}</span></p>
+                                        <p>Severity: <span>${issue.severity}</span></p>
+                                    </div>
+                                    <div class="issue-card-properties">
+                                        <p>Status: <span>${issue.status}</span></p>
+                                        <p>Project: <span>${issue.project}</span></p>
+                                    </div>
+                                    <a class="btn btn-primary issue-details-button btn-danger" onclick="deleteIssue(${issue.id}, '${issue.title}')">
+                                        Delete
+                                    </a>
+                                    <a class="btn btn-primary issue-details-button issue-card-button-details" onclick="displayIssueDetails(${issue.id})">
+                                        Details
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                `;
+                });
+                resultsElement.innerHTML = resultsToHtml;
+                resetFilters();
+            });
     })
-  });
+}
 
-})()
+function resetFilters() {
+    setSelectElement("type", "all");
+    setSelectElement("severity", "all");
+    setSelectElement("status", "all");
+    setSelectElement("project", "all");
+}
+
+function setSaveFormToIssueProperties(issue) {
+    setSelectElement("type-save", issue.type);
+    setSelectElement("severity-save", issue.severity);
+    setSelectElement("status-save", issue.status);
+    setSelectElement("project-save", issue.project);
+}
+
+function displayIssueDetails(id) {
+    let resultsToHtml = ``;
+    fetch(`${mainDomain}/issue/id/${id}`, {
+        method: 'GET',
+    })
+        .then(response => response.json())
+        .then(issue => {
+            if (principalAuthoritiesElement.value.includes('ROLE_ADMIN')) {
+                resultsToHtml +=
+                    `
+                    <input type="text" id="displayed-issue-id" style="display: none" value='${JSON.stringify(issue).replace(/[\/\(\)\']/g, "&apos;")}'>
+                    <h5>${issue.title}</h5>
+                    <p style="margin-bottom: 0">Author: ${issue.author}</p>
+                    <p>Created: ${issue.date}</p>
+                    <p style="margin-bottom: 0">Type: <span style="font-weight: bold">${issue.type}</span></p>
+                    <p style="margin-bottom: 0">Severity: <span style="font-weight: bold">${issue.severity}</span></p>
+                    <p style="margin-bottom: 0">Status: <span style="font-weight: bold">${issue.status}</span></p>
+                    <p >Project: <span style="font-weight: bold">${issue.project}</span></p>
+                    <hr style="margin: 0.5rem -1rem 0.5rem;color: white">
+                    <p>${issue.description}</p>
+                    <div style="display: flex; justify-content: center">
+                        <a id="update-description-button" href="/tracker/update"><button class="btn btn-primary btn-lg btn-block submit-button" style="max-height: 3rem">Update description</button></a>
+                    </div>
+                    `;
+                detailsElement.innerHTML = resultsToHtml;
+                let updateButton = document.getElementById("update-description-button")
+                updateButton.setAttribute("href", "/tracker/update?title=" + issue['title'] + "&description=" + issue['description'])
+                setSaveFormToIssueProperties(issue);
+
+            } else {
+                resultsToHtml +=
+                    `
+                    <input type="text" id="displayed-issue-id" style="display: none" value='${JSON.stringify(issue).replace(/[\/\(\)\']/g, "&apos;")}'>
+                    <h5>${issue.title}</h5>
+                    <p style="margin-bottom: 0">Author: ${issue.author}</p>
+                    <p>Created: ${issue.date}</p>
+                    <p style="margin-bottom: 0">Type: <span style="font-weight: bold">${issue.type}</span></p>
+                    <p style="margin-bottom: 0">Severity: <span style="font-weight: bold">${issue.severity}</span></p>
+                    <p style="margin-bottom: 0">Status: <span style="font-weight: bold">${issue.status}</span></p>
+                    <p >Project: <span style="font-weight: bold">${issue.project}</span></p>
+                    <hr style="margin: 0.5rem -1rem 0.5rem;color: white">
+                    <p>${issue.description}</p>
+                    
+                    <div style="display: flex; justify-content: center">
+                        <button type="submit" disabled class="btn btn-primary btn-lg btn-block submit-button" style="max-height: 3rem">Update description</button>
+                    </div>
+                    `;
+                detailsElement.innerHTML = resultsToHtml;
+                let updateButton = document.getElementById("update-description-button")
+                updateButton.setAttribute("href", "/tracker/update?title=" + issue['title'] + "&description=" + issue['description'])
+                setSaveFormToIssueProperties(issue);
+            }
+        });
+}
+
+function setSelectElement(id, value) {
+    let element = document.getElementById(id);
+    element.value = value;
+}
+
+function deleteIssue (id, title) {
+    if (confirm(`delete report #${id} ${title}?`)) {
+        fetch(`${mainDomain}/issue/id/${id}`, {
+            method: 'DELETE',
+        })
+            .then(
+                function(response) {
+                    if (response.status !== 200) {
+                        window.alert("There was an error deleting the report.")
+                    } else {
+                        window.alert(`Report #${id} ${title} was deleted successfully`)
+
+                    }
+                });
+    }
+    setTimeout(() => {searchIssues()}, 1000);
+    //searchIssues();
+    resetFilters();
+}
+
+
+function updateIssue() {
+    let type = typeSaveSelect.options[typeSaveSelect.selectedIndex]
+    let severity = severitySaveSelect.options[severitySaveSelect.selectedIndex]
+    let status = statusSaveSelect.options[statusSaveSelect.selectedIndex]
+    let project = projectSaveSelect.options[projectSaveSelect.selectedIndex]
+
+    let hiddenIssue = document.getElementById("displayed-issue-id");
+    let issue = JSON.parse(hiddenIssue.value);
+
+    issue.type = type.value;
+    issue.severity = severity.value;
+    issue.status = status.value;
+    issue.project = project.value;
+
+    console.log(issue);
+
+    let postBody = JSON.stringify(issue);
+    fetch(`${mainDomain}/issue/update`, {
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        method: 'PUT',
+        body: postBody
+    })
+    .then(
+        function(response) {
+            if (response.status !== 200) {
+                window.alert("There was an error updating the report.")
+            } else {
+                window.alert(`Report #${issue.id} ${issue.title} was updated successfully`)
+            }
+        });
+
+    let element = document.getElementById("status");
+    element.value = issue['status'];
+    setTimeout(() => {filterIssues()}, 1000);
+    setTimeout(() => {displayIssueDetails(issue['id'])}, 1000);
+}
+

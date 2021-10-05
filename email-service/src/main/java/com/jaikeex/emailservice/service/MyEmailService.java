@@ -1,6 +1,5 @@
 package com.jaikeex.emailservice.service;
 
-import com.jaikeex.emailservice.dto.EmailDto;
 import com.jaikeex.emailservice.entity.Email;
 import com.jaikeex.emailservice.repository.EmailRepository;
 import lombok.AllArgsConstructor;
@@ -15,7 +14,6 @@ import org.springframework.stereotype.Service;
 import javax.mail.*;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
-import java.sql.Timestamp;
 import java.util.Properties;
 
 @EqualsAndHashCode(callSuper = true)

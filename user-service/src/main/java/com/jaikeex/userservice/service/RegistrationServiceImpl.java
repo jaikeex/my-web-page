@@ -22,7 +22,7 @@ public class RegistrationServiceImpl implements RegistrationService{
     @Override
     public User registerUser(User user) throws UserAlreadyExistsException {
         if (canBeRegistered(user)) {
-            log.info("Registering new user: username = " + user.getUsername());
+            log.info("Registering new user: {}", user.getUsername());
             repository.save(user);
         }
         return user;
@@ -34,8 +34,8 @@ public class RegistrationServiceImpl implements RegistrationService{
     }
 
 
-    private boolean hasOriginalEmail(User user) throws UserAlreadyExistsException {
-        User dbResponse = repository.findByEmail(user.getEmail());
+    private boolean hasOriginalEmail(User user) {
+        User dbResponse = repository.findUserByEmail(user.getEmail());
         if (dbResponse != null) {
             throw new UserAlreadyExistsException("User with this email already exists");
         } else {
@@ -44,15 +44,12 @@ public class RegistrationServiceImpl implements RegistrationService{
     }
 
 
-    private boolean hasOriginalUsername(User user) throws UserAlreadyExistsException{
-        User dbResponse = repository.findByUsername(user.getUsername());
+    private boolean hasOriginalUsername(User user) {
+        User dbResponse = repository.findUserByUsername(user.getUsername());
         if (dbResponse != null) {
             throw new UserAlreadyExistsException("User with this name already exists");
         } else {
             return true;
         }
     }
-
-
-
 }

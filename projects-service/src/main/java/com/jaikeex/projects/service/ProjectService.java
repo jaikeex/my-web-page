@@ -12,7 +12,7 @@ import java.util.List;
 @Slf4j
 public class ProjectService {
 
-    private ProjectRepository repository;
+    private final ProjectRepository repository;
 
     @Autowired
     public ProjectService(ProjectRepository repository) {

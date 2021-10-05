@@ -1,8 +1,7 @@
 .container-banner {
-    height: 200px;
     width: 100%;
     overflow: hidden;
-    background: black;
+    background: rgb(66, 66, 66);
 }
 
 .banner-img {
@@ -72,12 +71,12 @@ body {
 }
 
 .card-bottom-space {
-    margin-right: 80px;
-    margin-bottom: 80px;
-    width: 300px;
+    margin-right: 30px;
+    margin-bottom: 60px;
+    min-width: 30%;
 }
 
-.grit-testing {
+.projects-card {
     overflow: auto;
     display: flex;
     flex-wrap: wrap;
@@ -93,7 +92,20 @@ body {
 
 @media (min-width: 1900px) {
     .breadcrumbs-margin {
-        margin-left: -8%;
+        margin-left: 0%;
     }
+}
+
+.mwp-scheme {
+    width: 70%;
+    height: auto;
+}
+
+.code-snippet {
+    color: white;
+}
+
+h6 {
+    font-size: 110%;
 }
 

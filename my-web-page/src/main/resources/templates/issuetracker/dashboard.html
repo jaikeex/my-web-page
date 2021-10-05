@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en"
+      xmlns:th="http://www.thymeleaf.org"
+>
+
+<head>
+    <title>Dashboard</title>
+    <div th:replace="issuetracker/fragments/head :: head"></div>
+</head>
+
+<body>
+<div th:replace="fragments/navbar :: navbar"></div>
+<input type="hidden" id="principal-authority" name="principal-authority" th:value="${#authentication.getAuthorities()}">
+
+    <div class="container" style="height: 100%">
+        <div class="row" style="height: 70%">
+            <div class="container issue-container">
+                <div class="list-of-issues-container">
+                        <form class="issue-filter-form" method="GET" id="filter-form" action="javascript:void(0);">
+                            <div class="form-row" style="float: left">
+                                <div style="float: left; margin-right: 1rem">
+                            <label for="type" style="display: block">Type: </label>
+                            <select name="type" style="display: block" id="type">
+                                <option value="all">all</option>
+                                <option value="BUG">BUG</option>
+                                <option value="SUGGESTION">SUGGESTION</option>
+                                <option value="ENHANCEMENT">ENHANCEMENT</option>
+                            </select>
+                                </div>
+                                <div style="float: left; margin-right: 1rem">
+
+                                <label for="severity" style="display: block">Severity: </label>
+                            <select name="severity" style="display: block" id="severity">
+                                <option value="all">all</option>
+                                <option value="CRITICAL">CRITICAL</option>
+                                <option value="HIGH">HIGH</option>
+                                <option value="MEDIUM">MEDIUM</option>
+                                <option value="LOW">LOW</option>
+                            </select>
+                                </div>
+                                <div style="float: left; margin-right: 1rem">
+
+                                <label for="status" style="display: block">Status: </label>
+                            <select name="status" style="display: block" id="status">
+                                <option value="all">all</option>
+                                <option value="SUBMITTED">SUBMITTED</option>
+                                <option value="OPEN">OPEN</option>
+                                <option value="SOLVED">SOLVED</option>
+                            </select>
+                                </div>
+                                <div style="float: left; margin-right: 1rem">
+
+                                    <label for="project" style="display: block">Project: </label>
+                                    <select name="project" style="display: block" id="project">
+                                        <option value="all">all</option>
+                                        <option value="MWP">MWP</option>
+                                        <option value="TRACKER">TRACKER</option>
+                                        <option value="SUDOKU">SUDOKU</option>
+                                        <option value="DAP">DAP</option>
+                                    </select>
+                                </div>
+
+                                <div style="float: right; padding-top: 0.8rem;">
+
+                                <button id="filter-button" class="btn btn-success filter-button" style="margin-left: 1rem; min-width: 90%" onclick="filterIssues()">
+                                    Filter
+                                </button>
+                                </div>
+
+                            </div>
+                        </form>
+                    <div class="list-of-issues-box">
+                        <form class="issue-search-form" action="javascript:void(0);" autocomplete="off">
+                                <input id="search-bar" class="form-control mw-90" type="search" placeholder="Search" aria-label="Search">
+                                <button id="search-button" class="btn btn-outline-success search-button" type="submit" onclick="searchIssues()">Search</button>
+                        </form>
+                        <div  id="filter-results">
+                        <div class="card issue-card-custom" th:each="issue: ${issues}">
+                            <div class="issue-card-header-custom">
+                            <h5 class="card-header" style="float:left" th:text="${issue.getTitle()}"></h5>
+                            <h5 class="card-header" style="float:right" th:text="'#' + ${issue.getId()}"></h5>
+                            </div>
+                            <div class="card-body issue-card-body">
+                                <p class="card-text issue-description-text" th:utext="${issue.getDescription()}"></p>
+                                <hr class="issue-card-hr-separator">
+                                <div style="display: inline">
+                                    <div class="issue-card-properties" style="margin-right: 1rem">
+                                        <p>Type: <span th:text="${issue.type}"></span></p>
+                                        <p>Severity: <span th:text="${issue.severity}"></span></p>
+                                    </div>
+                                    <div class="issue-card-properties">
+                                        <p>Status: <span th:text="${issue.status}"></span></p>
+                                        <p>Project: <span th:text="${issue.project}"></span></p>
+                                    </div>
+                                    <a class="btn btn-primary issue-details-button btn-danger" th:data="${issue.getTitle()}" th:onclick="|deleteIssue('${issue.getId()}', 'data')|">
+                                        Delete
+                                    </a>
+                                    <a class="btn btn-primary issue-details-button issue-card-button-details" th:onclick="|displayIssueDetails('${issue.getId()}')|">
+                                        Details
+                                    </a>
+                                </div>
+                            </div>
+
+
+                        </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="issue-details-container">
+                    <form class="issue-filter-form" action="javascript:void(0);">
+                        <div class="form-row" style="float: left">
+                            <div style="float: left; margin-right: 1rem">
+                                <label for="type-save" style="display: block">Type: </label>
+                                <select name="type" style="display: block" id="type-save">
+                                    <option value="BUG">BUG</option>
+                                    <option value="SUGGESTION">SUGGESTION</option>
+                                    <option value="ENHANCEMENT">ENHANCEMENT</option>
+                                </select>
+                            </div>
+                            <div style="float: left; margin-right: 1rem">
+
+                                <label for="severity-save" style="display: block">Severity: </label>
+                                <select name="severity" style="display: block" id="severity-save">
+                                    <option value="CRITICAL">CRITICAL</option>
+                                    <option value="HIGH">HIGH</option>
+                                    <option value="MEDIUM">MEDIUM</option>
+                                    <option value="LOW">LOW</option>
+                                </select>
+                            </div>
+                            <div style="float: left; margin-right: 1rem">
+
+                                <label for="status-save" style="display: block">Status: </label>
+                                <select name="status" style="display: block" id="status-save">
+                                    <option value="SUBMITTED">SUBMITTED</option>
+                                    <option value="OPEN">OPEN</option>
+                                    <option value="SOLVED">SOLVED</option>
+                                </select>
+                            </div>
+                            <div style="float: left; margin-right: 1rem">
+
+                                <label for="project-save" style="display: block">Project: </label>
+                                <select name="project" style="display: block" id="project-save">
+                                    <option value="MWP">MWP</option>
+                                    <option value="TRACKER">TRACKER</option>
+                                    <option value="SUDOKU">SUDOKU</option>
+                                    <option value="DAP">DAP</option>
+                                </select>
+                            </div>
+
+                            <div style="float: right; padding-top: 0.8rem;">
+
+                                <button th:disabled="${#authorization.expression('!hasAuthority(''ROLE_ADMIN'')')}" class="btn btn-success filter-button" style="margin-left: 1rem; min-width: 90%" onclick="updateIssue()">Save</button>
+                            </div>
+                        </div>
+                    </form>
+                    <div id="issue-details-box" class="issue-details-box" style="background: #28373e">
+                        <h4>No report selected</h4>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row" style="display:none;">
+            <div class="container history-container">
+                <div class="history-box">
+
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="container issue-container">
+                <div class="new-issue-button-box">
+                    <a href="/tracker/create"><button type="button" class="btn btn-primary btn-lg btn-block submit-button">Create new report</button></a>
+                </div>
+            </div>
+        </div>
+    </div>
+<script type="text/javascript" th:src="@{/assets/js/main.js}"></script>
+<script>
+    let element = document.getElementById("status");
+    element.value = "SUBMITTED";
+    filterIssues()
+</script>
+</body>
+</html>

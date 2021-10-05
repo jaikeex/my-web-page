@@ -1,9 +1,47 @@
 server:
   port: 8080
+
 spring:
-  jpa:
-    database: mysql
-  datasource:
-    url: jdbc:mysql://localhost:3306/mwpdb
-    username: root
-    password: 1Thewinterstar197
+  thymeleaf:
+    prefix: classpath:/templates/
+    suffix: .html
+  application:
+    name: my-web-page
+
+docker:
+  network:
+    api-gateway-url: http://api-gateway:9000/
+    issue-tracker-service-url: http://issue-tracker-service:9091/issue/
+
+management:
+  health:
+    circuitbreakers:
+      enabled: true
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+      base-path: "/actuator"
+
+resilience4j:
+  circuitbreaker:
+    instances:
+      ISSUE_SERVICE_CB:
+        registerHealthIndicator: true
+        eventConsumerBufferSize: 10
+        automaticTransitionFromOpenToHalfOpenEnabled: true
+        failureRateThreshold: 10
+        minimumNumberOfCalls: 5
+        waitDurationOpenState: 5s
+        slidingWindowType: COUNT_BASED
+        slidingWindowSize: 10
+        permittedNumberOfCallsInHalfOpenState: 3
+
+eureka:
+  client:
+    register-with-eureka: true
+    fetch-registry: true
+    service-url:
+      defaultZone: http://service-registry:8761/eureka/
+  instance:
+    hostname: service-registry

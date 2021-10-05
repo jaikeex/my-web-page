@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+<!--This is the login view-->
 <html lang="en" xmlns:th="http://www.thymeleaf.org"
       xmlns:tiles="http://www.thymeleaf.org"
 >
@@ -14,8 +15,8 @@
 
   <div th:replace="fragments/banner :: banner"></div>
   <div th:replace="fragments/breadcrumbs :: breadcrumbs (title='Login')"></div>
-
-    <div class="container form-container">
+  <section id="login">
+    <div class="container">
       <div class="row">
         <div class="col-md-6 col-md-offset-3">
         <div tiles:fragment="content">
@@ -37,9 +38,9 @@
               <label for="password" class="control-label">Password</label>
               <input type="password" name="password" id="password" class="form-control"/>
             </div>
-            <div class="form-actions">
+            <div style="margin-top: 10px" class="form-actions">
               <button type="submit" class="btn btn-success">Log in</button>
-              <span><a href="/" th:href="@{/user/reset-password}">Forgot password?</a></span>
+              <span style="float: right"><a th:href="@{/user/reset-password}">Forgot password?</a></span>
 
             </div>
           </fieldset>
@@ -49,7 +50,7 @@
 
       </div>
     </div>
-
+  </section>
 </main><!-- End #main -->
 
 <div th:replace="fragments/footer :: footer"></div>

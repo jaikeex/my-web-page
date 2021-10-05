@@ -4,10 +4,6 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
 import java.sql.Timestamp;
 
 @Data
@@ -21,4 +17,44 @@ public class Email {
     private String recipient;
     private Timestamp date;
 
+
+    private Email(Builder builder) {
+        this.subject = builder.subject;
+        this.message = builder.message;
+        this.recipient = builder.recipient;
+        this.date = builder.date;
+    }
+
+
+    public static class Builder {
+
+        private final String recipient;
+
+        private String subject = "";
+        private String message = "";
+        private Timestamp date = new Timestamp(System.currentTimeMillis());
+
+        public Builder(String recipient) {
+            this.recipient = recipient;
+        }
+
+        public Builder subject(String subject) {
+            this.subject = subject;
+            return this;
+        }
+
+        public Builder message(String message) {
+            this.message = message;
+            return this;
+        }
+
+        public Builder date(Timestamp date) {
+            this.date = date;
+            return this;
+        }
+
+        public Email build() {
+            return new Email(this);
+        }
+    }
 }

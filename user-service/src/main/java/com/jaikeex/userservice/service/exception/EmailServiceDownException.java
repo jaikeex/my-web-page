@@ -1,6 +1,6 @@
 package com.jaikeex.userservice.service.exception;
 
-public class EmailServiceDownException extends Exception {
+public class EmailServiceDownException extends RuntimeException {
     public EmailServiceDownException() {
         super("Email service not responding");
     }
