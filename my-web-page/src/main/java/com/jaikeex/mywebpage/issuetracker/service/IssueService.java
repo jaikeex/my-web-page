@@ -4,9 +4,10 @@ import com.jaikeex.mywebpage.issuetracker.dto.DescriptionDto;
 import com.jaikeex.mywebpage.issuetracker.dto.IssueDto;
 import com.jaikeex.mywebpage.issuetracker.entity.Issue;
 import com.jaikeex.mywebpage.issuetracker.utility.IssueServiceDownException;
-import com.jaikeex.mywebpage.restemplate.RestTemplateFactory;
+import com.jaikeex.mywebpage.resttemplate.RestTemplateFactory;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cloud.client.circuitbreaker.CircuitBreaker;
 import org.springframework.cloud.client.circuitbreaker.CircuitBreakerFactory;
 import org.springframework.http.ResponseEntity;
@@ -21,8 +22,10 @@ import java.util.List;
 @Slf4j
 public class IssueService {
 
-    private static final String ISSUE_TRACKER_SERVICE_URL = "http://issue-tracker-service:9091/issue/";
     private static final String CIRCUIT_BREAKER_NAME = "ISSUE_SERVICE_CB";
+
+    @Value("${docker.network.issue-tracker-service-url}")
+    private String issueTrackerServiceUrl;
 
     private final RestTemplateFactory restTemplateFactory;
     private final CircuitBreaker circuitBreaker;
@@ -47,9 +50,9 @@ public class IssueService {
      */
     public void createNewReport(IssueDto issueDto) {
         Issue issue = new Issue(issueDto);
-        String url = ISSUE_TRACKER_SERVICE_URL + "create";
-        String message = "There was an error creating the report.";
-        postRequestToIssueMicroservice(url, issue, message);
+        String url = issueTrackerServiceUrl + "create";
+        String errorMessage = "There was an error creating the report.";
+        postRequestToIssueMicroservice(url, issue, errorMessage);
     }
 
     /**
@@ -63,9 +66,9 @@ public class IssueService {
      *          Whenever a 5xx http status code gets returned.
      */
     public void updateDescription(DescriptionDto descriptionDto) {
-        String url = ISSUE_TRACKER_SERVICE_URL + "update-description";
-        String message = "There was an error updating the report.";
-        postRequestToIssueMicroservice(url, descriptionDto, message);
+        String url = issueTrackerServiceUrl + "update-description";
+        String errorMessage = "There was an error updating the report.";
+        postRequestToIssueMicroservice(url, descriptionDto, errorMessage);
     }
 
     /**
@@ -79,7 +82,7 @@ public class IssueService {
      *          Whenever a 5xx http status code gets returned.
      */
     public List<Issue> getAllIssues() {
-        String url = ISSUE_TRACKER_SERVICE_URL + "all";
+        String url = issueTrackerServiceUrl + "all";
         return getListOfAllIssues(url);
     }
 
@@ -96,7 +99,8 @@ public class IssueService {
         return Arrays.asList(responseEntity.getBody());
     }
 
-    private void postRequestToIssueMicroservice(String url, Object body, String fallbackMessage) {
+    private void postRequestToIssueMicroservice(
+            String url, Object body, String fallbackMessage) {
         RestTemplate restTemplate = restTemplateFactory.getRestTemplate();
         circuitBreaker.run(
                 () -> restTemplate.postForEntity(url, body, Issue.class),

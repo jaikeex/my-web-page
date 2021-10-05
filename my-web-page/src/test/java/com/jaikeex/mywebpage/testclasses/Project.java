@@ -1,6 +1,6 @@
 package com.jaikeex.mywebpage.testclasses;
 
-import com.jaikeex.mywebpage.model.Technology;
+import com.jaikeex.mywebpage.mainwebsite.model.Technology;
 
 import java.util.HashSet;
 import java.util.Objects;

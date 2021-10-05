@@ -8,6 +8,11 @@ spring:
   application:
     name: my-web-page
 
+docker:
+  network:
+    api-gateway-url: http://api-gateway:9000/
+    issue-tracker-service-url: http://issue-tracker-service:9091/issue/
+
 management:
   health:
     circuitbreakers:

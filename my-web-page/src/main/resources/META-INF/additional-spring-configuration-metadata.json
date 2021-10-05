@@ -1,0 +1,13 @@
+{
+  "properties": [
+    {
+      "name": "docker.network.api-gateway-url",
+      "type": "java.lang.String",
+      "description": "Url of the api gateway."
+    },
+    {
+      "name": "docker.network.issue-tracker-service-url",
+      "type": "java.lang.String",
+      "description": "Url of the issue tracker service."
+    }
+  ] }

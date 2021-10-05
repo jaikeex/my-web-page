@@ -8,6 +8,8 @@ import com.jaikeex.mywebpage.issuetracker.entity.properties.Status;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 
 import java.sql.Timestamp;
 
@@ -18,9 +20,12 @@ public class Issue {
 
     public Issue(IssueDto issueDto) {
         Timestamp now = new Timestamp(System.currentTimeMillis());
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String currentUserName = authentication.getName();
+
         this.setDate(now);
         this.setStatus(Status.SUBMITTED);
-        this.setAuthor("jaikeex");
+        this.setAuthor(currentUserName);
 
         this.setTitle(issueDto.getTitle());
         this.setDescription(issueDto.getDescription());

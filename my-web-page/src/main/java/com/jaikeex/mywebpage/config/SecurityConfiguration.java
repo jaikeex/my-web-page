@@ -1,8 +1,8 @@
 package com.jaikeex.mywebpage.config;
 
-import com.jaikeex.mywebpage.utility.security.MyAuthenticationSuccessHandler;
-import com.jaikeex.mywebpage.utility.security.MyPasswordEncoder;
-import com.jaikeex.mywebpage.utility.security.MyUserDetailsService;
+import com.jaikeex.mywebpage.mainwebsite.utility.security.MyAuthenticationSuccessHandler;
+import com.jaikeex.mywebpage.mainwebsite.utility.security.MyPasswordEncoder;
+import com.jaikeex.mywebpage.mainwebsite.utility.security.MyUserDetailsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -55,6 +55,14 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
         http.authorizeRequests()
                 .antMatchers("/tracker/update")
                 .hasRole("ADMIN")
+                .and()
+                .formLogin()
+                .loginPage("/login")
+                .permitAll()
+                .successHandler(successHandler);
+        http.authorizeRequests()
+                .antMatchers("/tracker/create")
+                .hasAnyRole("USER", "ADMIN")
                 .and()
                 .formLogin()
                 .loginPage("/login")
