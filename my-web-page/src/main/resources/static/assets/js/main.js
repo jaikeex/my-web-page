@@ -85,7 +85,6 @@ function filterIssues() {
 }
 
 function searchIssues() {
-
     let postBody = searchBar.value;
     let resultsToHtml = ``;
 
@@ -189,20 +188,44 @@ function setSaveFormToIssueProperties(issue) {
     setSelectElement("project-save", issue.project);
 }
 
+function formatDateForDetails(sqlDate) {
+    let date = sqlDate.split(/[- :T.]/);
+    let jsDate = new Date(Date.UTC(date[0], date[1] - 1, date[2], date[3], date[4], date[5]));
+    return moment(jsDate).format('DD.MM.YYYY HH:mm');
+}
+
 function displayIssueDetails(id) {
     let resultsToHtml = ``;
+
+    function loadIssueDetailsHistory(issue) {
+        let historyRecords = issue.historyRecords;
+        let historyHtml = ``;
+        historyRecords.slice().reverse().forEach(
+            record => {
+                let formattedDate = formatDateForDetails(record.date);
+                historyHtml +=`
+                <p style="margin-bottom: 0; font-size: 85%">
+                    <span><span style="color: yellowgreen">${formattedDate}</span>: ${record.text}</span>
+                </p>
+                `;
+            }
+        );
+        return historyHtml;
+    }
+
     fetch(`${mainDomain}/issue/id/${id}`, {
         method: 'GET',
     })
         .then(response => response.json())
         .then(issue => {
+            let formattedDate = formatDateForDetails(issue.date);
             if (principalAuthoritiesElement.value.includes('ROLE_ADMIN')) {
                 resultsToHtml +=
                     `
                     <input type="text" id="displayed-issue-id" style="display: none" value='${JSON.stringify(issue).replace(/[\/\(\)\']/g, "&apos;")}'>
                     <h5>${issue.title}</h5>
                     <p style="margin-bottom: 0">Author: ${issue.author}</p>
-                    <p>Created: ${issue.date}</p>
+                    <p>Created: ${formattedDate}</p>
                     <p style="margin-bottom: 0">Type: <span style="font-weight: bold">${issue.type}</span></p>
                     <p style="margin-bottom: 0">Severity: <span style="font-weight: bold">${issue.severity}</span></p>
                     <p style="margin-bottom: 0">Status: <span style="font-weight: bold">${issue.status}</span></p>
@@ -212,10 +235,15 @@ function displayIssueDetails(id) {
                     <div style="display: flex; justify-content: center">
                         <a id="update-description-button" href="/tracker/update"><button class="btn btn-primary btn-lg btn-block submit-button" style="max-height: 3rem">Update description</button></a>
                     </div>
+                    <hr style="margin: 0.5rem -1rem 0.5rem;color: white">
+                    <p style="margin-bottom: 0">History of changes:</p>
+                    <div id="issue-details-history"></div>
                     `;
                 detailsElement.innerHTML = resultsToHtml;
-                let updateButton = document.getElementById("update-description-button")
-                updateButton.setAttribute("href", "/tracker/update?title=" + issue['title'] + "&description=" + issue['description'])
+                let issueDetailsHistoryElement = document.getElementById("issue-details-history");
+                issueDetailsHistoryElement.innerHTML = loadIssueDetailsHistory(issue);
+                let updateButton = document.getElementById("update-description-button");
+                updateButton.setAttribute("href", "/tracker/update?title=" + issue['title'] + "&description=" + issue['description']);
                 setSaveFormToIssueProperties(issue);
 
             } else {
@@ -224,7 +252,7 @@ function displayIssueDetails(id) {
                     <input type="text" id="displayed-issue-id" style="display: none" value='${JSON.stringify(issue).replace(/[\/\(\)\']/g, "&apos;")}'>
                     <h5>${issue.title}</h5>
                     <p style="margin-bottom: 0">Author: ${issue.author}</p>
-                    <p>Created: ${issue.date}</p>
+                    <p>Created: ${formattedDate}</p>
                     <p style="margin-bottom: 0">Type: <span style="font-weight: bold">${issue.type}</span></p>
                     <p style="margin-bottom: 0">Severity: <span style="font-weight: bold">${issue.severity}</span></p>
                     <p style="margin-bottom: 0">Status: <span style="font-weight: bold">${issue.status}</span></p>
@@ -235,11 +263,16 @@ function displayIssueDetails(id) {
                     <div style="display: flex; justify-content: center">
                         <button type="submit" disabled class="btn btn-primary btn-lg btn-block submit-button" style="max-height: 3rem">Update description</button>
                     </div>
+                    <hr style="margin: 0.5rem -1rem 0.5rem;color: white">
+                    <p style="margin-bottom: 0">History of changes:</p>
+                    <div id="issue-details-history"></div>
                     `;
                 detailsElement.innerHTML = resultsToHtml;
-                let updateButton = document.getElementById("update-description-button")
-                updateButton.setAttribute("href", "/tracker/update?title=" + issue['title'] + "&description=" + issue['description'])
+                let issueDetailsHistoryElement = document.getElementById("issue-details-history");
+                issueDetailsHistoryElement.innerHTML = loadIssueDetailsHistory(issue);
                 setSaveFormToIssueProperties(issue);
+
+
             }
         });
 }

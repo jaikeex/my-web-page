@@ -1,7 +1,7 @@
 package com.jaikeex.mywebpage.mainwebsite.services;
 
 
-import com.jaikeex.mywebpage.mainwebsite.dto.ContactFormDto;
+import com.jaikeex.mywebpage.mainwebsite.dto.EmailDto;
 import com.jaikeex.mywebpage.mainwebsite.model.Email;
 import com.jaikeex.mywebpage.resttemplate.RestTemplateFactory;
 import org.junit.jupiter.api.BeforeEach;
@@ -26,7 +26,7 @@ class ContactServiceTest {
     public static final String TEST_SUBJECT = "testSubject";
     public static final String TEST_MESSAGE_TEXT = "testMessageText";
     public static final String TEST_EMAIL = "testEmail";
-    ContactFormDto testContactFormDto = new ContactFormDto();
+    EmailDto testEmailDto = new EmailDto();
 
     @Mock
     RestTemplateFactory restTemplateFactory;
@@ -39,15 +39,15 @@ class ContactServiceTest {
     @BeforeEach
     public void beforeEach() {
         when(restTemplateFactory.getRestTemplate()).thenReturn(restTemplate);
-        testContactFormDto.setSubject(TEST_SUBJECT);
-        testContactFormDto.setMessageText(TEST_MESSAGE_TEXT);
-        testContactFormDto.setEmail(TEST_EMAIL);
+        testEmailDto.setSubject(TEST_SUBJECT);
+        testEmailDto.setMessageText(TEST_MESSAGE_TEXT);
+        testEmailDto.setSender(TEST_EMAIL);
     }
 
     @Test
     public void sendContactFormAsEmail_emailShouldIncludeSubject() {
         ArgumentCaptor<Email> argument = ArgumentCaptor.forClass(Email.class);
-        service.sendContactFormAsEmail(testContactFormDto);
+        service.sendEmailToAdmin(testEmailDto);
         verify(restTemplate).postForEntity(anyString(), argument.capture(), any());
         assertTrue(argument.getValue().getSubject().contains(TEST_SUBJECT));
     }
@@ -55,7 +55,7 @@ class ContactServiceTest {
     @Test
     public void sendContactFormAsEmail_emailShouldIncludeBody() {
         ArgumentCaptor<Email> argument = ArgumentCaptor.forClass(Email.class);
-        service.sendContactFormAsEmail(testContactFormDto);
+        service.sendEmailToAdmin(testEmailDto);
         verify(restTemplate).postForEntity(anyString(), argument.capture(), any());
         assertTrue(argument.getValue().getMessage().contains(TEST_MESSAGE_TEXT));
     }
@@ -63,14 +63,14 @@ class ContactServiceTest {
     @Test
     public void sendContactFormAsEmail_emailShouldIncludeEmailAddress() {
         ArgumentCaptor<Email> argument = ArgumentCaptor.forClass(Email.class);
-        service.sendContactFormAsEmail(testContactFormDto);
+        service.sendEmailToAdmin(testEmailDto);
         verify(restTemplate).postForEntity(anyString(), argument.capture(), any());
         assertTrue(argument.getValue().getMessage().contains(TEST_EMAIL));
     }
 
     @Test
     public void sendContactFormAsEmail_shouldPostHttpRequestToEmailService() {
-        service.sendContactFormAsEmail(testContactFormDto);
+        service.sendEmailToAdmin(testEmailDto);
         verify(restTemplate, times(1))
                 .postForEntity(anyString(), any(Email.class), any());
     }

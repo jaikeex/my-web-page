@@ -1,6 +1,6 @@
 package com.jaikeex.mywebpage.mainwebsite.controllers;
 
-import com.jaikeex.mywebpage.mainwebsite.dto.ContactFormDto;
+import com.jaikeex.mywebpage.mainwebsite.dto.EmailDto;
 import com.jaikeex.mywebpage.mainwebsite.services.ContactService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -47,12 +47,12 @@ class ContactControllerTest {
     @Autowired
     private WebApplicationContext context;
 
-    private final ContactFormDto contactFormDto = new ContactFormDto(
+    private final EmailDto emailDto = new EmailDto(
             "bar@example.com",
             "test subject",
             "test body");
 
-    private final ContactFormDto emptyContactFormDto = new ContactFormDto();
+    private final EmailDto emptyEmailDto = new EmailDto();
 
 
     @BeforeEach
@@ -78,31 +78,31 @@ class ContactControllerTest {
 
     @Test
     public void sendForm_shouldSendConfirmationEmail() throws Exception {
-        postContactFormDtoToSendformEndpoint(contactFormDto)
+        postContactFormDtoToSendformEndpoint(emailDto)
                 .andExpect(status().isOk());
-        verify(service).sendContactFormAsEmail(any(ContactFormDto.class));
+        verify(service).sendEmailToAdmin(any(EmailDto.class));
     }
 
     @Test
     public void sendForm_shouldFailWithInvalidEmail() throws Exception {
-        contactFormDto.setEmail("bar@example");
-        postContactFormDtoToSendformEndpoint(contactFormDto)
+        emailDto.setSender("bar@example");
+        postContactFormDtoToSendformEndpoint(emailDto)
                 .andExpect(status().isOk())
                 .andExpect(content().string(containsString("Wrong email")));
     }
 
     @Test
     public void sendForm_shouldFailWithNoMessage() throws Exception {
-        contactFormDto.setMessageText("");
-        postContactFormDtoToSendformEndpoint(contactFormDto)
+        emailDto.setMessageText("");
+        postContactFormDtoToSendformEndpoint(emailDto)
                 .andExpect(status().isOk())
                 .andExpect(content().string(containsString("Please fill in")));
     }
 
     @Test
     public void sendForm_shouldFailWithNoSubject() throws Exception {
-        contactFormDto.setSubject("");
-        postContactFormDtoToSendformEndpoint(contactFormDto)
+        emailDto.setSubject("");
+        postContactFormDtoToSendformEndpoint(emailDto)
                 .andExpect(status().isOk())
                 .andExpect(content().string(containsString("Please fill in")));
     }
@@ -110,14 +110,14 @@ class ContactControllerTest {
     @Test
     public void sendForm_givenResultError_shouldReturnCorrectView() throws Exception {
         getBindingResultMock();
-        postContactFormDtoToSendformEndpoint(emptyContactFormDto)
+        postContactFormDtoToSendformEndpoint(emptyEmailDto)
                 .andExpect(content().string(containsString(CONTACT_VIEW_ID_COMMENT)));
     }
 
     @Test
     public void sendForm_givenNoErrors_shouldReturnCorrectView() throws Exception {
         getBindingResultMock();
-        postContactFormDtoToSendformEndpoint(contactFormDto)
+        postContactFormDtoToSendformEndpoint(emailDto)
                 .andExpect(content().string(containsString(CONTACT_SENDFORM_VIEW_ID_COMMENT)));
     }
 
@@ -125,8 +125,8 @@ class ContactControllerTest {
     public void sendForm_shouldCatchHttpServerErrorException() throws Exception {
         HttpServerErrorException exception =
                 new HttpServerErrorException(HttpStatus.INTERNAL_SERVER_ERROR, "testException");
-        doThrow(exception).when(service).sendContactFormAsEmail(contactFormDto);
-        postContactFormDtoToSendformEndpoint(contactFormDto)
+        doThrow(exception).when(service).sendEmailToAdmin(emailDto);
+        postContactFormDtoToSendformEndpoint(emailDto)
                 .andExpect(status().isOk())
                 .andExpect(model().attributeExists("message"));
     }
@@ -135,8 +135,8 @@ class ContactControllerTest {
     public void sendForm_shouldCatchHttpClientErrorException() throws Exception {
         HttpClientErrorException exception =
                 new HttpClientErrorException(HttpStatus.BAD_REQUEST, "testException");
-        doThrow(exception).when(service).sendContactFormAsEmail(contactFormDto);
-        postContactFormDtoToSendformEndpoint(contactFormDto)
+        doThrow(exception).when(service).sendEmailToAdmin(emailDto);
+        postContactFormDtoToSendformEndpoint(emailDto)
                 .andExpect(status().isOk())
                 .andExpect(model().attributeExists("message"));
     }
@@ -148,10 +148,10 @@ class ContactControllerTest {
 
     }
 
-    private ResultActions postContactFormDtoToSendformEndpoint(ContactFormDto contactFormDto) throws Exception {
+    private ResultActions postContactFormDtoToSendformEndpoint(EmailDto emailDto) throws Exception {
         return mockMvc.perform(post(CONTACT_SENDFORM_ENDPOINT)
                 .with(csrf())
-                .flashAttr(CONTACT_FORM_DTO_ATTRIBUTE_NAME, contactFormDto));
+                .flashAttr(CONTACT_FORM_DTO_ATTRIBUTE_NAME, emailDto));
     }
 
 

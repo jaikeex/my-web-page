@@ -10,10 +10,10 @@ import javax.validation.constraints.NotBlank;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class ContactFormDto {
+public class EmailDto {
 
     @ValidateEmail
-    private String email;
+    private String sender;
     @NotBlank
     private String subject;
     @NotBlank

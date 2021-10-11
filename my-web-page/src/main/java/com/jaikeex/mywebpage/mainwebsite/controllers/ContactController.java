@@ -1,6 +1,6 @@
 package com.jaikeex.mywebpage.mainwebsite.controllers;
 
-import com.jaikeex.mywebpage.mainwebsite.dto.ContactFormDto;
+import com.jaikeex.mywebpage.mainwebsite.dto.EmailDto;
 import com.jaikeex.mywebpage.mainwebsite.services.ContactService;
 import com.jaikeex.mywebpage.mainwebsite.utility.BindingResultErrorParser;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -40,22 +40,22 @@ public class ContactController {
     }
 
     @PostMapping(value = "/contact/sendform")
-    public String postContactFormData(@Valid ContactFormDto contactFormDto, BindingResult result, Model model) {
+    public String postContactFormData(@Valid EmailDto emailDto, BindingResult result, Model model) {
         if (isResultOk(result, model)) {
-            passEmailDataToContactService(contactFormDto, model);
+            passEmailDataToContactService(emailDto, model);
             return CONTACT_SENDFORM_VIEW;
         }
         return CONTACT_VIEW;
     }
 
-    private void passEmailDataToContactService(ContactFormDto contactFormDto, Model model) {
-        contactService.sendContactFormAsEmail(contactFormDto);
+    private void passEmailDataToContactService(EmailDto emailDto, Model model) {
+        contactService.sendEmailToAdmin(emailDto);
         appendModelWithMessageSentSuccessfullyAttributes(model);
     }
 
     private void addEmptyDtoIntoModel(Model model) {
-        ContactFormDto contactFormDto = new ContactFormDto();
-        model.addAttribute(CONTACT_FORM_DTO_ATTRIBUTE_NAME, contactFormDto);
+        EmailDto emailDto = new EmailDto();
+        model.addAttribute(CONTACT_FORM_DTO_ATTRIBUTE_NAME, emailDto);
     }
 
     private boolean isResultOk(BindingResult result, Model model) {

@@ -12,6 +12,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 
 import java.sql.Timestamp;
+import java.util.List;
 
 @Data
 @NoArgsConstructor
@@ -45,6 +46,9 @@ public class Issue {
     private Severity severity;
     private Status status;
     private Project project;
+
+    private List<HistoryRecord> historyRecords;
+
 }
 
 

@@ -4,6 +4,8 @@ import com.jaikeex.mywebpage.issuetracker.dto.DescriptionDto;
 import com.jaikeex.mywebpage.issuetracker.dto.IssueDto;
 import com.jaikeex.mywebpage.issuetracker.entity.Issue;
 import com.jaikeex.mywebpage.issuetracker.utility.IssueServiceDownException;
+import com.jaikeex.mywebpage.mainwebsite.dto.EmailDto;
+import com.jaikeex.mywebpage.mainwebsite.services.ContactService;
 import com.jaikeex.mywebpage.resttemplate.RestTemplateFactory;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,13 +31,16 @@ public class IssueService {
 
     private final RestTemplateFactory restTemplateFactory;
     private final CircuitBreaker circuitBreaker;
+    private final ContactService contactService;
 
     @Autowired
     public IssueService(
             RestTemplateFactory restTemplateFactory,
-            CircuitBreakerFactory<?, ?> circuitBreakerFactory) {
+            CircuitBreakerFactory<?, ?> circuitBreakerFactory,
+            ContactService contactService) {
         this.restTemplateFactory = restTemplateFactory;
         this.circuitBreaker = circuitBreakerFactory.create(CIRCUIT_BREAKER_NAME);
+        this.contactService = contactService;
     }
 
     /**
@@ -53,6 +58,7 @@ public class IssueService {
         String url = issueTrackerServiceUrl + "create";
         String errorMessage = "There was an error creating the report.";
         postRequestToIssueMicroservice(url, issue, errorMessage);
+        notifyAdministrator(issue);
     }
 
     /**
@@ -118,6 +124,14 @@ public class IssueService {
     private ResponseEntity<Issue> throwFallbackException(String fallbackMessage) {
         log.warn("issue-tracker-service is unreachable!");
         throw new IssueServiceDownException(fallbackMessage);
+    }
+
+    private void notifyAdministrator(final Issue issue) {
+        final EmailDto emailDto = new EmailDto();
+        emailDto.setSender(issue.getAuthor());
+        emailDto.setSubject("New report!" + issue.getTitle());
+        emailDto.setMessageText(issue.getDescription());
+        this.contactService.sendEmailToAdmin(emailDto);
     }
 
 }

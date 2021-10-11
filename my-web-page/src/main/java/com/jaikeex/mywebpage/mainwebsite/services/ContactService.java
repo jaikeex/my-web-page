@@ -1,6 +1,6 @@
 package com.jaikeex.mywebpage.mainwebsite.services;
 
-import com.jaikeex.mywebpage.mainwebsite.dto.ContactFormDto;
+import com.jaikeex.mywebpage.mainwebsite.dto.EmailDto;
 import com.jaikeex.mywebpage.mainwebsite.model.Email;
 import com.jaikeex.mywebpage.resttemplate.RestTemplateFactory;
 import lombok.extern.slf4j.Slf4j;
@@ -28,25 +28,25 @@ public class ContactService{
 
     /**Passes the data from a filled-in contact form to the email service
      * with an http request.
-     * @param contactFormDto Data transfer object with the email form parameters
+     * @param emailDto Data transfer object with the email form parameters
      *                       as its fields.
      * @throws org.springframework.web.client.HttpClientErrorException
      *          Whenever a 4xx http status code gets returned.
      * @throws org.springframework.web.client.HttpServerErrorException
      *          Whenever a 5xx http status code gets returned.
      */
-    public void sendContactFormAsEmail(ContactFormDto contactFormDto) {
-        Email email = loadDataFromDtoIntoEmailObject(contactFormDto);
+    public void sendEmailToAdmin(EmailDto emailDto) {
+        Email email = loadDataFromDtoIntoEmailObject(emailDto);
         postHttpRequestToEmailService(email);
     }
 
-    private Email loadDataFromDtoIntoEmailObject(ContactFormDto contactFormDto) {
-        return new Email.Builder(CONTACT_EMAIL_RECIPIENT).subject(contactFormDto.getSubject())
-                .message(constructContactMessage(contactFormDto)).build();
+    private Email loadDataFromDtoIntoEmailObject(EmailDto emailDto) {
+        return new Email.Builder(CONTACT_EMAIL_RECIPIENT).subject(emailDto.getSubject())
+                .message(constructContactMessage(emailDto)).build();
     }
 
-    private String constructContactMessage(ContactFormDto contactFormDto) {
-        return contactFormDto.getMessageText() + "\n\n" + contactFormDto.getEmail();
+    private String constructContactMessage(EmailDto emailDto) {
+        return emailDto.getMessageText() + "\n\nAuthor: " + emailDto.getSender();
     }
 
     private void postHttpRequestToEmailService(Email email) {
