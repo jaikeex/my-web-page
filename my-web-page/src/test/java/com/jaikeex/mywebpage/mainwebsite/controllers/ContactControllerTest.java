@@ -35,7 +35,7 @@ class ContactControllerTest {
 
     public static final String CONTACT_VIEW_ID_COMMENT = "This is the contact view";
     public static final String CONTACT_SENDFORM_VIEW_ID_COMMENT = "This is the contact/sendform view";
-    public static final String CONTACT_FORM_DTO_ATTRIBUTE_NAME = "contactFormDto";
+    public static final String CONTACT_FORM_DTO_ATTRIBUTE_NAME = "emailDto";
     public static final String CONTACT_SENDFORM_ENDPOINT = "/contact/sendform";
     public static final String CONTACT_ENDPOINT = "/contact";
 

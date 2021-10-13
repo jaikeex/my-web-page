@@ -48,7 +48,7 @@ public class Issue {
     private Project project;
 
     private List<HistoryRecord> historyRecords;
-
+    private List<Attachment> attachments;
 }
 
 

@@ -1,5 +1,7 @@
 package com.jaikeex.mywebpage.issuetracker.service;
 
+import com.jaikeex.mywebpage.issuetracker.dto.AttachmentBytesDto;
+import com.jaikeex.mywebpage.issuetracker.dto.AttachmentDto;
 import com.jaikeex.mywebpage.issuetracker.dto.DescriptionDto;
 import com.jaikeex.mywebpage.issuetracker.dto.IssueDto;
 import com.jaikeex.mywebpage.issuetracker.entity.Issue;
@@ -16,6 +18,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -77,6 +80,16 @@ public class IssueService {
         postRequestToIssueMicroservice(url, descriptionDto, errorMessage);
     }
 
+    public void uploadNewAttachment(AttachmentDto attachmentDto) throws IOException {
+        AttachmentBytesDto attachmentBytesDto = new AttachmentBytesDto();
+        attachmentBytesDto.setAttachmentBytes(attachmentDto.getAttachment().getBytes());
+        attachmentBytesDto.setTitle(attachmentDto.getTitle());
+        attachmentBytesDto.setOriginalFilename(attachmentDto.getAttachment().getOriginalFilename());
+        String url = issueTrackerServiceUrl + "upload-attachment";
+        String errorMessage = "There was an error while uploading the file.";
+        postRequestToIssueMicroservice(url, attachmentBytesDto, errorMessage);
+    }
+
     /**
      * Fetches all issue reports from the issue tracker service and returns
      * them as a List.
@@ -89,7 +102,9 @@ public class IssueService {
      */
     public List<Issue> getAllIssues() {
         String url = issueTrackerServiceUrl + "all";
-        return getListOfAllIssues(url);
+        List<Issue> issues = getListOfAllIssues(url);
+        System.out.println(issues);
+        return issues;
     }
 
     private List<Issue> getListOfAllIssues(String url) {
@@ -110,7 +125,7 @@ public class IssueService {
         RestTemplate restTemplate = restTemplateFactory.getRestTemplate();
         circuitBreaker.run(
                 () -> restTemplate.postForEntity(url, body, Issue.class),
-                throwable -> throwFallbackException(fallbackMessage));
+                throwable -> throwFallbackException(fallbackMessage, throwable.getMessage()));
     }
 
     private List<Issue> findAllFallback() {
@@ -121,7 +136,8 @@ public class IssueService {
         return Collections.singletonList(fallbackIssue);
     }
 
-    private ResponseEntity<Issue> throwFallbackException(String fallbackMessage) {
+    private ResponseEntity<Issue> throwFallbackException(String fallbackMessage, String exceptionMessage) {
+        log.warn(exceptionMessage);
         log.warn("issue-tracker-service is unreachable!");
         throw new IssueServiceDownException(fallbackMessage);
     }
@@ -129,7 +145,7 @@ public class IssueService {
     private void notifyAdministrator(final Issue issue) {
         final EmailDto emailDto = new EmailDto();
         emailDto.setSender(issue.getAuthor());
-        emailDto.setSubject("New report!" + issue.getTitle());
+        emailDto.setSubject("New report! - " + issue.getTitle());
         emailDto.setMessageText(issue.getDescription());
         this.contactService.sendEmailToAdmin(emailDto);
     }

@@ -213,6 +213,25 @@ function displayIssueDetails(id) {
         return historyHtml;
     }
 
+    function loadIssueDetailsAttachments(issue) {
+        let attachments = issue.attachments;
+        let attachmentsHtml = ``;
+        attachments.forEach(
+            attachment => {
+                let formattedDate = formatDateForDetails(attachment.date);
+                attachmentsHtml +=`
+                <p style="margin-bottom: 0; font-size: 85%">
+                    <a href="${attachment.path}" download>
+                        <span><span style="color: yellowgreen">${formattedDate}</span>: ${attachment.path}</span>
+                    </a>
+                </p>
+                `;
+            }
+        );
+        return attachmentsHtml;
+    }
+
+
     fetch(`${mainDomain}/issue/id/${id}`, {
         method: 'GET',
     })
@@ -233,8 +252,16 @@ function displayIssueDetails(id) {
                     <hr style="margin: 0.5rem -1rem 0.5rem;color: white">
                     <p>${issue.description}</p>
                     <div style="display: flex; justify-content: center">
-                        <a id="update-description-button" href="/tracker/update"><button class="btn btn-primary btn-lg btn-block submit-button" style="max-height: 3rem">Update description</button></a>
+                        <a id="update-description-button" href="/tracker/update">
+                        <button class="btn btn-primary btn-lg btn-block submit-button" style="max-height: 3rem">Update description</button>
+                        </a>
+                        <a id="add-file-button" href="/tracker/upload">
+                            <button class="btn btn-primary btn-lg btn-block submit-button" style="max-height: 3rem">Add file</button>
+                        </a>
                     </div>
+                    <hr style="margin: 0.5rem -1rem 0.5rem;color: white">
+                    <p style="margin-bottom: 0">Attached files:</p>
+                    <div id="issue-details-attachments"></div>
                     <hr style="margin: 0.5rem -1rem 0.5rem;color: white">
                     <p style="margin-bottom: 0">History of changes:</p>
                     <div id="issue-details-history"></div>
@@ -242,8 +269,12 @@ function displayIssueDetails(id) {
                 detailsElement.innerHTML = resultsToHtml;
                 let issueDetailsHistoryElement = document.getElementById("issue-details-history");
                 issueDetailsHistoryElement.innerHTML = loadIssueDetailsHistory(issue);
+                let issueDetailsAttachmentsElement = document.getElementById("issue-details-attachments");
+                issueDetailsAttachmentsElement.innerHTML = loadIssueDetailsAttachments(issue);
                 let updateButton = document.getElementById("update-description-button");
                 updateButton.setAttribute("href", "/tracker/update?title=" + issue['title'] + "&description=" + issue['description']);
+                let uploadButton = document.getElementById("add-file-button");
+                uploadButton.setAttribute("href", "/tracker/upload?title=" + issue['title']);
                 setSaveFormToIssueProperties(issue);
 
             } else {
@@ -262,7 +293,13 @@ function displayIssueDetails(id) {
                     
                     <div style="display: flex; justify-content: center">
                         <button type="submit" disabled class="btn btn-primary btn-lg btn-block submit-button" style="max-height: 3rem">Update description</button>
+                        <a id="add-file-button" href="/tracker/upload">
+                            <button class="btn btn-primary btn-lg btn-block submit-button" style="max-height: 3rem">Add file</button>
+                        </a>
                     </div>
+                    <hr style="margin: 0.5rem -1rem 0.5rem;color: white">
+                    <p style="margin-bottom: 0">Attached files:</p>
+                    <div id="issue-details-attachments"></div>
                     <hr style="margin: 0.5rem -1rem 0.5rem;color: white">
                     <p style="margin-bottom: 0">History of changes:</p>
                     <div id="issue-details-history"></div>
@@ -270,9 +307,11 @@ function displayIssueDetails(id) {
                 detailsElement.innerHTML = resultsToHtml;
                 let issueDetailsHistoryElement = document.getElementById("issue-details-history");
                 issueDetailsHistoryElement.innerHTML = loadIssueDetailsHistory(issue);
+                let issueDetailsAttachmentsElement = document.getElementById("issue-details-attachments");
+                issueDetailsAttachmentsElement.innerHTML = loadIssueDetailsAttachments(issue);
+                let uploadButton = document.getElementById("add-file-button");
+                uploadButton.setAttribute("href", "/tracker/upload?title=" + issue['title']);
                 setSaveFormToIssueProperties(issue);
-
-
             }
         });
 }

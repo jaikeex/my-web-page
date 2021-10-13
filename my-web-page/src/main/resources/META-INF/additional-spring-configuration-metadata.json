@@ -9,5 +9,10 @@
       "name": "docker.network.issue-tracker-service-url",
       "type": "java.lang.String",
       "description": "Url of the issue tracker service."
+    },
+    {
+      "name": "storage.folder.issue-attachments",
+      "type": "java.lang.String",
+      "description": "Description for storage.folder.issue-attachments."
     }
   ] }

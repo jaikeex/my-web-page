@@ -8,6 +8,11 @@ spring:
   application:
     name: my-web-page
 
+storage:
+  folder:
+    issue-attachments-folder: "/issue/attachments/"
+
+
 docker:
   network:
     api-gateway-url: http://api-gateway:9000/

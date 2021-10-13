@@ -23,7 +23,7 @@ public class ContactController {
     private static final String MESSAGE_SENT_ATTRIBUTE_NAME = "messageSent";
     private static final String CONTACT_VIEW = "contact";
     private static final String CONTACT_SENDFORM_VIEW = "contact/sendform";
-    private static final String CONTACT_FORM_DTO_ATTRIBUTE_NAME = "contactFormDto";
+    private static final String CONTACT_FORM_DTO_ATTRIBUTE_NAME = "emailDto";
     private static final String MESSAGE_SENT_STATUS_ATTRIBUTE_NAME = "message";
 
     private final ContactService contactService;
