@@ -1,6 +1,6 @@
 package com.jaikeex.mywebpage.mainwebsite.utility.security;
 
-import com.jaikeex.mywebpage.mainwebsite.services.UserService;
+import com.jaikeex.mywebpage.mainwebsite.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.web.DefaultRedirectStrategy;

@@ -1,4 +1,4 @@
-package com.jaikeex.mywebpage.mainwebsite.controllers;
+package com.jaikeex.mywebpage.mainwebsite.controller;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;

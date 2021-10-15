@@ -1,8 +1,8 @@
-package com.jaikeex.mywebpage.mainwebsite.controllers;
+package com.jaikeex.mywebpage.mainwebsite.controller;
 
 import com.jaikeex.mywebpage.mainwebsite.dto.ResetPasswordDto;
 import com.jaikeex.mywebpage.mainwebsite.dto.ResetPasswordEmailDto;
-import com.jaikeex.mywebpage.mainwebsite.services.ResetPasswordService;
+import com.jaikeex.mywebpage.mainwebsite.service.ResetPasswordService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;

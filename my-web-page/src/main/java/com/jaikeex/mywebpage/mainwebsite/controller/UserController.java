@@ -1,8 +1,8 @@
-package com.jaikeex.mywebpage.mainwebsite.controllers;
+package com.jaikeex.mywebpage.mainwebsite.controller;
 
 
 import com.jaikeex.mywebpage.mainwebsite.dto.UserDto;
-import com.jaikeex.mywebpage.mainwebsite.services.UserService;
+import com.jaikeex.mywebpage.mainwebsite.service.UserService;
 import com.jaikeex.mywebpage.mainwebsite.utility.BindingResultErrorParser;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;

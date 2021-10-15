@@ -1,4 +1,4 @@
-package com.jaikeex.mywebpage.mainwebsite.controllers;
+package com.jaikeex.mywebpage.mainwebsite.controller;
 
 
 import org.springframework.stereotype.Controller;

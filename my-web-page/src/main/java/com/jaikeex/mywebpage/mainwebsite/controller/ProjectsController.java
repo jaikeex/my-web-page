@@ -1,8 +1,8 @@
-package com.jaikeex.mywebpage.mainwebsite.controllers;
+package com.jaikeex.mywebpage.mainwebsite.controller;
 
 
 import com.jaikeex.mywebpage.mainwebsite.model.Project;
-import com.jaikeex.mywebpage.mainwebsite.services.ProjectDetailsService;
+import com.jaikeex.mywebpage.mainwebsite.service.ProjectDetailsService;
 import lombok.NoArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;

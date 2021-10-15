@@ -1,7 +1,7 @@
-package com.jaikeex.mywebpage.mainwebsite.controllers;
+package com.jaikeex.mywebpage.mainwebsite.controller;
 
 import com.jaikeex.mywebpage.mainwebsite.dto.EmailDto;
-import com.jaikeex.mywebpage.mainwebsite.services.ContactService;
+import com.jaikeex.mywebpage.mainwebsite.service.ContactService;
 import com.jaikeex.mywebpage.mainwebsite.utility.BindingResultErrorParser;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;

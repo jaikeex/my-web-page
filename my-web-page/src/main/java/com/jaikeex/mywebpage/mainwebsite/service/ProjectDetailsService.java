@@ -1,4 +1,4 @@
-package com.jaikeex.mywebpage.mainwebsite.services;
+package com.jaikeex.mywebpage.mainwebsite.service;
 
 import com.jaikeex.mywebpage.mainwebsite.model.Project;
 import com.jaikeex.mywebpage.resttemplate.RestTemplateFactory;

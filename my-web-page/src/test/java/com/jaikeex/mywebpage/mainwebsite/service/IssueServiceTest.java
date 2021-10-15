@@ -1,4 +1,4 @@
-package com.jaikeex.mywebpage.mainwebsite.services;
+package com.jaikeex.mywebpage.mainwebsite.service;
 
 import com.jaikeex.mywebpage.issuetracker.dto.DescriptionDto;
 import com.jaikeex.mywebpage.issuetracker.dto.IssueFormDto;

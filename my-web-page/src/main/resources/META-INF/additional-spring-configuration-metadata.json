@@ -11,8 +11,18 @@
       "description": "Url of the issue tracker service."
     },
     {
-      "name": "storage.folder.issue-attachments",
+      "name": "storage.folder.issue-attachments-folder",
       "type": "java.lang.String",
-      "description": "Description for storage.folder.issue-attachments."
+      "description": "Path to the issue attachments volume mountpoint."
+    },
+    {
+      "name": "logging.logback.encoder.pattern",
+      "type": "java.lang.String",
+      "description": "Logback encoder pattern."
+    },
+    {
+      "name": "logging.logback.appender.name",
+      "type": "java.lang.String",
+      "description": "Logback rolling file appender name."
     }
   ] }

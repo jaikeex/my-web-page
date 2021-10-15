@@ -5,7 +5,6 @@ import com.jaikeex.mywebpage.issuetracker.dto.AttachmentFormDto;
 import com.jaikeex.mywebpage.issuetracker.dto.DescriptionDto;
 import com.jaikeex.mywebpage.issuetracker.dto.IssueFormDto;
 import com.jaikeex.mywebpage.issuetracker.entity.Issue;
-import com.jaikeex.mywebpage.issuetracker.service.FileService;
 import com.jaikeex.mywebpage.issuetracker.service.IssueService;
 import com.jaikeex.mywebpage.issuetracker.utility.IssueServiceDownException;
 import lombok.extern.slf4j.Slf4j;
@@ -30,56 +29,53 @@ public class DashboardController {
     public static final String ISSUE_DTO_ATTRIBUTE_NAME = "issueFormDto";
     public static final String DESCRIPTION_DTO_ATTRIBUTE_NAME = "descriptionDto";
     private static final String ATTACHMENT_DTO_ATTRIBUTE_NAME = "attachmentDto";
+    private static final String ISSUES_ATTRIBUTE_NAME = "issues";
+    private static final String ISSUES_AS_JSON_ATTRIBUTE_NAME = "issuesAsJson";
+    private static final String ISSUETRACKER_ERROR_VIEW = "issuetracker/issue-service-error";
 
     private final IssueService issueService;
-    private final FileService fileService;
 
     @Autowired
-    public DashboardController(IssueService issueService, FileService fileService) {
+    public DashboardController(IssueService issueService) {
         this.issueService = issueService;
-        this.fileService = fileService;
     }
 
     @GetMapping("/dashboard")
     public String displayDashboard (Model model) {
         List<Issue> issues = issueService.getAllIssues();
-        model.addAttribute("issues", issues);
-        model.addAttribute("issuesAsJson", convertListOfIssuesToJson(issues));
+        addDashboardAttributesToModel(model, issues);
         return "issuetracker/dashboard";
     }
 
     @GetMapping("/create")
     public String createNewReport (Model model) {
-        IssueFormDto issueFormDto = new IssueFormDto();
-        model.addAttribute(ISSUE_DTO_ATTRIBUTE_NAME, issueFormDto);
+        addCreateIssueAttributesToModel(model);
         return "issuetracker/create-issue";
     }
 
     @PostMapping("/create")
     public String postNewReport (IssueFormDto issueFormDto, Model model) throws IOException {
         issueService.createNewReport(issueFormDto);
-        model.addAttribute(SUCCESS, true);
+        addSuccessTrueAttributeToModel(model);
         return "issuetracker/create-issue-success";
     }
 
     @GetMapping("/update")
     public String updateDescription (Model model) {
-        DescriptionDto descriptionDto = new DescriptionDto();
-        model.addAttribute(DESCRIPTION_DTO_ATTRIBUTE_NAME, descriptionDto);
+        addUpdateDescriptionAttributesToModel(model);
         return "issuetracker/update-description";
     }
 
     @PostMapping("/update")
     public String postUpdateDescription (DescriptionDto descriptionDto, Model model) {
         issueService.updateDescription(descriptionDto);
-        model.addAttribute(SUCCESS, true);
+        addSuccessTrueAttributeToModel(model);
         return "issuetracker/update-description-success";
     }
 
     @GetMapping("/upload")
     public String displayUploadAttachmentForm(Model model) {
-        AttachmentFormDto attachmentFormDto = new AttachmentFormDto();
-        model.addAttribute(ATTACHMENT_DTO_ATTRIBUTE_NAME, attachmentFormDto);
+        addAttachmentFormAttributesToModel(model);
         return "issuetracker/upload-attachment";
     }
 
@@ -87,7 +83,7 @@ public class DashboardController {
     public String UploadAttachment(AttachmentFormDto attachmentFormDto,
                                    Model model) throws IOException {
         issueService.uploadNewAttachment(attachmentFormDto);
-        model.addAttribute(SUCCESS, true);
+        addSuccessTrueAttributeToModel(model);
         return "issuetracker/upload-attachment-success";
     }
 
@@ -96,12 +92,45 @@ public class DashboardController {
         return gson.toJson(issues);
     }
 
+    private void addDashboardAttributesToModel(Model model, List<Issue> issues) {
+        model.addAttribute(ISSUES_ATTRIBUTE_NAME, issues);
+        log.debug("Added attribute to model [name={}, value={}]", ISSUES_ATTRIBUTE_NAME, issues);
+        model.addAttribute(ISSUES_AS_JSON_ATTRIBUTE_NAME, convertListOfIssuesToJson(issues));
+        log.debug("Added attribute to model [name={}, value={}]", ISSUES_AS_JSON_ATTRIBUTE_NAME, convertListOfIssuesToJson(issues));
+    }
+
+    private void addCreateIssueAttributesToModel(Model model) {
+        IssueFormDto issueFormDto = new IssueFormDto();
+        model.addAttribute(ISSUE_DTO_ATTRIBUTE_NAME, issueFormDto);
+        log.debug("Added attribute to model [name={}, value={}]", ISSUE_DTO_ATTRIBUTE_NAME, issueFormDto);
+    }
+
+    private void addUpdateDescriptionAttributesToModel(Model model) {
+        DescriptionDto descriptionDto = new DescriptionDto();
+        model.addAttribute(DESCRIPTION_DTO_ATTRIBUTE_NAME, descriptionDto);
+        log.debug("Added attribute to model [name={}, value={}]", DESCRIPTION_DTO_ATTRIBUTE_NAME, descriptionDto);
+    }
+
+    private void addSuccessTrueAttributeToModel(Model model) {
+        model.addAttribute(SUCCESS, true);
+        log.debug("Added attribute to model [name={}, value={}]", SUCCESS, true);
+    }
+
+    private void addAttachmentFormAttributesToModel(Model model) {
+        AttachmentFormDto attachmentFormDto = new AttachmentFormDto();
+        model.addAttribute(ATTACHMENT_DTO_ATTRIBUTE_NAME, attachmentFormDto);
+        log.debug("Added attribute to model [name={}, value={}]", ATTACHMENT_DTO_ATTRIBUTE_NAME, attachmentFormDto);
+    }
+
     @ExceptionHandler({IssueServiceDownException.class, IOException.class})
     public String IssueServiceDown(Model model, Exception exception) {
+        String errorMessage = exception.getMessage();
         log.warn(exception.getMessage());
         model.addAttribute(SUCCESS, false);
-        model.addAttribute(ERROR_MESSAGE_ATTRIBUTE_NAME, exception.getMessage());
-        return "issuetracker/issue-service-error";
+        log.debug("Added attribute to model [name={}, value={}]", SUCCESS, false);
+        model.addAttribute(ERROR_MESSAGE_ATTRIBUTE_NAME, errorMessage);
+        log.debug("Added attribute to model [name={}, value={}]", ERROR_MESSAGE_ATTRIBUTE_NAME, errorMessage);
+        return ISSUETRACKER_ERROR_VIEW;
     }
 }
 

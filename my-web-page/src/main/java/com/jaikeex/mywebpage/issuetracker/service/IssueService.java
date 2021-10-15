@@ -4,7 +4,7 @@ import com.jaikeex.mywebpage.issuetracker.dto.*;
 import com.jaikeex.mywebpage.issuetracker.entity.Issue;
 import com.jaikeex.mywebpage.issuetracker.utility.IssueServiceDownException;
 import com.jaikeex.mywebpage.mainwebsite.dto.EmailDto;
-import com.jaikeex.mywebpage.mainwebsite.services.ContactService;
+import com.jaikeex.mywebpage.mainwebsite.service.ContactService;
 import com.jaikeex.mywebpage.resttemplate.RestTemplateFactory;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,8 +12,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cloud.client.circuitbreaker.CircuitBreaker;
 import org.springframework.cloud.client.circuitbreaker.CircuitBreakerFactory;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
@@ -27,6 +25,7 @@ import java.util.List;
 public class IssueService {
 
     private static final String CIRCUIT_BREAKER_NAME = "ISSUE_SERVICE_CB";
+    private static final String CREATE_REPORT_ERROR_MESSAGE = "There was an error creating the report.";
 
     @Value("${docker.network.issue-tracker-service-url}")
     private String issueTrackerServiceUrl;
@@ -56,17 +55,10 @@ public class IssueService {
      *          Whenever a 5xx http status code gets returned.
      */
     public void createNewReport(IssueFormDto issueFormDto) throws IOException {
-        Issue issue = new Issue(issueFormDto);
         IssueDto issueDto = new IssueDto(issueFormDto);
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        String currentUserName = authentication.getName();
-        issueDto.setAuthor(currentUserName);
         String url = issueTrackerServiceUrl + "create";
-        String errorMessage = "There was an error creating the report.";
-        System.out.println(issueDto);
-        System.out.println(issueFormDto);
-        postRequestToIssueMicroservice(url, issueDto, errorMessage);
-        notifyAdministrator(issue);
+        postRequestToIssueMicroservice(url, issueDto, CREATE_REPORT_ERROR_MESSAGE);
+        notifyAdministrator(issueDto);
     }
 
     /**
@@ -142,11 +134,11 @@ public class IssueService {
         throw new IssueServiceDownException(fallbackMessage);
     }
 
-    private void notifyAdministrator(final Issue issue) {
+    private void notifyAdministrator(IssueDto issueDto) {
         final EmailDto emailDto = new EmailDto();
-        emailDto.setSender(issue.getAuthor());
-        emailDto.setSubject("New report! - " + issue.getTitle());
-        emailDto.setMessageText(issue.getDescription());
+        emailDto.setSender(issueDto.getAuthor());
+        emailDto.setSubject("New report! - " + issueDto.getTitle());
+        emailDto.setMessageText(issueDto.getDescription());
         this.contactService.sendEmailToAdmin(emailDto);
     }
 }
