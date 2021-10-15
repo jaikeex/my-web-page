@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+  <title>Upload Attachment</title>
+  <div th:replace="fragments/head :: head"></div>
+</head>
+
+<body>
+<div th:replace="issuetracker/fragments/head :: head"></div>
+
+<div class="row justify-content-center">
+  <div class="col-md-4"></div>
+  <div class="col-md-4" style="margin-top: 2rem">
+    <h4 style="text-align: center">Upload Attachment</h4>
+    <form th:action="@{/tracker/upload}" enctype="multipart/form-data" method="post" th:object="${attachmentFormDto}">
+      <br>
+      <div class="form-row">
+        <h5 th:text="${param.title}"></h5>
+        <div class="form-group" style="display: none">
+          <label for="title" class="control-label">Title</label>
+          <input id="title" name="title" class="form-control" type="text" th:value='${param.title}'>
+        </div>
+        <br>
+        <div class="form-group">
+          <label for="attachment" class="control-label"></label>
+          <input id="attachment" name="attachment" type="file" style="color: white">
+        </div>
+        <div class="container issue-container">
+          <div class="new-issue-button-box">
+            <button type="submit" class="btn btn-primary btn-lg btn-block submit-button">Upload</button>
+          </div>
+        </div>
+      </div>
+    </form>
+  </div>
+  <div class="col-md-4"></div>
+</div>
+
+<script type="text/javascript" th:src="@{/assets/js/main.js}"></script>
+<script type="text/javascript">
+  let str = document.getElementById("description").innerHTML;
+  document.getElementById("description").innerHTML = str.replace(/&lt;br\s*\/&gt;/g, "\n");
+</script>
+</body>
+</html>

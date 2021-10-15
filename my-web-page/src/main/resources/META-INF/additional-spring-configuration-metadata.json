@@ -9,5 +9,20 @@
       "name": "docker.network.issue-tracker-service-url",
       "type": "java.lang.String",
       "description": "Url of the issue tracker service."
+    },
+    {
+      "name": "storage.folder.issue-attachments-folder",
+      "type": "java.lang.String",
+      "description": "Path to the issue attachments volume mountpoint."
+    },
+    {
+      "name": "logging.logback.encoder.pattern",
+      "type": "java.lang.String",
+      "description": "Logback encoder pattern."
+    },
+    {
+      "name": "logging.logback.appender.name",
+      "type": "java.lang.String",
+      "description": "Logback rolling file appender name."
     }
   ] }

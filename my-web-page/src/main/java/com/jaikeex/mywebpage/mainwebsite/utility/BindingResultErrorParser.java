@@ -13,7 +13,6 @@ public class BindingResultErrorParser {
 
     private static final String DEFAULT_FORM_ERROR_MESSAGE_ATTRIBUTE_NAME = "formErrorMessage";
 
-
     private final BindingResult result;
     private final Model model;
     private final String errorMessageAttributeName;
