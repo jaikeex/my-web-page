@@ -5,7 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.jaikeex.mywebpage.issuetracker.dto.DescriptionDto;
-import com.jaikeex.mywebpage.issuetracker.dto.IssueDto;
+import com.jaikeex.mywebpage.issuetracker.dto.IssueFormDto;
 import com.jaikeex.mywebpage.issuetracker.entity.properties.IssueType;
 import com.jaikeex.mywebpage.issuetracker.entity.properties.Project;
 import com.jaikeex.mywebpage.issuetracker.entity.properties.Severity;
@@ -36,7 +36,7 @@ class DashboardControllerTest {
     @MockBean
     IssueService service;
 
-    IssueDto testIssueDto;
+    IssueFormDto testIssueFormDto;
     String issueDtoJson;
     DescriptionDto descriptionDto;
 
@@ -50,17 +50,16 @@ class DashboardControllerTest {
         ObjectMapper mapper = new ObjectMapper();
         mapper.configure(SerializationFeature.WRAP_ROOT_VALUE, false);
         ObjectWriter writer = mapper.writer().withDefaultPrettyPrinter();
-        issueDtoJson = writer.writeValueAsString(testIssueDto);
+        issueDtoJson = writer.writeValueAsString(testIssueFormDto);
     }
 
     private void initIssueDto() {
-        testIssueDto = new IssueDto();
-        testIssueDto.setTitle("testTitle");
-        testIssueDto.setAuthor("testAuthor");
-        testIssueDto.setDescription("testDescription");
-        testIssueDto.setType(IssueType.BUG);
-        testIssueDto.setSeverity(Severity.HIGH);
-        testIssueDto.setProject(Project.MWP);
+        testIssueFormDto = new IssueFormDto();
+        testIssueFormDto.setTitle("testTitle");
+        testIssueFormDto.setDescription("testDescription");
+        testIssueFormDto.setType(IssueType.BUG);
+        testIssueFormDto.setSeverity(Severity.HIGH);
+        testIssueFormDto.setProject(Project.MWP);
     }
 
     private void initDescriptionDto() {
@@ -79,18 +78,18 @@ class DashboardControllerTest {
     public void postNewReport_shouldCallService() throws Exception {
         mockMvc.perform(post("/tracker/create")
                 .with(csrf())
-                .flashAttr("issueDto", testIssueDto));
-        verify(service, times(1)).createNewReport(testIssueDto);
+                .flashAttr("issueDto", testIssueFormDto));
+        verify(service, times(1)).createNewReport(testIssueFormDto);
     }
 
     @Test
     public void postNewReport_shouldCatchIssueServiceDownException() throws Exception {
         IssueServiceDownException exception =
                 new IssueServiceDownException("testMessage");
-        doThrow(exception).when(service).createNewReport(testIssueDto);
+        doThrow(exception).when(service).createNewReport(testIssueFormDto);
         mockMvc.perform(post("/tracker/create")
                 .with(csrf())
-                .flashAttr("issueDto", testIssueDto))
+                .flashAttr("issueDto", testIssueFormDto))
                 .andExpect(model().attributeExists("errorMessage"));
 
     }
@@ -109,7 +108,7 @@ class DashboardControllerTest {
     @Test
     public void postNewReport_givenAllOk_shouldAddSuccessAttribute() throws Exception {
         mockMvc.perform(post("/tracker/create")
-                .flashAttr("issueDto", testIssueDto)
+                .flashAttr("issueDto", testIssueFormDto)
                 .with(csrf()))
                 .andExpect(model().attribute("success", true));
     }

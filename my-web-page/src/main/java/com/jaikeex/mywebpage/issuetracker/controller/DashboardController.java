@@ -1,9 +1,9 @@
 package com.jaikeex.mywebpage.issuetracker.controller;
 
 import com.google.gson.Gson;
-import com.jaikeex.mywebpage.issuetracker.dto.AttachmentDto;
+import com.jaikeex.mywebpage.issuetracker.dto.AttachmentFormDto;
 import com.jaikeex.mywebpage.issuetracker.dto.DescriptionDto;
-import com.jaikeex.mywebpage.issuetracker.dto.IssueDto;
+import com.jaikeex.mywebpage.issuetracker.dto.IssueFormDto;
 import com.jaikeex.mywebpage.issuetracker.entity.Issue;
 import com.jaikeex.mywebpage.issuetracker.service.FileService;
 import com.jaikeex.mywebpage.issuetracker.service.IssueService;
@@ -27,7 +27,7 @@ public class DashboardController {
 
     public static final String ERROR_MESSAGE_ATTRIBUTE_NAME = "errorMessage";
     public static final String SUCCESS = "success";
-    public static final String ISSUE_DTO_ATTRIBUTE_NAME = "issueDto";
+    public static final String ISSUE_DTO_ATTRIBUTE_NAME = "issueFormDto";
     public static final String DESCRIPTION_DTO_ATTRIBUTE_NAME = "descriptionDto";
     private static final String ATTACHMENT_DTO_ATTRIBUTE_NAME = "attachmentDto";
 
@@ -50,14 +50,14 @@ public class DashboardController {
 
     @GetMapping("/create")
     public String createNewReport (Model model) {
-        IssueDto issueDto = new IssueDto();
-        model.addAttribute(ISSUE_DTO_ATTRIBUTE_NAME, issueDto);
+        IssueFormDto issueFormDto = new IssueFormDto();
+        model.addAttribute(ISSUE_DTO_ATTRIBUTE_NAME, issueFormDto);
         return "issuetracker/create-issue";
     }
 
     @PostMapping("/create")
-    public String postNewReport (IssueDto issueDto, Model model) {
-        issueService.createNewReport(issueDto);
+    public String postNewReport (IssueFormDto issueFormDto, Model model) throws IOException {
+        issueService.createNewReport(issueFormDto);
         model.addAttribute(SUCCESS, true);
         return "issuetracker/create-issue-success";
     }
@@ -78,15 +78,15 @@ public class DashboardController {
 
     @GetMapping("/upload")
     public String displayUploadAttachmentForm(Model model) {
-        AttachmentDto attachmentDto = new AttachmentDto();
-        model.addAttribute(ATTACHMENT_DTO_ATTRIBUTE_NAME, attachmentDto);
+        AttachmentFormDto attachmentFormDto = new AttachmentFormDto();
+        model.addAttribute(ATTACHMENT_DTO_ATTRIBUTE_NAME, attachmentFormDto);
         return "issuetracker/upload-attachment";
     }
 
     @PostMapping("/upload")
-    public String UploadAttachment(AttachmentDto attachmentDto,
+    public String UploadAttachment(AttachmentFormDto attachmentFormDto,
                                    Model model) throws IOException {
-        issueService.uploadNewAttachment(attachmentDto);
+        issueService.uploadNewAttachment(attachmentFormDto);
         model.addAttribute(SUCCESS, true);
         return "issuetracker/upload-attachment-success";
     }

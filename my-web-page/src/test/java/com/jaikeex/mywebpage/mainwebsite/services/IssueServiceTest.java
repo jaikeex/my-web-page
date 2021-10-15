@@ -1,7 +1,7 @@
 package com.jaikeex.mywebpage.mainwebsite.services;
 
 import com.jaikeex.mywebpage.issuetracker.dto.DescriptionDto;
-import com.jaikeex.mywebpage.issuetracker.dto.IssueDto;
+import com.jaikeex.mywebpage.issuetracker.dto.IssueFormDto;
 import com.jaikeex.mywebpage.issuetracker.entity.Issue;
 import com.jaikeex.mywebpage.issuetracker.entity.properties.IssueType;
 import com.jaikeex.mywebpage.issuetracker.entity.properties.Project;
@@ -18,6 +18,8 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.web.client.RestTemplate;
+
+import java.io.IOException;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
@@ -39,7 +41,7 @@ class IssueServiceTest {
     public static final String NEW_DESCRIPTION = "new description";
     public static final String NEW_TITLE = "new title";
 
-    IssueDto testIssueDto;
+    IssueFormDto testIssueFormDto;
     DescriptionDto descriptionDto;
 
     @BeforeEach
@@ -48,13 +50,12 @@ class IssueServiceTest {
         when(restTemplateFactory.getRestTemplate()).thenReturn(restTemplate);
         initDescriptionDto();
 
-        testIssueDto = new IssueDto();
-        testIssueDto.setTitle("testTitle");
-        testIssueDto.setAuthor("testAuthor");
-        testIssueDto.setDescription("testDescription");
-        testIssueDto.setType(IssueType.BUG);
-        testIssueDto.setSeverity(Severity.HIGH);
-        testIssueDto.setProject(Project.MWP);
+        testIssueFormDto = new IssueFormDto();
+        testIssueFormDto.setTitle("testTitle");
+        testIssueFormDto.setDescription("testDescription");
+        testIssueFormDto.setType(IssueType.BUG);
+        testIssueFormDto.setSeverity(Severity.HIGH);
+        testIssueFormDto.setProject(Project.MWP);
     }
 
 
@@ -65,16 +66,16 @@ class IssueServiceTest {
     }
 
     @Test
-    public void createNewReport_shouldPostHttpRequest() {
-        service.createNewReport(testIssueDto);
+    public void createNewReport_shouldPostHttpRequest() throws IOException {
+        service.createNewReport(testIssueFormDto);
         verify(restTemplate, times(1))
                 .postForEntity(anyString(), any(Issue.class), any());
     }
 
     @Test
-    public void createNewReport_shouldIncludeDateToDto() {
+    public void createNewReport_shouldIncludeDateToDto() throws IOException {
         ArgumentCaptor<Issue> argument = ArgumentCaptor.forClass(Issue.class);
-        service.createNewReport(testIssueDto);
+        service.createNewReport(testIssueFormDto);
         verify(restTemplate, times(1))
                 .postForEntity(anyString(), argument.capture(), any());
         assertEquals(Status.SUBMITTED, argument.getValue().getStatus());

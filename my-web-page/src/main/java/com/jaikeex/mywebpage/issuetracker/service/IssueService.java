@@ -1,9 +1,6 @@
 package com.jaikeex.mywebpage.issuetracker.service;
 
-import com.jaikeex.mywebpage.issuetracker.dto.AttachmentBytesDto;
-import com.jaikeex.mywebpage.issuetracker.dto.AttachmentDto;
-import com.jaikeex.mywebpage.issuetracker.dto.DescriptionDto;
-import com.jaikeex.mywebpage.issuetracker.dto.IssueDto;
+import com.jaikeex.mywebpage.issuetracker.dto.*;
 import com.jaikeex.mywebpage.issuetracker.entity.Issue;
 import com.jaikeex.mywebpage.issuetracker.utility.IssueServiceDownException;
 import com.jaikeex.mywebpage.mainwebsite.dto.EmailDto;
@@ -15,6 +12,8 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cloud.client.circuitbreaker.CircuitBreaker;
 import org.springframework.cloud.client.circuitbreaker.CircuitBreakerFactory;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
@@ -49,18 +48,24 @@ public class IssueService {
     /**
      * Processes the dto object and sends the data to the issue tracker service
      * /create endpoint with an http request.
-     * @param issueDto A data transfer object with the fields necessary for
+     * @param issueFormDto A data transfer object with the fields necessary for
      *                 creating a new issue report in the database.
      * @throws org.springframework.web.client.HttpClientErrorException
      *          Whenever a 4xx http status code gets returned.
      * @throws org.springframework.web.client.HttpServerErrorException
      *          Whenever a 5xx http status code gets returned.
      */
-    public void createNewReport(IssueDto issueDto) {
-        Issue issue = new Issue(issueDto);
+    public void createNewReport(IssueFormDto issueFormDto) throws IOException {
+        Issue issue = new Issue(issueFormDto);
+        IssueDto issueDto = new IssueDto(issueFormDto);
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String currentUserName = authentication.getName();
+        issueDto.setAuthor(currentUserName);
         String url = issueTrackerServiceUrl + "create";
         String errorMessage = "There was an error creating the report.";
-        postRequestToIssueMicroservice(url, issue, errorMessage);
+        System.out.println(issueDto);
+        System.out.println(issueFormDto);
+        postRequestToIssueMicroservice(url, issueDto, errorMessage);
         notifyAdministrator(issue);
     }
 
@@ -80,14 +85,11 @@ public class IssueService {
         postRequestToIssueMicroservice(url, descriptionDto, errorMessage);
     }
 
-    public void uploadNewAttachment(AttachmentDto attachmentDto) throws IOException {
-        AttachmentBytesDto attachmentBytesDto = new AttachmentBytesDto();
-        attachmentBytesDto.setAttachmentBytes(attachmentDto.getAttachment().getBytes());
-        attachmentBytesDto.setTitle(attachmentDto.getTitle());
-        attachmentBytesDto.setOriginalFilename(attachmentDto.getAttachment().getOriginalFilename());
+    public void uploadNewAttachment(AttachmentFormDto attachmentFormDto) throws IOException {
+        AttachmentFileDto attachmentFileDto = new AttachmentFileDto(attachmentFormDto);
         String url = issueTrackerServiceUrl + "upload-attachment";
         String errorMessage = "There was an error while uploading the file.";
-        postRequestToIssueMicroservice(url, attachmentBytesDto, errorMessage);
+        postRequestToIssueMicroservice(url, attachmentFileDto, errorMessage);
     }
 
     /**
@@ -102,9 +104,7 @@ public class IssueService {
      */
     public List<Issue> getAllIssues() {
         String url = issueTrackerServiceUrl + "all";
-        List<Issue> issues = getListOfAllIssues(url);
-        System.out.println(issues);
-        return issues;
+        return getListOfAllIssues(url);
     }
 
     private List<Issue> getListOfAllIssues(String url) {
@@ -131,7 +131,7 @@ public class IssueService {
     private List<Issue> findAllFallback() {
         log.warn("issue-tracker-service is unreachable!");
         Issue fallbackIssue = new Issue();
-        fallbackIssue.setTitle("ISSUE TRACKER SERVICE IS UNREACHABLE!");
+        fallbackIssue.setTitle("ISSUE TRACKER SERVICE IS UNAVAILABLE!");
         fallbackIssue.setDescription("There was an error retrieving the list of reports, please try again later.");
         return Collections.singletonList(fallbackIssue);
     }
@@ -149,5 +149,4 @@ public class IssueService {
         emailDto.setMessageText(issue.getDescription());
         this.contactService.sendEmailToAdmin(emailDto);
     }
-
 }

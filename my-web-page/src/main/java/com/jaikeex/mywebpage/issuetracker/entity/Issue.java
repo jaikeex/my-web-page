@@ -1,6 +1,6 @@
 package com.jaikeex.mywebpage.issuetracker.entity;
 
-import com.jaikeex.mywebpage.issuetracker.dto.IssueDto;
+import com.jaikeex.mywebpage.issuetracker.dto.IssueFormDto;
 import com.jaikeex.mywebpage.issuetracker.entity.properties.IssueType;
 import com.jaikeex.mywebpage.issuetracker.entity.properties.Project;
 import com.jaikeex.mywebpage.issuetracker.entity.properties.Severity;
@@ -19,7 +19,7 @@ import java.util.List;
 @AllArgsConstructor
 public class Issue {
 
-    public Issue(IssueDto issueDto) {
+    public Issue(IssueFormDto issueFormDto) {
         Timestamp now = new Timestamp(System.currentTimeMillis());
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String currentUserName = authentication.getName();
@@ -28,11 +28,11 @@ public class Issue {
         this.setStatus(Status.SUBMITTED);
         this.setAuthor(currentUserName);
 
-        this.setTitle(issueDto.getTitle());
-        this.setDescription(issueDto.getDescription());
-        this.setType(issueDto.getType());
-        this.setSeverity(issueDto.getSeverity());
-        this.setProject(issueDto.getProject());
+        this.setTitle(issueFormDto.getTitle());
+        this.setDescription(issueFormDto.getDescription());
+        this.setType(issueFormDto.getType());
+        this.setSeverity(issueFormDto.getSeverity());
+        this.setProject(issueFormDto.getProject());
     }
 
     private int id;

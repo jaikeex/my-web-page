@@ -14,6 +14,7 @@ public class Attachment {
     private int id;
     private String path;
     private Timestamp date;
+    private String originalFilename;
     private Issue issue;
 
 }

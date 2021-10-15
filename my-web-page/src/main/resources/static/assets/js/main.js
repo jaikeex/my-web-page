@@ -218,19 +218,30 @@ function displayIssueDetails(id) {
         let attachmentsHtml = ``;
         attachments.forEach(
             attachment => {
-                let formattedDate = formatDateForDetails(attachment.date);
-                attachmentsHtml +=`
-                <p style="margin-bottom: 0; font-size: 85%">
-                    <a href="${attachment.path}" download>
-                        <span><span style="color: yellowgreen">${formattedDate}</span>: ${attachment.path}</span>
-                    </a>
-                </p>
-                `;
+                if (principalAuthoritiesElement.value.includes('ROLE_ADMIN')) {
+                    attachmentsHtml +=`
+                    <p style="margin-bottom: 0; font-size: 85%">
+                        <a href="${attachment.path}" download>
+                            <span>${attachment.originalFilename} </span>
+                        </a>
+                        <a href="#" style="color: crimson" onclick="deleteAttachment(${attachment.id}, ${issue.id}, '${attachment.originalFilename}')">
+                            <span> (delete)</span>
+                        </a>
+                    </p>
+                    `;
+                } else {
+                    attachmentsHtml +=`
+                    <p style="margin-bottom: 0; font-size: 85%">
+                        <a href="${attachment.path}" download>
+                            <span>${attachment.originalFilename} </span>
+                        </a>
+                    </p>
+                    `;
+                }
             }
         );
         return attachmentsHtml;
     }
-
 
     fetch(`${mainDomain}/issue/id/${id}`, {
         method: 'GET',
@@ -253,15 +264,17 @@ function displayIssueDetails(id) {
                     <p>${issue.description}</p>
                     <div style="display: flex; justify-content: center">
                         <a id="update-description-button" href="/tracker/update">
-                        <button class="btn btn-primary btn-lg btn-block submit-button" style="max-height: 3rem">Update description</button>
-                        </a>
-                        <a id="add-file-button" href="/tracker/upload">
-                            <button class="btn btn-primary btn-lg btn-block submit-button" style="max-height: 3rem">Add file</button>
+                            <button class="btn btn-primary issue-details-button issue-card-button-details">Update description</button>
                         </a>
                     </div>
                     <hr style="margin: 0.5rem -1rem 0.5rem;color: white">
                     <p style="margin-bottom: 0">Attached files:</p>
                     <div id="issue-details-attachments"></div>
+                    <div style="display: flex; justify-content: center">
+                        <a id="add-file-button" href="/tracker/upload">
+                            <button class="btn btn-primary issue-details-button issue-card-button-details">Add file</button>
+                        </a>
+                    </div>
                     <hr style="margin: 0.5rem -1rem 0.5rem;color: white">
                     <p style="margin-bottom: 0">History of changes:</p>
                     <div id="issue-details-history"></div>
@@ -292,14 +305,16 @@ function displayIssueDetails(id) {
                     <p>${issue.description}</p>
                     
                     <div style="display: flex; justify-content: center">
-                        <button type="submit" disabled class="btn btn-primary btn-lg btn-block submit-button" style="max-height: 3rem">Update description</button>
-                        <a id="add-file-button" href="/tracker/upload">
-                            <button class="btn btn-primary btn-lg btn-block submit-button" style="max-height: 3rem">Add file</button>
-                        </a>
+                        <button type="submit" disabled class="btn btn-primary issue-details-button issue-card-button-details">Update description</button>
                     </div>
                     <hr style="margin: 0.5rem -1rem 0.5rem;color: white">
                     <p style="margin-bottom: 0">Attached files:</p>
                     <div id="issue-details-attachments"></div>
+                    <div style="display: flex; justify-content: center">
+                        <a id="add-file-button" href="/tracker/upload">
+                            <button class="btn btn-primary issue-details-button issue-card-button-details">Add file</button>
+                        </a>
+                    </div>
                     <hr style="margin: 0.5rem -1rem 0.5rem;color: white">
                     <p style="margin-bottom: 0">History of changes:</p>
                     <div id="issue-details-history"></div>
@@ -339,6 +354,25 @@ function deleteIssue (id, title) {
     setTimeout(() => {searchIssues()}, 1000);
     //searchIssues();
     resetFilters();
+}
+
+function deleteAttachment (attachmentId, issueId, filename) {
+    if (confirm(`delete file ${filename}?`)) {
+        fetch(`${mainDomain}/issue/attachments/${attachmentId}`, {
+            method: 'DELETE',
+        })
+            .then(
+                function(response) {
+                    if (response.status !== 200) {
+                        window.alert("There was an error deleting the report.")
+                    } else {
+                        window.alert(`File ${filename} was deleted successfully`)
+
+                    }
+                });
+    }
+    setTimeout(() => {searchIssues()}, 1000);
+    displayIssueDetails(issueId)
 }
 
 

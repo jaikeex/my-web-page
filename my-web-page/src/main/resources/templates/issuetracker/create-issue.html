@@ -11,7 +11,7 @@
 <div class="row justify-content-center">
   <div class="col-md-6" style="margin-top: 2rem">
     <h4 style="text-align: center">Create new report</h4>
-    <form th:action="@{/tracker/create}" th:object="${issueDto}" method="post">
+    <form th:action="@{/tracker/create}" enctype="multipart/form-data" th:object="${issueFormDto}" method="post">
     <div style="display:flex; justify-content: center">
       <div class="form-row">
         <div style="float: left; margin-right: 1.5rem">
@@ -53,8 +53,12 @@
       <br>
       <div class="form-group">
         <label for="description" class="control-label">Description</label>
-        <textarea id="description" class="form-control" rows="15" cols="80" th:field="*{description}"></textarea>
+        <textarea id="description" class="form-control" rows="10" cols="80" th:field="*{description}"></textarea>
       </div>
+        <div class="form-group">
+          <label for="attachment" class="control-label">Add file (optional): </label>
+          <input id="attachment" name="attachment" type="file" style="color: white" th:field="*{attachment}">
+        </div>
         <div class="container issue-container">
           <div class="new-issue-button-box">
             <button type="submit" class="btn btn-primary btn-lg btn-block submit-button">Create new report</button>
