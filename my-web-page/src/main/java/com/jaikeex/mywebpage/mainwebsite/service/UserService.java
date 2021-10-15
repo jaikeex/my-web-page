@@ -52,15 +52,16 @@ public class UserService {
      */
     public void updateUserStatsOnLogin(String username) {
         RestTemplate restTemplate = restTemplateFactory.getRestTemplate();
+        String url = apiGatewayUrl + "users/last-access/";
         UserLastAccessDateDto dto = new UserLastAccessDateDto(username);
-        restTemplate.patchForObject(apiGatewayUrl + "users/last-access/", dto, User.class);
+        restTemplate.patchForObject(url, dto, User.class);
     }
-
 
     private void postHttpPostRequestToUserService(User user) {
         RestTemplate restTemplate = restTemplateFactory.getRestTemplate();
+        String url = apiGatewayUrl + "users/";
         HttpEntity<User> entity = getUserHttpEntity(user);
-        restTemplate.exchange(apiGatewayUrl + "users/", HttpMethod.POST, entity, User.class);
+        restTemplate.exchange(url, HttpMethod.POST, entity, User.class);
     }
 
     private HttpEntity<User> getUserHttpEntity(User user) {

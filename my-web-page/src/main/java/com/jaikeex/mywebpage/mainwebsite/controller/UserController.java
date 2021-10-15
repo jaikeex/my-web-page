@@ -1,9 +1,9 @@
 package com.jaikeex.mywebpage.mainwebsite.controller;
 
-
 import com.jaikeex.mywebpage.mainwebsite.dto.UserDto;
 import com.jaikeex.mywebpage.mainwebsite.service.UserService;
 import com.jaikeex.mywebpage.mainwebsite.utility.BindingResultErrorParser;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -18,6 +18,7 @@ import org.springframework.web.client.HttpStatusCodeException;
 import javax.validation.Valid;
 
 @Controller
+@Slf4j
 public class UserController {
 
     private static final String LOGIN_VIEW = "user/login";
@@ -27,6 +28,7 @@ public class UserController {
     private static final String REGISTRATION_STATUS_ATTRIBUTE_NAME = "registered";
     private static final String DATABASE_ERROR_STATUS_ATTRIBUTE_NAME = "databaseError";
     private static final String DATABASE_ERROR_MESSAGE_ATTRIBUTE_NAME = "databaseErrorMessage";
+    private static final String USER_DTO_ATTRIBUTE_NAME = "userDto";
 
     UserService userService;
 
@@ -67,27 +69,33 @@ public class UserController {
 
     private void sendUserToUserServiceForRegistration(Model model, UserDto userDto) {
         userService.registerUser(userDto);
-        appendModelWithRegistrationSuccessAttributes(model);
+        addRegistrationSuccessAttributesToModel(model);
     }
 
-    private void appendModelWithRegistrationSuccessAttributes(Model model) {
+    private void addRegistrationSuccessAttributesToModel(Model model) {
         model.addAttribute(REGISTRATION_STATUS_ATTRIBUTE_NAME, true);
+        log.debug("Added attribute to model [name={}, value={}]", REGISTRATION_STATUS_ATTRIBUTE_NAME, true);
+
     }
 
-    private void appendModelWithRegistrationFailedAttributes(Model model, Exception exception) {
+    private void addRegistrationFailedAttributesToModel(Model model, Exception exception) {
+        String errorMessage = exception.getMessage();
         model.addAttribute(DATABASE_ERROR_STATUS_ATTRIBUTE_NAME, true);
-        model.addAttribute(DATABASE_ERROR_MESSAGE_ATTRIBUTE_NAME, exception.getMessage());
+        log.debug("Added attribute to model [name={}, value={}]", DATABASE_ERROR_STATUS_ATTRIBUTE_NAME, true);
+        model.addAttribute(DATABASE_ERROR_MESSAGE_ATTRIBUTE_NAME, errorMessage);
+        log.debug("Added attribute to model [name={}, value={}]", DATABASE_ERROR_MESSAGE_ATTRIBUTE_NAME, errorMessage);
     }
 
     private void addUserDtoObjectToModel(Model model) {
         UserDto userDto = new UserDto();
-        model.addAttribute(userDto);
+        model.addAttribute(USER_DTO_ATTRIBUTE_NAME, userDto);
+        log.debug("Added attribute to model [name={}, value={}]", USER_DTO_ATTRIBUTE_NAME, userDto);
     }
 
     @ExceptionHandler({HttpServerErrorException.class, HttpClientErrorException.class})
     public String userServiceError(Model model, HttpStatusCodeException exception) {
         addUserDtoObjectToModel(model);
-        appendModelWithRegistrationFailedAttributes(model, exception);
+        addRegistrationFailedAttributesToModel(model, exception);
         return SIGNUP_VIEW;
     }
 }

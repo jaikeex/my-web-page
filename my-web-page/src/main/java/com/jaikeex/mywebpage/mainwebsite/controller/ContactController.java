@@ -3,6 +3,7 @@ package com.jaikeex.mywebpage.mainwebsite.controller;
 import com.jaikeex.mywebpage.mainwebsite.dto.EmailDto;
 import com.jaikeex.mywebpage.mainwebsite.service.ContactService;
 import com.jaikeex.mywebpage.mainwebsite.utility.BindingResultErrorParser;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -17,6 +18,7 @@ import org.springframework.web.client.HttpStatusCodeException;
 import javax.validation.Valid;
 
 @Controller
+@Slf4j
 public class ContactController {
 
     private static final String ERROR_MESSAGE_ATTRIBUTE_NAME = "errorMessage";
@@ -25,6 +27,7 @@ public class ContactController {
     private static final String CONTACT_SENDFORM_VIEW = "contact/sendform";
     private static final String CONTACT_FORM_DTO_ATTRIBUTE_NAME = "emailDto";
     private static final String MESSAGE_SENT_STATUS_ATTRIBUTE_NAME = "message";
+    private static final String MESSAGE_SENT_SUCCESSFULLY = "Message sent successfully!";
 
     private final ContactService contactService;
 
@@ -65,13 +68,18 @@ public class ContactController {
     }
 
     private void appendModelWithEmailServiceErrorAttributes(Model model, HttpStatusCodeException exception) {
+        String errorMessage = exception.getResponseBodyAsString();
         model.addAttribute(MESSAGE_SENT_ATTRIBUTE_NAME, false);
-        model.addAttribute(MESSAGE_SENT_STATUS_ATTRIBUTE_NAME, exception.getResponseBodyAsString());
+        log.debug("Added attribute to model [name={}, value={}]", MESSAGE_SENT_ATTRIBUTE_NAME, false);
+        model.addAttribute(MESSAGE_SENT_STATUS_ATTRIBUTE_NAME, errorMessage);
+        log.debug("Added attribute to model [name={}, value={}]", MESSAGE_SENT_STATUS_ATTRIBUTE_NAME, errorMessage);
     }
 
     private void appendModelWithMessageSentSuccessfullyAttributes(Model model) {
         model.addAttribute(MESSAGE_SENT_ATTRIBUTE_NAME, true);
-        model.addAttribute(MESSAGE_SENT_STATUS_ATTRIBUTE_NAME, "Message sent successfully!");
+        log.debug("Added attribute to model [name={}, value={}]", MESSAGE_SENT_ATTRIBUTE_NAME, true);
+        model.addAttribute(MESSAGE_SENT_STATUS_ATTRIBUTE_NAME, MESSAGE_SENT_SUCCESSFULLY);
+        log.debug("Added attribute to model [name={}, value={}]", MESSAGE_SENT_STATUS_ATTRIBUTE_NAME, MESSAGE_SENT_SUCCESSFULLY);
     }
 
     @ExceptionHandler({HttpServerErrorException.class, HttpClientErrorException.class})

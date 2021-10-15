@@ -24,10 +24,10 @@ import java.util.List;
 @Slf4j
 public class DashboardController {
 
-    public static final String ERROR_MESSAGE_ATTRIBUTE_NAME = "errorMessage";
-    public static final String SUCCESS = "success";
-    public static final String ISSUE_DTO_ATTRIBUTE_NAME = "issueFormDto";
-    public static final String DESCRIPTION_DTO_ATTRIBUTE_NAME = "descriptionDto";
+    private static final String ERROR_MESSAGE_ATTRIBUTE_NAME = "errorMessage";
+    private static final String SUCCESS = "success";
+    private static final String ISSUE_DTO_ATTRIBUTE_NAME = "issueFormDto";
+    private static final String DESCRIPTION_DTO_ATTRIBUTE_NAME = "descriptionDto";
     private static final String ATTACHMENT_DTO_ATTRIBUTE_NAME = "attachmentDto";
     private static final String ISSUES_ATTRIBUTE_NAME = "issues";
     private static final String ISSUES_AS_JSON_ATTRIBUTE_NAME = "issuesAsJson";

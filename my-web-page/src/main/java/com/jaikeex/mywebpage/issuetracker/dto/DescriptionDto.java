@@ -11,5 +11,4 @@ public class DescriptionDto {
 
     private String title;
     private String description;
-
 }

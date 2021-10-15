@@ -24,8 +24,11 @@ import java.util.List;
 @Slf4j
 public class IssueService {
 
-    private static final String CIRCUIT_BREAKER_NAME = "ISSUE_SERVICE_CB";
     private static final String CREATE_REPORT_ERROR_MESSAGE = "There was an error creating the report.";
+    private static final String UPDATE_ISSUE_ERROR_MESSAGE = "There was an error updating the report.";
+    private static final String UPLOAD_ATTACHMENT_ERROR_MESSAGE = "There was an error while uploading the file.";
+    private static final String FALLBACK_ISSUE_TITLE = "Issue tracker service is unavailable!";
+    private static final String FALLBACK_ISSUE_DESCRIPTION = "There was an error retrieving the list of reports, please try again later.";
 
     @Value("${docker.network.issue-tracker-service-url}")
     private String issueTrackerServiceUrl;
@@ -37,17 +40,18 @@ public class IssueService {
     @Autowired
     public IssueService(
             RestTemplateFactory restTemplateFactory,
-            CircuitBreakerFactory<?, ?> circuitBreakerFactory,
+            CircuitBreaker circuitBreaker,
             ContactService contactService) {
         this.restTemplateFactory = restTemplateFactory;
-        this.circuitBreaker = circuitBreakerFactory.create(CIRCUIT_BREAKER_NAME);
+        this.circuitBreaker = circuitBreaker;
         this.contactService = contactService;
     }
 
     /**
      * Processes the dto object and sends the data to the issue tracker service
-     * /create endpoint with an http request.
-     * @param issueFormDto A data transfer object with the fields necessary for
+     * /create endpoint with an http request. Also sends a notification email
+     * to the tracker admin.
+     * @param issueFormDto Data transfer object with the fields necessary for
      *                 creating a new issue report in the database.
      * @throws org.springframework.web.client.HttpClientErrorException
      *          Whenever a 4xx http status code gets returned.
@@ -63,8 +67,8 @@ public class IssueService {
 
     /**
      * Processes the dto object and sends the data to the issue tracker service
-     * /update-description endpoint with an http request.
-     * @param descriptionDto A data transfer object with the fields necessary for
+     * /update-description.
+     * @param descriptionDto Data transfer object with the fields necessary for
      *                      updating the description of an issue report in the database.
      * @throws org.springframework.web.client.HttpClientErrorException
      *          Whenever a 4xx http status code gets returned.
@@ -73,15 +77,20 @@ public class IssueService {
      */
     public void updateDescription(DescriptionDto descriptionDto) {
         String url = issueTrackerServiceUrl + "update-description";
-        String errorMessage = "There was an error updating the report.";
-        postRequestToIssueMicroservice(url, descriptionDto, errorMessage);
+        postRequestToIssueMicroservice(url, descriptionDto, UPDATE_ISSUE_ERROR_MESSAGE);
     }
 
+    /**
+     * Processes the dto object and sends the data to the issue tracker service
+     * /upload-attachment endpoint.
+     * @param attachmentFormDto Data transfer object carrying attachment file
+                                data from html form.
+     * @throws IOException Whenever there is a problem processing the attachment file.
+     */
     public void uploadNewAttachment(AttachmentFormDto attachmentFormDto) throws IOException {
         AttachmentFileDto attachmentFileDto = new AttachmentFileDto(attachmentFormDto);
         String url = issueTrackerServiceUrl + "upload-attachment";
-        String errorMessage = "There was an error while uploading the file.";
-        postRequestToIssueMicroservice(url, attachmentFileDto, errorMessage);
+        postRequestToIssueMicroservice(url, attachmentFileDto, UPLOAD_ATTACHMENT_ERROR_MESSAGE);
     }
 
     /**
@@ -121,24 +130,18 @@ public class IssueService {
     }
 
     private List<Issue> findAllFallback() {
-        log.warn("issue-tracker-service is unreachable!");
-        Issue fallbackIssue = new Issue();
-        fallbackIssue.setTitle("ISSUE TRACKER SERVICE IS UNAVAILABLE!");
-        fallbackIssue.setDescription("There was an error retrieving the list of reports, please try again later.");
+        log.warn(FALLBACK_ISSUE_TITLE);
+        Issue fallbackIssue = new Issue(FALLBACK_ISSUE_TITLE.toUpperCase(), FALLBACK_ISSUE_DESCRIPTION);
         return Collections.singletonList(fallbackIssue);
     }
 
     private ResponseEntity<Issue> throwFallbackException(String fallbackMessage, String exceptionMessage) {
         log.warn(exceptionMessage);
-        log.warn("issue-tracker-service is unreachable!");
-        throw new IssueServiceDownException(fallbackMessage);
+        throw new IssueServiceDownException(fallbackMessage + "\n" + exceptionMessage);
     }
 
     private void notifyAdministrator(IssueDto issueDto) {
-        final EmailDto emailDto = new EmailDto();
-        emailDto.setSender(issueDto.getAuthor());
-        emailDto.setSubject("New report! - " + issueDto.getTitle());
-        emailDto.setMessageText(issueDto.getDescription());
+        final EmailDto emailDto = new EmailDto(issueDto);
         this.contactService.sendEmailToAdmin(emailDto);
     }
 }

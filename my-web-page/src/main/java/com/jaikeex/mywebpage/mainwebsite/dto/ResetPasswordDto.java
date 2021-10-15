@@ -19,7 +19,6 @@ public class ResetPasswordDto implements MatchingPasswords {
 
     private PasswordEncoder encoder = new MyPasswordEncoder();
 
-
     @ValidateEmail
     @NotBlank
     private String email;

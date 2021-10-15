@@ -3,12 +3,14 @@ package com.jaikeex.mywebpage.mainwebsite.model;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 import java.sql.Timestamp;
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+@Slf4j
 public class Email {
 
     private Integer id;
@@ -47,13 +49,15 @@ public class Email {
             return this;
         }
 
-        public Builder message(Timestamp date) {
+        public Builder date(Timestamp date) {
             this.date = date;
             return this;
         }
 
         public Email build() {
-            return new Email(this);
+            Email email = new Email(this);
+            log.debug("Building new Email [email={}]", email);
+            return email;
         }
     }
 

@@ -18,7 +18,6 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.web.client.RestTemplate;
 
-import static com.jaikeex.mywebpage.MyWebPageApplication.API_GATEWAY_URL;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -27,6 +26,7 @@ import static org.mockito.Mockito.*;
 @SpringBootTest
 @ExtendWith(SpringExtension.class)
 class UserServiceTest {
+
     @MockBean
     RestTemplateFactory restTemplateFactory;
     @MockBean
@@ -56,6 +56,7 @@ class UserServiceTest {
     @Test
     public void registerUser_givenValidData_shouldCallUserServiceWithCorrectArguments(){
         service.registerUser(userDto);
+        String API_GATEWAY_URL = "http://api-gateway:9000/";
         verify(restTemplate, times(1)).exchange(
                 API_GATEWAY_URL + "users/", HttpMethod.POST, entity, User.class);
     }

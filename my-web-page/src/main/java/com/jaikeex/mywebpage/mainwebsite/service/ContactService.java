@@ -14,7 +14,7 @@ import org.springframework.web.client.RestTemplate;
 @Slf4j
 public class ContactService{
 
-    public static final String CONTACT_EMAIL_RECIPIENT = "hrubyy.jakub@gmail.com";
+    private static final String CONTACT_EMAIL_RECIPIENT = "hrubyy.jakub@gmail.com";
 
     @Value("${docker.network.api-gateway-url}")
     private String apiGatewayUrl;

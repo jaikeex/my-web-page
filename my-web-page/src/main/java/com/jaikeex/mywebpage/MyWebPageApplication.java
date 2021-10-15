@@ -13,7 +13,6 @@ import org.springframework.cloud.netflix.eureka.EnableEurekaClient;
 @EnableConfigurationProperties(StorageProperties.class)
 public class MyWebPageApplication  implements CommandLineRunner {
 
-	public static final String API_GATEWAY_URL = "http://api-gateway:9000/";
 
 	@Autowired
 	public MyWebPageApplication() {

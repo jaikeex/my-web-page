@@ -40,17 +40,18 @@ public class ResetPasswordService {
 
     private void sendResetPasswordRequestToUserService(ResetPasswordDto resetPasswordDto) {
         RestTemplate restTemplate = restTemplateFactory.getRestTemplate();
-        restTemplate.patchForObject(
-                apiGatewayUrl + "users/password/email/" + resetPasswordDto.getEmail() + "/token/" + resetPasswordDto.getToken(),
-                    resetPasswordDto.getPassword(),
-                    User.class);
-        log.info("Sent a request to the user service to change password in database [email={}]", resetPasswordDto.getEmail());
+        String url = getResetPasswordUrl(resetPasswordDto);
+        restTemplate.patchForObject(url, resetPasswordDto.getPassword(), User.class);
+    }
+
+    private String getResetPasswordUrl(ResetPasswordDto resetPasswordDto) {
+        return apiGatewayUrl + "users/password/email/" + resetPasswordDto.getEmail() + "/token/" + resetPasswordDto.getToken();
     }
 
     public void sendConfirmationEmail(String email) {
         RestTemplate restTemplate = restTemplateFactory.getRestTemplate();
-        restTemplate.getForEntity(apiGatewayUrl + "users/reset-password/email/" + email, User.class);
-        log.info("Sent a request to the user service to process the reset password confirmation email [email={}]", email);
+        String url = apiGatewayUrl + "users/reset-password/email/" + email;
+        restTemplate.getForEntity(url, User.class);
     }
 }
 

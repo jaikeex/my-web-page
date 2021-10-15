@@ -36,9 +36,8 @@ public class ProjectDetailsService {
      */
     public Project getProjectById(Integer projectId) {
         RestTemplate restTemplate = restTemplateFactory.getRestTemplate();
-        ResponseEntity<Project> responseEntity = restTemplate.getForEntity(
-                apiGatewayUrl + "projects/id/" + projectId, Project.class);
-        log.info("Sent a request to the projects service for the details of a single project [id={}]", projectId);
+        String url = apiGatewayUrl + "projects/id/" + projectId;
+        ResponseEntity<Project> responseEntity = restTemplate.getForEntity(url, Project.class);
         return responseEntity.getBody();
     }
 
@@ -52,9 +51,8 @@ public class ProjectDetailsService {
      */
     public List<Project> getProjectsList() {
         RestTemplate restTemplate = restTemplateFactory.getRestTemplate();
-        ResponseEntity<Project[]> responseEntity = restTemplate.getForEntity(
-                apiGatewayUrl + "projects", Project[].class);
-        log.info("Sent a request to the projects service for the details all available projects");
+        String url = apiGatewayUrl + "projects";
+        ResponseEntity<Project[]> responseEntity = restTemplate.getForEntity(url, Project[].class);
         Project[] projectsArray = responseEntity.getBody();
         return Arrays.asList(projectsArray);
     }

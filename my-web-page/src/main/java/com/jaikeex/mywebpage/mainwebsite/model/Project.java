@@ -12,6 +12,8 @@ import java.util.Set;
 @AllArgsConstructor
 public class Project {
 
+    //TODO: Refactor the project-technology relationship.
+
     private int id;
     private String name;
     private String githubLink;

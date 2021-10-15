@@ -4,6 +4,7 @@ import com.jaikeex.mywebpage.mainwebsite.dto.UserDto;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 import java.sql.Timestamp;
 import java.util.Objects;
@@ -11,7 +12,9 @@ import java.util.Objects;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
+@Slf4j
 public class User{
+    //TODO: This needs more functionality.
 
     private int id;
     private String username;
@@ -27,16 +30,15 @@ public class User{
     public User (UserDto userDto) {
         Timestamp now = new Timestamp(System.currentTimeMillis());
         userDto.encodePassword();
-
         this.setUsername(userDto.getUsername());
         this.setPassword(userDto.getPassword());
         this.setEmail(userDto.getEmail());
-
         this.setEnabled(true);
         this.setCreationDate(now);
         this.setLastAccessDate(now);
         this.setUpdatedAt(now);
         this.setRole("ROLE_USER");
+        log.debug("Initialized User from UserDto [user={}]", this);
     }
 
     @Override
