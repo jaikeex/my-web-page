@@ -3,8 +3,10 @@ package com.jaikeex.mywebpage.mainwebsite.controller;
 import com.jaikeex.mywebpage.mainwebsite.dto.UserDto;
 import com.jaikeex.mywebpage.mainwebsite.service.UserService;
 import com.jaikeex.mywebpage.mainwebsite.utility.BindingResultErrorParser;
+import com.jaikeex.mywebpage.mainwebsite.utility.exception.UserServiceDownException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -20,6 +22,9 @@ import javax.validation.Valid;
 @Controller
 @Slf4j
 public class UserController {
+
+    @Value("${spring.error-page-view:error}")
+    private String errorPageView;
 
     private static final String LOGIN_VIEW = "user/login";
     private static final String USER_AUTH_INFO_VIEW = "user/auth/info";
@@ -92,10 +97,9 @@ public class UserController {
         log.debug("Added attribute to model [name={}, value={}]", USER_DTO_ATTRIBUTE_NAME, userDto);
     }
 
-    @ExceptionHandler({HttpServerErrorException.class, HttpClientErrorException.class})
-    public String userServiceError(Model model, HttpStatusCodeException exception) {
-        addUserDtoObjectToModel(model);
+    @ExceptionHandler(HttpClientErrorException.class)
+    public String handleHttpException(Model model, HttpClientErrorException exception) {
         addRegistrationFailedAttributesToModel(model, exception);
-        return SIGNUP_VIEW;
+        return getRegistrationPage(model);
     }
 }

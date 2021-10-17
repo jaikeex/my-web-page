@@ -7,6 +7,8 @@ spring:
     suffix: .html
   application:
     name: my-web-page
+  error-page-view: "error"
+  error-message-attribute-name: "errorMessage"
 
 storage:
   folder:
@@ -22,7 +24,7 @@ logging:
       file-name-pattern: "/logs/my-web-page/logFile.%d{yyyy-MM-dd}.log"
       max-history: 3
   level:
-    root: info
+    root: debug
 
 docker:
   network:
@@ -39,6 +41,15 @@ management:
         include: "*"
       base-path: "/actuator"
 
+eureka:
+  client:
+    register-with-eureka: true
+    fetch-registry: true
+    service-url:
+      defaultZone: http://service-registry:8761/eureka/
+  instance:
+    hostname: service-registry
+
 resilience4j:
   circuitbreaker:
     instances:
@@ -52,12 +63,23 @@ resilience4j:
         slidingWindowType: COUNT_BASED
         slidingWindowSize: 10
         permittedNumberOfCallsInHalfOpenState: 3
-
-eureka:
-  client:
-    register-with-eureka: true
-    fetch-registry: true
-    service-url:
-      defaultZone: http://service-registry:8761/eureka/
-  instance:
-    hostname: service-registry
+      PROJECTS_SERVICE_CB:
+        registerHealthIndicator: true
+        eventConsumerBufferSize: 10
+        automaticTransitionFromOpenToHalfOpenEnabled: true
+        failureRateThreshold: 10
+        minimumNumberOfCalls: 5
+        waitDurationOpenState: 5s
+        slidingWindowType: COUNT_BASED
+        slidingWindowSize: 10
+        permittedNumberOfCallsInHalfOpenState: 3
+      USER_SERVICE_CB:
+        registerHealthIndicator: true
+        eventConsumerBufferSize: 10
+        automaticTransitionFromOpenToHalfOpenEnabled: true
+        failureRateThreshold: 10
+        minimumNumberOfCalls: 5
+        waitDurationOpenState: 5s
+        slidingWindowType: COUNT_BASED
+        slidingWindowSize: 10
+        permittedNumberOfCallsInHalfOpenState: 3

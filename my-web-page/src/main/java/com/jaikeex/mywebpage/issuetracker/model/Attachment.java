@@ -1,4 +1,4 @@
-package com.jaikeex.mywebpage.issuetracker.entity;
+package com.jaikeex.mywebpage.issuetracker.model;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -9,11 +9,12 @@ import java.sql.Timestamp;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class HistoryRecord {
+public class Attachment {
 
     private int id;
-    private String text;
+    private String path;
     private Timestamp date;
+    private String originalFilename;
     private Issue issue;
 
 }

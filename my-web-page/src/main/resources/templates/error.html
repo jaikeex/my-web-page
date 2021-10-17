@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+  <title>Error</title>
+  <div th:replace="fragments/head :: head"></div>
+</head>
+<body>
+  <div th:replace="fragments/mobile-nav :: mobile-nav"></div>
+  <div th:replace="fragments/header :: headertemplate (currentpage='home')"></div>
+
+  <main id="main"><!-- #main -->
+    <div th:replace="fragments/banner :: banner"></div>
+    <div th:replace="fragments/breadcrumbs :: breadcrumbs (title='Home')"></div>
+
+      <section id="index" class="container">
+        <div class="row">
+          <div class="col-lg-8">
+            <h3 class="error-message" style="color:red" th:text="${errorMessage}"></h3>
+          </div>
+        </div>
+      </section>
+
+  </main><!-- End #main -->
+
+  <div th:replace="fragments/footer :: footer"></div>
+  <div th:replace="fragments/arrowup :: arrowup"></div>
+  <div th:replace="fragments/jsfiles :: jsfiles"></div>
+
+</body>
+
+</html>

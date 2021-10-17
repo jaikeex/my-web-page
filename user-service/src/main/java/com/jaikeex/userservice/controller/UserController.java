@@ -96,7 +96,7 @@ public class UserController {
             return getInvalidResetTokenResponseEntity(exception.getMessage());
         }
     }
-    @PatchMapping("/last-access/")
+    @PostMapping("/last-access/")
     public ResponseEntity<Object> updateLastAccessDateOfUser(
             @RequestBody UserLastAccessDateDto userLastAccessDateDto) {
         log.debug("entering /users/last-access/ endpoint");

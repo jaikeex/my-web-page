@@ -1,4 +1,4 @@
-package com.jaikeex.mywebpage.issuetracker.entity.properties;
+package com.jaikeex.mywebpage.issuetracker.model.properties;
 
 /**
  * Solution Status of the issue. New reports are automatically assigned

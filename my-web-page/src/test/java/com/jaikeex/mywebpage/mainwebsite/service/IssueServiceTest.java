@@ -2,11 +2,11 @@ package com.jaikeex.mywebpage.mainwebsite.service;
 
 import com.jaikeex.mywebpage.issuetracker.dto.DescriptionDto;
 import com.jaikeex.mywebpage.issuetracker.dto.IssueFormDto;
-import com.jaikeex.mywebpage.issuetracker.entity.Issue;
-import com.jaikeex.mywebpage.issuetracker.entity.properties.IssueType;
-import com.jaikeex.mywebpage.issuetracker.entity.properties.Project;
-import com.jaikeex.mywebpage.issuetracker.entity.properties.Severity;
-import com.jaikeex.mywebpage.issuetracker.entity.properties.Status;
+import com.jaikeex.mywebpage.issuetracker.model.Issue;
+import com.jaikeex.mywebpage.issuetracker.model.properties.IssueType;
+import com.jaikeex.mywebpage.issuetracker.model.properties.Project;
+import com.jaikeex.mywebpage.issuetracker.model.properties.Severity;
+import com.jaikeex.mywebpage.issuetracker.model.properties.Status;
 import com.jaikeex.mywebpage.issuetracker.service.IssueService;
 import com.jaikeex.mywebpage.resttemplate.RestTemplateFactory;
 import org.junit.jupiter.api.BeforeEach;

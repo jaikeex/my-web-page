@@ -1,10 +1,15 @@
 package com.jaikeex.mywebpage.mainwebsite.service;
 
+import com.jaikeex.mywebpage.config.circuitbreaker.FallbackHandler;
+import com.jaikeex.mywebpage.config.circuitbreaker.qualifier.CircuitBreakerName;
+import com.jaikeex.mywebpage.mainwebsite.controller.fallback.MwpFallbackHandler;
 import com.jaikeex.mywebpage.mainwebsite.model.Project;
+import com.jaikeex.mywebpage.mainwebsite.utility.exception.ProjectsServiceDownException;
 import com.jaikeex.mywebpage.resttemplate.RestTemplateFactory;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cloud.client.circuitbreaker.CircuitBreaker;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
@@ -16,14 +21,23 @@ import java.util.List;
 @Slf4j
 public class ProjectDetailsService {
 
+    private static final String PROJECTS_SERVICE_CIRCUIT_BREAKER_NAME = "PROJECTS_SERVICE_CB";
+    private static final String GENERAL_FALLBACK_MESSAGE = "There was an error while fetching the projects info.";
+
     @Value("${docker.network.api-gateway-url}")
     private String apiGatewayUrl;
 
-    RestTemplateFactory restTemplateFactory;
+    private final RestTemplate restTemplate;
+    private final CircuitBreaker circuitBreaker;
+    private final FallbackHandler fallbackHandler;
 
     @Autowired
-    public ProjectDetailsService(RestTemplateFactory restTemplateFactory) {
-        this.restTemplateFactory = restTemplateFactory;
+    public ProjectDetailsService(RestTemplateFactory restTemplateFactory,
+                                 @CircuitBreakerName(PROJECTS_SERVICE_CIRCUIT_BREAKER_NAME) CircuitBreaker circuitBreaker,
+                                 MwpFallbackHandler fallbackManager) {
+        this.restTemplate = restTemplateFactory.getRestTemplate();
+        this.circuitBreaker = circuitBreaker;
+        this.fallbackHandler = fallbackManager;
     }
 
     /**Fetches a project matching the provided id value from the projects service.
@@ -35,9 +49,9 @@ public class ProjectDetailsService {
      *          Whenever a 5xx http status code gets returned.
      */
     public Project getProjectById(Integer projectId) {
-        RestTemplate restTemplate = restTemplateFactory.getRestTemplate();
         String url = apiGatewayUrl + "projects/id/" + projectId;
-        ResponseEntity<Project> responseEntity = restTemplate.getForEntity(url, Project.class);
+        ResponseEntity<Project> responseEntity =
+                sendRequest(url, Project.class);
         return responseEntity.getBody();
     }
 
@@ -50,10 +64,15 @@ public class ProjectDetailsService {
      *          Whenever a 5xx http status code gets returned.
      */
     public List<Project> getProjectsList() {
-        RestTemplate restTemplate = restTemplateFactory.getRestTemplate();
         String url = apiGatewayUrl + "projects";
-        ResponseEntity<Project[]> responseEntity = restTemplate.getForEntity(url, Project[].class);
+        ResponseEntity<Project[]> responseEntity = sendRequest(url, Project[].class);
         Project[] projectsArray = responseEntity.getBody();
         return Arrays.asList(projectsArray);
+    }
+
+    private <T> ResponseEntity<T> sendRequest(String url, Class<T> responseType) {
+        return circuitBreaker.run(
+                () -> restTemplate.getForEntity(url, responseType),
+                throwable -> fallbackHandler.throwFallbackException(GENERAL_FALLBACK_MESSAGE, throwable, ProjectsServiceDownException.class));
     }
 }

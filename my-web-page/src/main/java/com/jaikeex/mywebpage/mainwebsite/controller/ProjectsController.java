@@ -3,6 +3,7 @@ package com.jaikeex.mywebpage.mainwebsite.controller;
 
 import com.jaikeex.mywebpage.mainwebsite.model.Project;
 import com.jaikeex.mywebpage.mainwebsite.service.ProjectDetailsService;
+import com.jaikeex.mywebpage.mainwebsite.utility.exception.ProjectsServiceDownException;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,7 +27,6 @@ public class ProjectsController {
     private static final String PROJECT_DESCRIPTION_ATTRIBUTE_NAME = "projectDescriptionText";
     private static final String ERROR_MESSAGE_ATTRIBUTE_NAME = "errorMessage";
     private static final String PROJECTS_LIST_ATTRIBUTE_NAME = "projects";
-    private static final String PROJECT_DOES_NOT_EXIST = "This project does not exist";
 
     ProjectDetailsService service;
 
@@ -62,9 +62,9 @@ public class ProjectsController {
         log.debug("Added attribute to model [name={}, value={}]", PROJECTS_LIST_ATTRIBUTE_NAME, projects);
     }
 
-    private void appendModelWithProjectNotFoundAttributes(Model model) {
-        model.addAttribute(ERROR_MESSAGE_ATTRIBUTE_NAME, PROJECT_DOES_NOT_EXIST);
-        log.debug("Added attribute to model [name={}, value={}]", ERROR_MESSAGE_ATTRIBUTE_NAME, PROJECT_DOES_NOT_EXIST);
+    private void appendModelWithProjectNotFoundAttributes(Model model, String errorMessage) {
+        model.addAttribute(ERROR_MESSAGE_ATTRIBUTE_NAME, errorMessage);
+        log.debug("Added attribute to model [name={}, value={}]", ERROR_MESSAGE_ATTRIBUTE_NAME, errorMessage);
     }
 
     private void appendModelWithProjectDataAttributes(Model model, Project project) {
@@ -75,8 +75,8 @@ public class ProjectsController {
     }
 
     @ExceptionHandler(HttpClientErrorException.class)
-    public String projectNotFound(Model model) {
-        appendModelWithProjectNotFoundAttributes(model);
+    public String handleProjectNotFound(Model model, HttpClientErrorException exception) {
+        appendModelWithProjectNotFoundAttributes(model, exception.getResponseBodyAsString());
         return PROJECTS_VIEW;
     }
 }

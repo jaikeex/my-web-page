@@ -1,4 +1,4 @@
-package com.jaikeex.mywebpage.issuetracker.entity.properties;
+package com.jaikeex.mywebpage.issuetracker.model.properties;
 
 /**
  * The importance of the issue. Ranges from low to critical.

@@ -1,4 +1,4 @@
-package com.jaikeex.mywebpage.issuetracker.entity.properties;
+package com.jaikeex.mywebpage.issuetracker.model.properties;
 
 /**
  * Represents the purpose of the issue, whether it's a bug report,

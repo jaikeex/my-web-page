@@ -1,7 +1,8 @@
 package com.jaikeex.mywebpage.issuetracker.service;
 
+import com.jaikeex.mywebpage.config.circuitbreaker.qualifier.CircuitBreakerName;
 import com.jaikeex.mywebpage.issuetracker.dto.*;
-import com.jaikeex.mywebpage.issuetracker.entity.Issue;
+import com.jaikeex.mywebpage.issuetracker.model.Issue;
 import com.jaikeex.mywebpage.issuetracker.utility.IssueServiceDownException;
 import com.jaikeex.mywebpage.mainwebsite.dto.EmailDto;
 import com.jaikeex.mywebpage.mainwebsite.service.ContactService;
@@ -10,7 +11,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cloud.client.circuitbreaker.CircuitBreaker;
-import org.springframework.cloud.client.circuitbreaker.CircuitBreakerFactory;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
@@ -29,22 +29,23 @@ public class IssueService {
     private static final String UPLOAD_ATTACHMENT_ERROR_MESSAGE = "There was an error while uploading the file.";
     private static final String FALLBACK_ISSUE_TITLE = "Issue tracker service is unavailable!";
     private static final String FALLBACK_ISSUE_DESCRIPTION = "There was an error retrieving the list of reports, please try again later.";
+    private static final String ISSUE_SERVICE_CIRCUIT_BREAKER_NAME = "ISSUE_SERVICE_CB";
 
     @Value("${docker.network.issue-tracker-service-url}")
     private String issueTrackerServiceUrl;
 
-    private final RestTemplateFactory restTemplateFactory;
     private final CircuitBreaker circuitBreaker;
     private final ContactService contactService;
+    private final RestTemplate restTemplate;
 
     @Autowired
     public IssueService(
             RestTemplateFactory restTemplateFactory,
-            CircuitBreaker circuitBreaker,
+            @CircuitBreakerName(ISSUE_SERVICE_CIRCUIT_BREAKER_NAME) CircuitBreaker circuitBreaker,
             ContactService contactService) {
-        this.restTemplateFactory = restTemplateFactory;
         this.circuitBreaker = circuitBreaker;
         this.contactService = contactService;
+        this.restTemplate = restTemplateFactory.getRestTemplate();
     }
 
     /**
@@ -93,7 +94,7 @@ public class IssueService {
         postRequestToIssueMicroservice(url, attachmentFileDto, UPLOAD_ATTACHMENT_ERROR_MESSAGE);
     }
 
-    /**
+     /**
      * Fetches all issue reports from the issue tracker service and returns
      * them as a List.
      * @return list of Issue objects representing all the issue reports in the
@@ -105,17 +106,16 @@ public class IssueService {
      */
     public List<Issue> getAllIssues() {
         String url = issueTrackerServiceUrl + "all";
-        return getListOfAllIssues(url);
+        return getListOfAllIssuesFromTrackerService(url);
     }
 
-    private List<Issue> getListOfAllIssues(String url) {
+    private List<Issue> getListOfAllIssuesFromTrackerService(String url) {
         return circuitBreaker.run(
-                () -> sendFindAllRequestToIssueMicroservice(url),
+                () -> sendGetRequest(url),
                 throwable -> findAllFallback());
     }
 
-    private List<Issue> sendFindAllRequestToIssueMicroservice(String url) {
-        RestTemplate restTemplate = restTemplateFactory.getRestTemplate();
+    private List<Issue> sendGetRequest(String url) {
         ResponseEntity<Issue[]> responseEntity =
                 restTemplate.getForEntity(url, Issue[].class);
         return Arrays.asList(responseEntity.getBody());
@@ -123,10 +123,14 @@ public class IssueService {
 
     private void postRequestToIssueMicroservice(
             String url, Object body, String fallbackMessage) {
-        RestTemplate restTemplate = restTemplateFactory.getRestTemplate();
         circuitBreaker.run(
                 () -> restTemplate.postForEntity(url, body, Issue.class),
                 throwable -> throwFallbackException(fallbackMessage, throwable.getMessage()));
+    }
+
+    private void notifyAdministrator(IssueDto issueDto) {
+        final EmailDto emailDto = new EmailDto(issueDto);
+        this.contactService.sendEmailToAdmin(emailDto);
     }
 
     private List<Issue> findAllFallback() {
@@ -138,10 +142,5 @@ public class IssueService {
     private ResponseEntity<Issue> throwFallbackException(String fallbackMessage, String exceptionMessage) {
         log.warn(exceptionMessage);
         throw new IssueServiceDownException(fallbackMessage + "\n" + exceptionMessage);
-    }
-
-    private void notifyAdministrator(IssueDto issueDto) {
-        final EmailDto emailDto = new EmailDto(issueDto);
-        this.contactService.sendEmailToAdmin(emailDto);
     }
 }

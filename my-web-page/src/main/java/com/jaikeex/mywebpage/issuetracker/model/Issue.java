@@ -1,10 +1,10 @@
-package com.jaikeex.mywebpage.issuetracker.entity;
+package com.jaikeex.mywebpage.issuetracker.model;
 
 import com.jaikeex.mywebpage.issuetracker.dto.IssueFormDto;
-import com.jaikeex.mywebpage.issuetracker.entity.properties.IssueType;
-import com.jaikeex.mywebpage.issuetracker.entity.properties.Project;
-import com.jaikeex.mywebpage.issuetracker.entity.properties.Severity;
-import com.jaikeex.mywebpage.issuetracker.entity.properties.Status;
+import com.jaikeex.mywebpage.issuetracker.model.properties.IssueType;
+import com.jaikeex.mywebpage.issuetracker.model.properties.Project;
+import com.jaikeex.mywebpage.issuetracker.model.properties.Severity;
+import com.jaikeex.mywebpage.issuetracker.model.properties.Status;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
