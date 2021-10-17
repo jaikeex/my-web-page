@@ -1,44 +1,31 @@
 package com.jaikeex.mywebpage.mainwebsite.service;
 
-import com.jaikeex.mywebpage.config.circuitbreaker.FallbackHandler;
-import com.jaikeex.mywebpage.config.circuitbreaker.qualifier.CircuitBreakerName;
-import com.jaikeex.mywebpage.mainwebsite.controller.fallback.MwpFallbackHandler;
+import com.jaikeex.mywebpage.config.connection.ServiceRequest;
+import com.jaikeex.mywebpage.mainwebsite.connection.MwpServiceRequest;
 import com.jaikeex.mywebpage.mainwebsite.dto.UserDto;
 import com.jaikeex.mywebpage.mainwebsite.dto.UserLastAccessDateDto;
 import com.jaikeex.mywebpage.mainwebsite.model.User;
+import com.jaikeex.mywebpage.mainwebsite.utility.exception.ServiceDownException;
 import com.jaikeex.mywebpage.mainwebsite.utility.exception.UserServiceDownException;
-import com.jaikeex.mywebpage.resttemplate.RestTemplateFactory;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.cloud.client.circuitbreaker.CircuitBreaker;
-import org.springframework.http.*;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.HttpClientErrorException;
-import org.springframework.web.client.RestTemplate;
 
 @Service
 @Slf4j
 public class UserService {
 
-    private static final String USER_SERVICE_CIRCUIT_BREAKER_NAME = "USER_SERVICE_CB";
-    private static final String REGISTER_USER_ERROR_MESSAGE = "There was an error registering the new user.";
-    private static final String UPDATE_USER_DATA_ERROR_MESSAGE = "There was an error updating the user data.";
+    private static final Class<? extends ServiceDownException> SERVICE_EXCEPTION_TYPE = UserServiceDownException.class;
 
     @Value("${docker.network.api-gateway-url}")
     private String apiGatewayUrl;
 
-    private final RestTemplate restTemplate;
-    private final CircuitBreaker circuitBreaker;
-    private final FallbackHandler fallbackHandler;
+    private final ServiceRequest serviceRequest;
 
     @Autowired
-    public UserService(RestTemplateFactory restTemplateFactory,
-                       @CircuitBreakerName(USER_SERVICE_CIRCUIT_BREAKER_NAME) CircuitBreaker circuitBreaker,
-                       MwpFallbackHandler fallbackHandler) {
-        this.restTemplate = restTemplateFactory.getRestTemplate();
-        this.circuitBreaker = circuitBreaker;
-        this.fallbackHandler = fallbackHandler;
+    public UserService(MwpServiceRequest serviceRequest) {
+        this.serviceRequest = serviceRequest;
     }
 
     /**Sends the new user's data to the user service to save them into the
@@ -53,7 +40,7 @@ public class UserService {
     public void registerUser (UserDto userDto){
         String url = apiGatewayUrl + "users/";
         User user = new User(userDto);
-        sendPostRequest(url, user, REGISTER_USER_ERROR_MESSAGE);
+        serviceRequest.sendPostRequest(url, user, SERVICE_EXCEPTION_TYPE);
     }
 
     /**Performs all the updates necessary when the user with a given username
@@ -67,12 +54,6 @@ public class UserService {
     public void updateUserStatsOnLogin(String username) {
         String url = apiGatewayUrl + "users/last-access/";
         UserLastAccessDateDto dto = new UserLastAccessDateDto(username);
-        sendPostRequest(url, dto, UPDATE_USER_DATA_ERROR_MESSAGE);
-    }
-
-    private void sendPostRequest(String url, Object body, String fallbackMessage) {
-        circuitBreaker.run(() -> restTemplate.postForEntity(url, body, User.class),
-                throwable -> fallbackHandler.throwFallbackException(
-                        fallbackMessage, throwable, UserServiceDownException.class));
+        serviceRequest.sendPostRequest(url, dto, SERVICE_EXCEPTION_TYPE);
     }
 }

@@ -1,6 +1,6 @@
-package com.jaikeex.mywebpage.mainwebsite.controller.fallback;
+package com.jaikeex.mywebpage.mainwebsite.connection;
 
-import com.jaikeex.mywebpage.config.circuitbreaker.FallbackHandler;
+import com.jaikeex.mywebpage.config.connection.FallbackHandler;
 import com.jaikeex.mywebpage.mainwebsite.utility.exception.ServiceDownException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
@@ -24,11 +24,11 @@ public class MwpFallbackHandler implements FallbackHandler {
 
     private void throwMatchingException(String fallbackMessage, Class<? extends ServiceDownException> exceptionType) {
         try {
-            throw exceptionType.getConstructor(String.class).newInstance(fallbackMessage);
+            throw exceptionType.getConstructor().newInstance();
         } catch (ReflectiveOperationException exception) {
             log.warn("Couldn't throw exception [exception={}]", exceptionType);
             log.warn("{}", (Object) exception.getStackTrace());
-            throw new ServiceDownException();
+            throw new ServiceDownException(fallbackMessage);
         }
     }
 

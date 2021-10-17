@@ -1,18 +1,15 @@
 package com.jaikeex.mywebpage.mainwebsite.service;
 
-import com.jaikeex.mywebpage.config.circuitbreaker.FallbackHandler;
-import com.jaikeex.mywebpage.config.circuitbreaker.qualifier.CircuitBreakerName;
-import com.jaikeex.mywebpage.mainwebsite.controller.fallback.MwpFallbackHandler;
+import com.jaikeex.mywebpage.config.connection.ServiceRequest;
+import com.jaikeex.mywebpage.mainwebsite.connection.MwpServiceRequest;
 import com.jaikeex.mywebpage.mainwebsite.model.Project;
 import com.jaikeex.mywebpage.mainwebsite.utility.exception.ProjectsServiceDownException;
-import com.jaikeex.mywebpage.resttemplate.RestTemplateFactory;
+import com.jaikeex.mywebpage.mainwebsite.utility.exception.ServiceDownException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.cloud.client.circuitbreaker.CircuitBreaker;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.RestTemplate;
 
 import java.util.Arrays;
 import java.util.List;
@@ -21,23 +18,16 @@ import java.util.List;
 @Slf4j
 public class ProjectDetailsService {
 
-    private static final String PROJECTS_SERVICE_CIRCUIT_BREAKER_NAME = "PROJECTS_SERVICE_CB";
-    private static final String GENERAL_FALLBACK_MESSAGE = "There was an error while fetching the projects info.";
+    private static final Class<? extends ServiceDownException> SERVICE_EXCEPTION_TYPE = ProjectsServiceDownException.class;
 
     @Value("${docker.network.api-gateway-url}")
     private String apiGatewayUrl;
 
-    private final RestTemplate restTemplate;
-    private final CircuitBreaker circuitBreaker;
-    private final FallbackHandler fallbackHandler;
+    private final ServiceRequest serviceRequest;
 
     @Autowired
-    public ProjectDetailsService(RestTemplateFactory restTemplateFactory,
-                                 @CircuitBreakerName(PROJECTS_SERVICE_CIRCUIT_BREAKER_NAME) CircuitBreaker circuitBreaker,
-                                 MwpFallbackHandler fallbackManager) {
-        this.restTemplate = restTemplateFactory.getRestTemplate();
-        this.circuitBreaker = circuitBreaker;
-        this.fallbackHandler = fallbackManager;
+    public ProjectDetailsService(MwpServiceRequest serviceRequest) {
+        this.serviceRequest = serviceRequest;
     }
 
     /**Fetches a project matching the provided id value from the projects service.
@@ -51,7 +41,7 @@ public class ProjectDetailsService {
     public Project getProjectById(Integer projectId) {
         String url = apiGatewayUrl + "projects/id/" + projectId;
         ResponseEntity<Project> responseEntity =
-                sendRequest(url, Project.class);
+                serviceRequest.sendGetRequest(url, Project.class, SERVICE_EXCEPTION_TYPE);
         return responseEntity.getBody();
     }
 
@@ -65,14 +55,9 @@ public class ProjectDetailsService {
      */
     public List<Project> getProjectsList() {
         String url = apiGatewayUrl + "projects";
-        ResponseEntity<Project[]> responseEntity = sendRequest(url, Project[].class);
+        ResponseEntity<Project[]> responseEntity =
+                serviceRequest.sendGetRequest(url, Project[].class, SERVICE_EXCEPTION_TYPE);
         Project[] projectsArray = responseEntity.getBody();
         return Arrays.asList(projectsArray);
-    }
-
-    private <T> ResponseEntity<T> sendRequest(String url, Class<T> responseType) {
-        return circuitBreaker.run(
-                () -> restTemplate.getForEntity(url, responseType),
-                throwable -> fallbackHandler.throwFallbackException(GENERAL_FALLBACK_MESSAGE, throwable, ProjectsServiceDownException.class));
     }
 }

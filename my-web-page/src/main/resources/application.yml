@@ -24,7 +24,7 @@ logging:
       file-name-pattern: "/logs/my-web-page/logFile.%d{yyyy-MM-dd}.log"
       max-history: 3
   level:
-    root: debug
+    root: info
 
 docker:
   network:
@@ -63,7 +63,7 @@ resilience4j:
         slidingWindowType: COUNT_BASED
         slidingWindowSize: 10
         permittedNumberOfCallsInHalfOpenState: 3
-      PROJECTS_SERVICE_CB:
+      ProjectsService_CB:
         registerHealthIndicator: true
         eventConsumerBufferSize: 10
         automaticTransitionFromOpenToHalfOpenEnabled: true

@@ -1,4 +1,4 @@
-package com.jaikeex.mywebpage.config.circuitbreaker;
+package com.jaikeex.mywebpage.config.connection;
 
 import com.jaikeex.mywebpage.mainwebsite.utility.exception.ServiceDownException;
 import org.springframework.http.ResponseEntity;

@@ -1,13 +1,15 @@
 package com.jaikeex.mywebpage.mainwebsite.service;
 
+import com.jaikeex.mywebpage.config.connection.ServiceRequest;
+import com.jaikeex.mywebpage.mainwebsite.connection.MwpServiceRequest;
 import com.jaikeex.mywebpage.mainwebsite.dto.EmailDto;
 import com.jaikeex.mywebpage.mainwebsite.model.Email;
-import com.jaikeex.mywebpage.resttemplate.RestTemplateFactory;
+import com.jaikeex.mywebpage.mainwebsite.utility.exception.ContactServiceDownException;
+import com.jaikeex.mywebpage.mainwebsite.utility.exception.ServiceDownException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.RestTemplate;
 
 
 @Service
@@ -15,15 +17,16 @@ import org.springframework.web.client.RestTemplate;
 public class ContactService{
 
     private static final String CONTACT_EMAIL_RECIPIENT = "hrubyy.jakub@gmail.com";
+    private static final Class<? extends ServiceDownException> SERVICE_EXCEPTION_TYPE = ContactServiceDownException.class;
 
     @Value("${docker.network.api-gateway-url}")
     private String apiGatewayUrl;
 
-    RestTemplateFactory restTemplateFactory;
+    private final ServiceRequest serviceRequest;
 
     @Autowired
-    public ContactService(RestTemplateFactory restTemplateFactory) {
-        this.restTemplateFactory = restTemplateFactory;
+    public ContactService(MwpServiceRequest serviceRequest) {
+        this.serviceRequest = serviceRequest;
     }
 
     /**Passes the data from a filled-in contact form to the email service
@@ -50,8 +53,8 @@ public class ContactService{
     }
 
     private void postHttpRequestToEmailService(Email email) {
-        RestTemplate restTemplate = restTemplateFactory.getRestTemplate();
-        restTemplate.postForEntity(apiGatewayUrl + "emails/", email, Email.class);
+        String url = apiGatewayUrl + "emails/";
+        serviceRequest.sendPostRequest(url, email, SERVICE_EXCEPTION_TYPE);
         log.info("Sent a request to the email service with the following [email={}]", email);
     }
 }
