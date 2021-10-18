@@ -3,7 +3,6 @@ package com.jaikeex.mywebpage.mainwebsite.controller;
 import com.jaikeex.mywebpage.mainwebsite.dto.UserDto;
 import com.jaikeex.mywebpage.mainwebsite.service.UserService;
 import com.jaikeex.mywebpage.mainwebsite.utility.BindingResultErrorParser;
-import com.jaikeex.mywebpage.mainwebsite.utility.exception.UserServiceDownException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -14,8 +13,6 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.client.HttpClientErrorException;
-import org.springframework.web.client.HttpServerErrorException;
-import org.springframework.web.client.HttpStatusCodeException;
 
 import javax.validation.Valid;
 

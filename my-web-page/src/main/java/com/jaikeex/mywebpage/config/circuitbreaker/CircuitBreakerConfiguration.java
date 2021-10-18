@@ -1,26 +1,31 @@
 package com.jaikeex.mywebpage.config.circuitbreaker;
 
 import com.jaikeex.mywebpage.config.circuitbreaker.qualifier.CircuitBreakerName;
+import io.github.resilience4j.circuitbreaker.CircuitBreakerConfig;
+import io.github.resilience4j.circuitbreaker.CircuitBreakerRegistry;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cloud.client.circuitbreaker.CircuitBreaker;
 import org.springframework.cloud.client.circuitbreaker.CircuitBreakerFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-@Configuration
-public class CircuitBreakerConfig {
+import java.time.Duration;
 
-    private static final String ISSUE_SERVICE_CIRCUIT_BREAKER = "IssueService_CB";
-    private static final String PROJECTS_SERVICE_CIRCUIT_BREAKER = "ProjectDetailsService_CB";
-    private static final String USER_SERVICE_CIRCUIT_BREAKER = "UserService_CB";
-    private static final String RESET_PASSWORD_SERVICE_CIRCUIT_BREAKER = "ResetPasswordService_CB";
-    private static final String CONTACT_SERVICE_CIRCUIT_BREAKER = "ContactService_CB";
+import static com.jaikeex.mywebpage.config.circuitbreaker.CircuitBreakerInstanceNames.*;
+
+@Configuration
+public class CircuitBreakerConfiguration {
+
+
 
     private final CircuitBreakerFactory<?, ?> circuitBreakerFactory;
-
+    private final CircuitBreakerConfig config;
+    private final CircuitBreakerRegistry circuitBreakerRegistry;
     @Autowired
-    public CircuitBreakerConfig(CircuitBreakerFactory<?, ?> circuitBreakerFactory) {
+    public CircuitBreakerConfiguration(CircuitBreakerFactory<?, ?> circuitBreakerFactory) {
+        this.circuitBreakerRegistry = CircuitBreakerRegistry.of(getConfig());
         this.circuitBreakerFactory = circuitBreakerFactory;
+        this.config = getConfig();
     }
 
     @Bean
@@ -52,4 +57,18 @@ public class CircuitBreakerConfig {
     public CircuitBreaker getContactServiceCircuitBreaker() {
         return circuitBreakerFactory.create(CONTACT_SERVICE_CIRCUIT_BREAKER);
     }
+
+    private CircuitBreakerConfig getConfig() {
+        return CircuitBreakerConfig.custom()
+                .failureRateThreshold(50)
+                .slowCallRateThreshold(50)
+                .waitDurationInOpenState(Duration.ofMillis(1000))
+                .slowCallDurationThreshold(Duration.ofSeconds(2))
+                .permittedNumberOfCallsInHalfOpenState(3)
+                .minimumNumberOfCalls(10)
+                .slidingWindowType(CircuitBreakerConfig.SlidingWindowType.TIME_BASED)
+                .slidingWindowSize(5)
+                .build();
+    }
+
 }

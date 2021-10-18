@@ -26,29 +26,19 @@ import java.util.List;
 @Slf4j
 public class IssueService {
 
-    private static final String CREATE_REPORT_ERROR_MESSAGE = "There was an error creating the report.";
-    private static final String UPDATE_ISSUE_ERROR_MESSAGE = "There was an error updating the report.";
-    private static final String UPLOAD_ATTACHMENT_ERROR_MESSAGE = "There was an error while uploading the file.";
-    private static final String ISSUE_SERVICE_CIRCUIT_BREAKER_NAME = "IssueService_CB";
     private static final Class<? extends ServiceDownException> SERVICE_DOWN_EXCEPTION = IssueServiceDownException.class;
 
     @Value("${docker.network.issue-tracker-service-url}")
     private String issueTrackerServiceUrl;
 
     private final ServiceRequest serviceRequest;
-    private final CircuitBreaker circuitBreaker;
     private final ContactService contactService;
-    private final RestTemplate restTemplate;
 
     @Autowired
     public IssueService(
-            TrackerServiceRequest serviceRequest, RestTemplateFactory restTemplateFactory,
-            @CircuitBreakerName(ISSUE_SERVICE_CIRCUIT_BREAKER_NAME) CircuitBreaker circuitBreaker,
-            ContactService contactService) {
+            TrackerServiceRequest serviceRequest, ContactService contactService) {
         this.serviceRequest = serviceRequest;
-        this.circuitBreaker = circuitBreaker;
         this.contactService = contactService;
-        this.restTemplate = restTemplateFactory.getRestTemplate();
     }
 
     /**
@@ -63,9 +53,9 @@ public class IssueService {
      *          Whenever a 5xx http status code gets returned.
      */
     public void createNewReport(IssueFormDto issueFormDto) throws IOException {
-        IssueDto issueDto = new IssueDto(issueFormDto);
         String url = issueTrackerServiceUrl + "create";
-        postRequestToIssueMicroservice(url, issueDto, CREATE_REPORT_ERROR_MESSAGE);
+        IssueDto issueDto = new IssueDto(issueFormDto);
+        serviceRequest.sendPostRequest(url, issueDto, IssueServiceDownException.class);
         notifyAdministrator(issueDto);
     }
 
@@ -81,7 +71,7 @@ public class IssueService {
      */
     public void updateDescription(DescriptionDto descriptionDto) {
         String url = issueTrackerServiceUrl + "update-description";
-        postRequestToIssueMicroservice(url, descriptionDto, UPDATE_ISSUE_ERROR_MESSAGE);
+        serviceRequest.sendPostRequest(url, descriptionDto, SERVICE_DOWN_EXCEPTION);
     }
 
     /**
@@ -92,9 +82,9 @@ public class IssueService {
      * @throws IOException Whenever there is a problem processing the attachment file.
      */
     public void uploadNewAttachment(AttachmentFormDto attachmentFormDto) throws IOException {
-        AttachmentFileDto attachmentFileDto = new AttachmentFileDto(attachmentFormDto);
         String url = issueTrackerServiceUrl + "upload-attachment";
-        postRequestToIssueMicroservice(url, attachmentFileDto, UPLOAD_ATTACHMENT_ERROR_MESSAGE);
+        AttachmentFileDto attachmentFileDto = new AttachmentFileDto(attachmentFormDto);
+        serviceRequest.sendPostRequest(url, attachmentFileDto, SERVICE_DOWN_EXCEPTION);
     }
 
      /**
@@ -119,27 +109,8 @@ public class IssueService {
         return Arrays.asList(issueArray);
     }
 
-    private List<Issue> sendGetRequest(String url) {
-        ResponseEntity<Issue[]> responseEntity =
-                restTemplate.getForEntity(url, Issue[].class);
-        return Arrays.asList(responseEntity.getBody());
-    }
-
-    private void postRequestToIssueMicroservice(
-            String url, Object body, String fallbackMessage) {
-        circuitBreaker.run(
-                () -> restTemplate.postForEntity(url, body, Issue.class),
-                throwable -> throwFallbackException(fallbackMessage, throwable.getMessage()));
-    }
-
     private void notifyAdministrator(IssueDto issueDto) {
         final EmailDto emailDto = new EmailDto(issueDto);
         this.contactService.sendEmailToAdmin(emailDto);
-    }
-
-
-    private ResponseEntity<Issue> throwFallbackException(String fallbackMessage, String exceptionMessage) {
-        log.warn(exceptionMessage);
-        throw new IssueServiceDownException(fallbackMessage + "\n" + exceptionMessage);
     }
 }

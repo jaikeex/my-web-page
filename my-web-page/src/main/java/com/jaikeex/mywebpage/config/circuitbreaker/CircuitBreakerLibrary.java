@@ -8,26 +8,27 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.stereotype.Component;
 
+import static com.jaikeex.mywebpage.config.circuitbreaker.CircuitBreakerInstanceNames.*;
+
+
 import java.util.HashMap;
 import java.util.Map;
-
 @Component
 public class CircuitBreakerLibrary {
-
-    private static final String ISSUE_SERVICE_CIRCUIT_BREAKER = "IssueService_CB";
-    private static final String PROJECTS_SERVICE_CIRCUIT_BREAKER = "ProjectDetailsService_CB";
-    private static final String USER_SERVICE_CIRCUIT_BREAKER = "UserService_CB";
-    private static final String RESET_PASSWORD_SERVICE_CIRCUIT_BREAKER = "ResetPasswordService_CB";
-    private static final String CONTACT_SERVICE_CIRCUIT_BREAKER = "ContactService_CB";
 
     private Map<String, CircuitBreaker> breakers;
 
     @Autowired
-    public CircuitBreakerLibrary(@CircuitBreakerName(ISSUE_SERVICE_CIRCUIT_BREAKER) CircuitBreaker issueServiceCircuitBreaker,
-                                 @CircuitBreakerName(PROJECTS_SERVICE_CIRCUIT_BREAKER) CircuitBreaker projectsServiceCircuitBreaker,
-                                 @CircuitBreakerName(USER_SERVICE_CIRCUIT_BREAKER) CircuitBreaker userServiceCircuitBreaker,
-                                 @CircuitBreakerName(RESET_PASSWORD_SERVICE_CIRCUIT_BREAKER) CircuitBreaker resetPasswordServiceCircuitBreaker,
-                                 @CircuitBreakerName(CONTACT_SERVICE_CIRCUIT_BREAKER) CircuitBreaker contactServiceCircuitBreaker) {
+    public CircuitBreakerLibrary(@CircuitBreakerName(ISSUE_SERVICE_CIRCUIT_BREAKER)
+                                             CircuitBreaker issueServiceCircuitBreaker,
+                                 @CircuitBreakerName(PROJECTS_SERVICE_CIRCUIT_BREAKER)
+                                             CircuitBreaker projectsServiceCircuitBreaker,
+                                 @CircuitBreakerName(USER_SERVICE_CIRCUIT_BREAKER)
+                                             CircuitBreaker userServiceCircuitBreaker,
+                                 @CircuitBreakerName(RESET_PASSWORD_SERVICE_CIRCUIT_BREAKER)
+                                             CircuitBreaker resetPasswordServiceCircuitBreaker,
+                                 @CircuitBreakerName(CONTACT_SERVICE_CIRCUIT_BREAKER)
+                                             CircuitBreaker contactServiceCircuitBreaker) {
         breakers = initializeBreakersMap(
                 issueServiceCircuitBreaker,
                 projectsServiceCircuitBreaker,

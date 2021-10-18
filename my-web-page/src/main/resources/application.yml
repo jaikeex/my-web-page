@@ -50,36 +50,3 @@ eureka:
   instance:
     hostname: service-registry
 
-resilience4j:
-  circuitbreaker:
-    instances:
-      ISSUE_SERVICE_CB:
-        registerHealthIndicator: true
-        eventConsumerBufferSize: 10
-        automaticTransitionFromOpenToHalfOpenEnabled: true
-        failureRateThreshold: 10
-        minimumNumberOfCalls: 5
-        waitDurationOpenState: 5s
-        slidingWindowType: COUNT_BASED
-        slidingWindowSize: 10
-        permittedNumberOfCallsInHalfOpenState: 3
-      ProjectsService_CB:
-        registerHealthIndicator: true
-        eventConsumerBufferSize: 10
-        automaticTransitionFromOpenToHalfOpenEnabled: true
-        failureRateThreshold: 10
-        minimumNumberOfCalls: 5
-        waitDurationOpenState: 5s
-        slidingWindowType: COUNT_BASED
-        slidingWindowSize: 10
-        permittedNumberOfCallsInHalfOpenState: 3
-      USER_SERVICE_CB:
-        registerHealthIndicator: true
-        eventConsumerBufferSize: 10
-        automaticTransitionFromOpenToHalfOpenEnabled: true
-        failureRateThreshold: 10
-        minimumNumberOfCalls: 5
-        waitDurationOpenState: 5s
-        slidingWindowType: COUNT_BASED
-        slidingWindowSize: 10
-        permittedNumberOfCallsInHalfOpenState: 3

@@ -1,4 +1,4 @@
-package com.jaikeex.mywebpage.mainwebsite.connection;
+package com.jaikeex.mywebpage.issuetracker.connection;
 
 import com.jaikeex.mywebpage.config.connection.FallbackHandler;
 import com.jaikeex.mywebpage.mainwebsite.utility.exception.ServiceDownException;
@@ -10,7 +10,7 @@ import org.springframework.web.client.HttpClientErrorException;
 
 @Component
 @Slf4j
-public class MwpFallbackHandler implements FallbackHandler {
+public class TrackerFallbackHandler implements FallbackHandler {
 
     @Override
     public <T> ResponseEntity<T> throwFallbackException(String fallbackMessage,
