@@ -5,6 +5,7 @@ import com.jaikeex.mywebpage.mainwebsite.dto.ResetPasswordDto;
 import com.jaikeex.mywebpage.mainwebsite.dto.ResetPasswordEmailDto;
 import com.jaikeex.mywebpage.mainwebsite.service.ResetPasswordService;
 import com.jaikeex.mywebpage.mainwebsite.utility.BindingResultErrorParser;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -18,7 +19,10 @@ import org.springframework.web.client.HttpStatusCodeException;
 import javax.validation.Valid;
 
 @Controller
+@Slf4j
 public class ResetPasswordController {
+
+    //TODO: Implement centralized exception handling.
 
     private static final String FORM_ERROR_MESSAGE_ATTRIBUTE_NAME = "formErrorMessage";
     private static final String SUCCESS_ATTRIBUTE_NAME = "success";
@@ -28,6 +32,7 @@ public class ResetPasswordController {
     private static final String RESET_PASSWORD_DONE_VIEW = "user/reset-password-done";
     private static final String RESET_PASSWORD_EMAIL_DTO_ATTRIBUTE_NAME = "resetPasswordEmailDto";
     private static final String RESET_PASSWORD_DTO_ATTRIBUTE_NAME = "resetPasswordDto";
+    private static final String EMAIL_SENT_SUCCESSFULLY = "The email was sent successfully.";
 
     ResetPasswordService resetPasswordService;
 
@@ -73,11 +78,13 @@ public class ResetPasswordController {
     private void addResetPasswordEmailDtoToModel(Model model) {
         ResetPasswordEmailDto resetPasswordEmailDto = new ResetPasswordEmailDto();
         model.addAttribute(RESET_PASSWORD_EMAIL_DTO_ATTRIBUTE_NAME, resetPasswordEmailDto);
+        log.debug("Added attribute to model [name={}, value={}]", RESET_PASSWORD_EMAIL_DTO_ATTRIBUTE_NAME, resetPasswordEmailDto);
     }
 
     private void addResetPasswordDtoToModel(Model model) {
         ResetPasswordDto resetPasswordDto = new ResetPasswordDto();
         model.addAttribute(RESET_PASSWORD_DTO_ATTRIBUTE_NAME, resetPasswordDto);
+        log.debug("Added attribute to model [name={}, value={}]", RESET_PASSWORD_DTO_ATTRIBUTE_NAME, resetPasswordDto);
     }
 
     private void passResetDataToResetPasswordService(Model model, ResetPasswordDto resetPasswordDto) {
@@ -85,6 +92,7 @@ public class ResetPasswordController {
             resetPasswordService.resetPassword(resetPasswordDto);
             appendModelWithFormOkAttributes(model);
         } catch (HttpServerErrorException | HttpClientErrorException exception) {
+            log.warn(exception.getResponseBodyAsString());
             appendModelWithFormErrorAttributes(model, exception);
         }
     }
@@ -94,26 +102,36 @@ public class ResetPasswordController {
             resetPasswordService.sendConfirmationEmail(resetPasswordEmailDto.getEmail());
             appendModelWithMessageSuccessAttributes(model);
         } catch (HttpServerErrorException | HttpClientErrorException exception) {
+            log.warn(exception.getResponseBodyAsString());
             appendModelWithMessageFailedAttributes(model, exception);
         }
     }
 
     private void appendModelWithFormOkAttributes(Model model) {
         model.addAttribute(SUCCESS_ATTRIBUTE_NAME, true);
+        log.debug("Added attribute to model [name={}, value={}]", SUCCESS_ATTRIBUTE_NAME, true);
     }
 
     private void appendModelWithFormErrorAttributes(Model model, HttpStatusCodeException exception) {
+        String errorMessage = exception.getResponseBodyAsString();
         model.addAttribute(SUCCESS_ATTRIBUTE_NAME, false);
-        model.addAttribute(FORM_ERROR_MESSAGE_ATTRIBUTE_NAME, exception.getResponseBodyAsString());
+        log.debug("Added attribute to model [name={}, value={}]", SUCCESS_ATTRIBUTE_NAME, false);
+        model.addAttribute(FORM_ERROR_MESSAGE_ATTRIBUTE_NAME, errorMessage);
+        log.debug("Added attribute to model [name={}, value={}]", FORM_ERROR_MESSAGE_ATTRIBUTE_NAME, errorMessage);
     }
     
     private void appendModelWithMessageFailedAttributes(Model model, HttpStatusCodeException exception) {
-        model.addAttribute(SENDING_STATUS_ATTRIBUTE_NAME, exception.getResponseBodyAsString());
+        String errorMessage = exception.getResponseBodyAsString();
+        model.addAttribute(SENDING_STATUS_ATTRIBUTE_NAME, errorMessage);
+        log.debug("Added attribute to model [name={}, value={}]", SENDING_STATUS_ATTRIBUTE_NAME, errorMessage);
         model.addAttribute(SUCCESS_ATTRIBUTE_NAME, false);
+        log.debug("Added attribute to model [name={}, value={}]", SUCCESS_ATTRIBUTE_NAME, false);
     }
 
     private void appendModelWithMessageSuccessAttributes(Model model) {
         model.addAttribute(SUCCESS_ATTRIBUTE_NAME, true);
-        model.addAttribute(SENDING_STATUS_ATTRIBUTE_NAME, "The email was sent successfully.");
+        log.debug("Added attribute to model [name={}, value={}]", SUCCESS_ATTRIBUTE_NAME, true);
+        model.addAttribute(SENDING_STATUS_ATTRIBUTE_NAME, EMAIL_SENT_SUCCESSFULLY);
+        log.debug("Added attribute to model [name={}, value={}]", SENDING_STATUS_ATTRIBUTE_NAME, EMAIL_SENT_SUCCESSFULLY);
     }
 }

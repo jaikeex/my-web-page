@@ -9,6 +9,7 @@ import org.springframework.web.multipart.MultipartFile;
 @NoArgsConstructor
 @AllArgsConstructor
 public class AttachmentFormDto {
+
     private String title;
     private MultipartFile attachment;
 }

@@ -1,13 +1,15 @@
 package com.jaikeex.mywebpage.mainwebsite.service;
 
+import com.jaikeex.mywebpage.config.connection.ServiceRequest;
+import com.jaikeex.mywebpage.mainwebsite.connection.MwpServiceRequest;
 import com.jaikeex.mywebpage.mainwebsite.model.Project;
-import com.jaikeex.mywebpage.resttemplate.RestTemplateFactory;
+import com.jaikeex.mywebpage.mainwebsite.utility.exception.ProjectsServiceDownException;
+import com.jaikeex.mywebpage.mainwebsite.utility.exception.ServiceDownException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.RestTemplate;
 
 import java.util.Arrays;
 import java.util.List;
@@ -16,14 +18,16 @@ import java.util.List;
 @Slf4j
 public class ProjectDetailsService {
 
+    private static final Class<? extends ServiceDownException> SERVICE_EXCEPTION_TYPE = ProjectsServiceDownException.class;
+
     @Value("${docker.network.api-gateway-url}")
     private String apiGatewayUrl;
 
-    RestTemplateFactory restTemplateFactory;
+    private final ServiceRequest serviceRequest;
 
     @Autowired
-    public ProjectDetailsService(RestTemplateFactory restTemplateFactory) {
-        this.restTemplateFactory = restTemplateFactory;
+    public ProjectDetailsService(MwpServiceRequest serviceRequest) {
+        this.serviceRequest = serviceRequest;
     }
 
     /**Fetches a project matching the provided id value from the projects service.
@@ -35,10 +39,9 @@ public class ProjectDetailsService {
      *          Whenever a 5xx http status code gets returned.
      */
     public Project getProjectById(Integer projectId) {
-        RestTemplate restTemplate = restTemplateFactory.getRestTemplate();
-        ResponseEntity<Project> responseEntity = restTemplate.getForEntity(
-                apiGatewayUrl + "projects/id/" + projectId, Project.class);
-        log.info("Sent a request to the projects service for the details of a single project [id={}]", projectId);
+        String url = apiGatewayUrl + "projects/id/" + projectId;
+        ResponseEntity<Project> responseEntity =
+                serviceRequest.sendGetRequest(url, Project.class, SERVICE_EXCEPTION_TYPE);
         return responseEntity.getBody();
     }
 
@@ -51,10 +54,9 @@ public class ProjectDetailsService {
      *          Whenever a 5xx http status code gets returned.
      */
     public List<Project> getProjectsList() {
-        RestTemplate restTemplate = restTemplateFactory.getRestTemplate();
-        ResponseEntity<Project[]> responseEntity = restTemplate.getForEntity(
-                apiGatewayUrl + "projects", Project[].class);
-        log.info("Sent a request to the projects service for the details all available projects");
+        String url = apiGatewayUrl + "projects";
+        ResponseEntity<Project[]> responseEntity =
+                serviceRequest.sendGetRequest(url, Project[].class, SERVICE_EXCEPTION_TYPE);
         Project[] projectsArray = responseEntity.getBody();
         return Arrays.asList(projectsArray);
     }

@@ -1,31 +1,31 @@
 package com.jaikeex.mywebpage.mainwebsite.service;
 
+import com.jaikeex.mywebpage.config.connection.ServiceRequest;
+import com.jaikeex.mywebpage.mainwebsite.connection.MwpServiceRequest;
 import com.jaikeex.mywebpage.mainwebsite.dto.UserDto;
 import com.jaikeex.mywebpage.mainwebsite.dto.UserLastAccessDateDto;
 import com.jaikeex.mywebpage.mainwebsite.model.User;
-import com.jaikeex.mywebpage.resttemplate.RestTemplateFactory;
+import com.jaikeex.mywebpage.mainwebsite.utility.exception.ServiceDownException;
+import com.jaikeex.mywebpage.mainwebsite.utility.exception.UserServiceDownException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.RestTemplate;
 
 @Service
 @Slf4j
 public class UserService {
 
+    private static final Class<? extends ServiceDownException> SERVICE_EXCEPTION_TYPE = UserServiceDownException.class;
+
     @Value("${docker.network.api-gateway-url}")
     private String apiGatewayUrl;
 
-    private final RestTemplateFactory restTemplateFactory;
+    private final ServiceRequest serviceRequest;
 
     @Autowired
-    public UserService(RestTemplateFactory restTemplateFactory) {
-        this.restTemplateFactory = restTemplateFactory;
+    public UserService(MwpServiceRequest serviceRequest) {
+        this.serviceRequest = serviceRequest;
     }
 
     /**Sends the new user's data to the user service to save them into the
@@ -38,8 +38,9 @@ public class UserService {
      *          Whenever a 5xx http status code gets returned.
      */
     public void registerUser (UserDto userDto){
+        String url = apiGatewayUrl + "users/";
         User user = new User(userDto);
-        postHttpPostRequestToUserService(user);
+        serviceRequest.sendPostRequest(url, user, SERVICE_EXCEPTION_TYPE);
     }
 
     /**Performs all the updates necessary when the user with a given username
@@ -51,21 +52,8 @@ public class UserService {
      *          Whenever a 5xx http status code gets returned.
      */
     public void updateUserStatsOnLogin(String username) {
-        RestTemplate restTemplate = restTemplateFactory.getRestTemplate();
+        String url = apiGatewayUrl + "users/last-access/";
         UserLastAccessDateDto dto = new UserLastAccessDateDto(username);
-        restTemplate.patchForObject(apiGatewayUrl + "users/last-access/", dto, User.class);
-    }
-
-
-    private void postHttpPostRequestToUserService(User user) {
-        RestTemplate restTemplate = restTemplateFactory.getRestTemplate();
-        HttpEntity<User> entity = getUserHttpEntity(user);
-        restTemplate.exchange(apiGatewayUrl + "users/", HttpMethod.POST, entity, User.class);
-    }
-
-    private HttpEntity<User> getUserHttpEntity(User user) {
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_JSON);
-        return new HttpEntity<>(user, headers);
+        serviceRequest.sendPostRequest(url, dto, SERVICE_EXCEPTION_TYPE);
     }
 }

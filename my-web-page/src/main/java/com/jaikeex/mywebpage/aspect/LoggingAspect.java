@@ -17,7 +17,7 @@ public class LoggingAspect {
 
     @Pointcut("within(@org.springframework.stereotype.Repository *)" +
             " || within(@org.springframework.stereotype.Service *)" +
-            " || within(@org.springframework.web.bind.annotation.RestController *)")
+            " || within(@org.springframework.stereotype.Controller *)")
     public void springBeanPointcut() {}
 
     @Pointcut("within(com.jaikeex.mywebpage.mainwebsite.service..*)" +
@@ -28,7 +28,7 @@ public class LoggingAspect {
             " || within(com.jaikeex.mywebpage.issuetracker.controller..*)")
     public void trackerApplicationPackagePointcut() {}
 
-    @Around("mwpApplicationPackagePointcut() && trackerApplicationPackagePointcut() && springBeanPointcut()")
+    @Around("(mwpApplicationPackagePointcut() || trackerApplicationPackagePointcut()) && springBeanPointcut()")
     public Object logAround(ProceedingJoinPoint joinPoint) throws Throwable {
         logWhenEnteringMethodBody(joinPoint);
         try {

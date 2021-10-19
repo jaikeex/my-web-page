@@ -1,0 +1,18 @@
+{
+  "properties": [
+    {
+      "name": "docker.network.api-gateway-url",
+      "type": "java.lang.String",
+      "description": "Url of the api gateway."
+    },
+    {
+      "name": "logging.logback.encoder.pattern",
+      "type": "java.lang.String",
+      "description": "Logback encoder pattern."
+    },
+    {
+      "name": "logging.logback.appender.name",
+      "type": "java.lang.String",
+      "description": "Logback rolling file appender name."
+    }
+  ] }

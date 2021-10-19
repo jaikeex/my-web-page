@@ -4,7 +4,7 @@ import com.google.gson.Gson;
 import com.jaikeex.mywebpage.issuetracker.dto.AttachmentFormDto;
 import com.jaikeex.mywebpage.issuetracker.dto.DescriptionDto;
 import com.jaikeex.mywebpage.issuetracker.dto.IssueFormDto;
-import com.jaikeex.mywebpage.issuetracker.entity.Issue;
+import com.jaikeex.mywebpage.issuetracker.model.Issue;
 import com.jaikeex.mywebpage.issuetracker.service.IssueService;
 import com.jaikeex.mywebpage.issuetracker.utility.IssueServiceDownException;
 import lombok.extern.slf4j.Slf4j;
@@ -24,10 +24,10 @@ import java.util.List;
 @Slf4j
 public class DashboardController {
 
-    public static final String ERROR_MESSAGE_ATTRIBUTE_NAME = "errorMessage";
-    public static final String SUCCESS = "success";
-    public static final String ISSUE_DTO_ATTRIBUTE_NAME = "issueFormDto";
-    public static final String DESCRIPTION_DTO_ATTRIBUTE_NAME = "descriptionDto";
+    private static final String ERROR_MESSAGE_ATTRIBUTE_NAME = "errorMessage";
+    private static final String SUCCESS = "success";
+    private static final String ISSUE_DTO_ATTRIBUTE_NAME = "issueFormDto";
+    private static final String DESCRIPTION_DTO_ATTRIBUTE_NAME = "descriptionDto";
     private static final String ATTACHMENT_DTO_ATTRIBUTE_NAME = "attachmentDto";
     private static final String ISSUES_ATTRIBUTE_NAME = "issues";
     private static final String ISSUES_AS_JSON_ATTRIBUTE_NAME = "issuesAsJson";
@@ -125,12 +125,16 @@ public class DashboardController {
     @ExceptionHandler({IssueServiceDownException.class, IOException.class})
     public String IssueServiceDown(Model model, Exception exception) {
         String errorMessage = exception.getMessage();
-        log.warn(exception.getMessage());
+        log.warn(errorMessage);
+        addExceptionCaughtAttributesToModel(model, errorMessage);
+        return ISSUETRACKER_ERROR_VIEW;
+    }
+
+    private void addExceptionCaughtAttributesToModel(Model model, String errorMessage) {
         model.addAttribute(SUCCESS, false);
         log.debug("Added attribute to model [name={}, value={}]", SUCCESS, false);
         model.addAttribute(ERROR_MESSAGE_ATTRIBUTE_NAME, errorMessage);
         log.debug("Added attribute to model [name={}, value={}]", ERROR_MESSAGE_ATTRIBUTE_NAME, errorMessage);
-        return ISSUETRACKER_ERROR_VIEW;
     }
 }
 

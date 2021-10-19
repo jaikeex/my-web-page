@@ -24,5 +24,20 @@
       "name": "logging.logback.appender.name",
       "type": "java.lang.String",
       "description": "Logback rolling file appender name."
+    },
+    {
+      "name": "resilience4j.instance-names.issue-tracker-circuit-breaker-name",
+      "type": "java.lang.String",
+      "description": "Description for resilience4j.instance-names.issue-tracker-circuit-breaker-name."
+    },
+    {
+      "name": "spring.error-page-view",
+      "type": "java.lang.String",
+      "description": "Description for spring.error-page-view."
+    },
+    {
+      "name": "spring.error-message-attribute-name",
+      "type": "java.lang.String",
+      "description": "Description for spring.error-message-attribute-name."
     }
   ] }

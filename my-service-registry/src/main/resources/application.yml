@@ -5,3 +5,15 @@ eureka:
   client:
     register-with-eureka: false
     fetch-registry: false
+
+logging:
+  logback:
+    appender:
+      name: "fileAppender"
+    encoder:
+      pattern: "%d [%thread] %-5level  %logger{35} - %msg%n"
+    rollingpolicy:
+      file-name-pattern: "/logs/service-registry/logFile.%d{yyyy-MM-dd}.log"
+      max-history: 3
+  level:
+    root: info

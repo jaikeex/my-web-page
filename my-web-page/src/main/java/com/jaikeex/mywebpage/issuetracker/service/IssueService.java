@@ -1,53 +1,51 @@
 package com.jaikeex.mywebpage.issuetracker.service;
 
+import com.jaikeex.mywebpage.config.circuitbreaker.qualifier.CircuitBreakerName;
+import com.jaikeex.mywebpage.config.connection.ServiceRequest;
+import com.jaikeex.mywebpage.issuetracker.connection.TrackerServiceRequest;
 import com.jaikeex.mywebpage.issuetracker.dto.*;
-import com.jaikeex.mywebpage.issuetracker.entity.Issue;
+import com.jaikeex.mywebpage.issuetracker.model.Issue;
 import com.jaikeex.mywebpage.issuetracker.utility.IssueServiceDownException;
 import com.jaikeex.mywebpage.mainwebsite.dto.EmailDto;
 import com.jaikeex.mywebpage.mainwebsite.service.ContactService;
+import com.jaikeex.mywebpage.mainwebsite.utility.exception.ServiceDownException;
 import com.jaikeex.mywebpage.resttemplate.RestTemplateFactory;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cloud.client.circuitbreaker.CircuitBreaker;
-import org.springframework.cloud.client.circuitbreaker.CircuitBreakerFactory;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
 import java.io.IOException;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 
 @Service
 @Slf4j
 public class IssueService {
 
-    private static final String CIRCUIT_BREAKER_NAME = "ISSUE_SERVICE_CB";
-    private static final String CREATE_REPORT_ERROR_MESSAGE = "There was an error creating the report.";
+    private static final Class<? extends ServiceDownException> SERVICE_DOWN_EXCEPTION = IssueServiceDownException.class;
 
     @Value("${docker.network.issue-tracker-service-url}")
     private String issueTrackerServiceUrl;
 
-    private final RestTemplateFactory restTemplateFactory;
-    private final CircuitBreaker circuitBreaker;
+    private final ServiceRequest serviceRequest;
     private final ContactService contactService;
 
     @Autowired
     public IssueService(
-            RestTemplateFactory restTemplateFactory,
-            CircuitBreakerFactory<?, ?> circuitBreakerFactory,
-            ContactService contactService) {
-        this.restTemplateFactory = restTemplateFactory;
-        this.circuitBreaker = circuitBreakerFactory.create(CIRCUIT_BREAKER_NAME);
+            TrackerServiceRequest serviceRequest, ContactService contactService) {
+        this.serviceRequest = serviceRequest;
         this.contactService = contactService;
     }
 
     /**
      * Processes the dto object and sends the data to the issue tracker service
-     * /create endpoint with an http request.
-     * @param issueFormDto A data transfer object with the fields necessary for
+     * /create endpoint with an http request. Also sends a notification email
+     * to the tracker admin.
+     * @param issueFormDto Data transfer object with the fields necessary for
      *                 creating a new issue report in the database.
      * @throws org.springframework.web.client.HttpClientErrorException
      *          Whenever a 4xx http status code gets returned.
@@ -55,16 +53,16 @@ public class IssueService {
      *          Whenever a 5xx http status code gets returned.
      */
     public void createNewReport(IssueFormDto issueFormDto) throws IOException {
-        IssueDto issueDto = new IssueDto(issueFormDto);
         String url = issueTrackerServiceUrl + "create";
-        postRequestToIssueMicroservice(url, issueDto, CREATE_REPORT_ERROR_MESSAGE);
+        IssueDto issueDto = new IssueDto(issueFormDto);
+        serviceRequest.sendPostRequest(url, issueDto, IssueServiceDownException.class);
         notifyAdministrator(issueDto);
     }
 
     /**
      * Processes the dto object and sends the data to the issue tracker service
-     * /update-description endpoint with an http request.
-     * @param descriptionDto A data transfer object with the fields necessary for
+     * /update-description.
+     * @param descriptionDto Data transfer object with the fields necessary for
      *                      updating the description of an issue report in the database.
      * @throws org.springframework.web.client.HttpClientErrorException
      *          Whenever a 4xx http status code gets returned.
@@ -73,18 +71,23 @@ public class IssueService {
      */
     public void updateDescription(DescriptionDto descriptionDto) {
         String url = issueTrackerServiceUrl + "update-description";
-        String errorMessage = "There was an error updating the report.";
-        postRequestToIssueMicroservice(url, descriptionDto, errorMessage);
-    }
-
-    public void uploadNewAttachment(AttachmentFormDto attachmentFormDto) throws IOException {
-        AttachmentFileDto attachmentFileDto = new AttachmentFileDto(attachmentFormDto);
-        String url = issueTrackerServiceUrl + "upload-attachment";
-        String errorMessage = "There was an error while uploading the file.";
-        postRequestToIssueMicroservice(url, attachmentFileDto, errorMessage);
+        serviceRequest.sendPostRequest(url, descriptionDto, SERVICE_DOWN_EXCEPTION);
     }
 
     /**
+     * Processes the dto object and sends the data to the issue tracker service
+     * /upload-attachment endpoint.
+     * @param attachmentFormDto Data transfer object carrying attachment file
+                                data from html form.
+     * @throws IOException Whenever there is a problem processing the attachment file.
+     */
+    public void uploadNewAttachment(AttachmentFormDto attachmentFormDto) throws IOException {
+        String url = issueTrackerServiceUrl + "upload-attachment";
+        AttachmentFileDto attachmentFileDto = new AttachmentFileDto(attachmentFormDto);
+        serviceRequest.sendPostRequest(url, attachmentFileDto, SERVICE_DOWN_EXCEPTION);
+    }
+
+     /**
      * Fetches all issue reports from the issue tracker service and returns
      * them as a List.
      * @return list of Issue objects representing all the issue reports in the
@@ -96,49 +99,18 @@ public class IssueService {
      */
     public List<Issue> getAllIssues() {
         String url = issueTrackerServiceUrl + "all";
-        return getListOfAllIssues(url);
+        return getListOfAllIssuesFromTrackerService(url);
     }
 
-    private List<Issue> getListOfAllIssues(String url) {
-        return circuitBreaker.run(
-                () -> sendFindAllRequestToIssueMicroservice(url),
-                throwable -> findAllFallback());
-    }
-
-    private List<Issue> sendFindAllRequestToIssueMicroservice(String url) {
-        RestTemplate restTemplate = restTemplateFactory.getRestTemplate();
+    private List<Issue> getListOfAllIssuesFromTrackerService(String url) {
         ResponseEntity<Issue[]> responseEntity =
-                restTemplate.getForEntity(url, Issue[].class);
-        return Arrays.asList(responseEntity.getBody());
-    }
-
-    private void postRequestToIssueMicroservice(
-            String url, Object body, String fallbackMessage) {
-        RestTemplate restTemplate = restTemplateFactory.getRestTemplate();
-        circuitBreaker.run(
-                () -> restTemplate.postForEntity(url, body, Issue.class),
-                throwable -> throwFallbackException(fallbackMessage, throwable.getMessage()));
-    }
-
-    private List<Issue> findAllFallback() {
-        log.warn("issue-tracker-service is unreachable!");
-        Issue fallbackIssue = new Issue();
-        fallbackIssue.setTitle("ISSUE TRACKER SERVICE IS UNAVAILABLE!");
-        fallbackIssue.setDescription("There was an error retrieving the list of reports, please try again later.");
-        return Collections.singletonList(fallbackIssue);
-    }
-
-    private ResponseEntity<Issue> throwFallbackException(String fallbackMessage, String exceptionMessage) {
-        log.warn(exceptionMessage);
-        log.warn("issue-tracker-service is unreachable!");
-        throw new IssueServiceDownException(fallbackMessage);
+                serviceRequest.sendGetRequest(url, Issue[].class, SERVICE_DOWN_EXCEPTION);;
+        Issue[] issueArray = responseEntity.getBody();
+        return Arrays.asList(issueArray);
     }
 
     private void notifyAdministrator(IssueDto issueDto) {
-        final EmailDto emailDto = new EmailDto();
-        emailDto.setSender(issueDto.getAuthor());
-        emailDto.setSubject("New report! - " + issueDto.getTitle());
-        emailDto.setMessageText(issueDto.getDescription());
+        final EmailDto emailDto = new EmailDto(issueDto);
         this.contactService.sendEmailToAdmin(emailDto);
     }
 }

@@ -1,26 +1,29 @@
 package com.jaikeex.mywebpage.mainwebsite.service;
 
+import com.jaikeex.mywebpage.config.connection.ServiceRequest;
+import com.jaikeex.mywebpage.mainwebsite.connection.MwpServiceRequest;
 import com.jaikeex.mywebpage.mainwebsite.dto.ResetPasswordDto;
-import com.jaikeex.mywebpage.mainwebsite.model.User;
-import com.jaikeex.mywebpage.resttemplate.RestTemplateFactory;
+import com.jaikeex.mywebpage.mainwebsite.utility.exception.ServiceDownException;
+import com.jaikeex.mywebpage.mainwebsite.utility.exception.UserServiceDownException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.RestTemplate;
 
 @Service
 @Slf4j
 public class ResetPasswordService {
 
+    private static final Class<? extends ServiceDownException> SERVICE_EXCEPTION_TYPE = UserServiceDownException.class;
+
     @Value("${docker.network.api-gateway-url}")
     private String apiGatewayUrl;
 
-    RestTemplateFactory restTemplateFactory;
+    private final ServiceRequest serviceRequest;
 
     @Autowired
-    public ResetPasswordService(RestTemplateFactory restTemplateFactory) {
-        this.restTemplateFactory = restTemplateFactory;
+    public ResetPasswordService(MwpServiceRequest serviceRequest) {
+        this.serviceRequest = serviceRequest;
     }
 
     /**Sends the request to the user service to update password in database based
@@ -35,22 +38,21 @@ public class ResetPasswordService {
      */
     public void resetPassword(ResetPasswordDto resetPasswordDto) {
         resetPasswordDto.encodePassword();
-        sendResetPasswordRequestToUserService(resetPasswordDto);
+        sendPostRequestToUserService(resetPasswordDto);
     }
 
-    private void sendResetPasswordRequestToUserService(ResetPasswordDto resetPasswordDto) {
-        RestTemplate restTemplate = restTemplateFactory.getRestTemplate();
-        restTemplate.patchForObject(
-                apiGatewayUrl + "users/password/email/" + resetPasswordDto.getEmail() + "/token/" + resetPasswordDto.getToken(),
-                    resetPasswordDto.getPassword(),
-                    User.class);
-        log.info("Sent a request to the user service to change password in database [email={}]", resetPasswordDto.getEmail());
+    private void sendPostRequestToUserService(ResetPasswordDto resetPasswordDto) {
+        String url = getResetPasswordUrl(resetPasswordDto);
+        serviceRequest.sendPatchRequest(url, resetPasswordDto.getPassword(), SERVICE_EXCEPTION_TYPE);
+    }
+
+    private String getResetPasswordUrl(ResetPasswordDto resetPasswordDto) {
+        return apiGatewayUrl + "users/password/email/" + resetPasswordDto.getEmail() + "/token/" + resetPasswordDto.getToken();
     }
 
     public void sendConfirmationEmail(String email) {
-        RestTemplate restTemplate = restTemplateFactory.getRestTemplate();
-        restTemplate.getForEntity(apiGatewayUrl + "users/reset-password/email/" + email, User.class);
-        log.info("Sent a request to the user service to process the reset password confirmation email [email={}]", email);
+        String url = apiGatewayUrl + "users/reset-password/email/" + email;
+        serviceRequest.sendGetRequest(url, Object.class, SERVICE_EXCEPTION_TYPE);
     }
 }
 

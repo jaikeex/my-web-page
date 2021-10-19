@@ -7,10 +7,17 @@ spring:
     suffix: .html
   application:
     name: my-web-page
+  error-page-view: "error"
+  error-message-attribute-name: "errorMessage"
 
 storage:
   folder:
     issue-attachments-folder: "/issue/attachments/"
+
+docker:
+  network:
+    api-gateway-url: http://api-gateway:9000/
+    issue-tracker-service-url: http://api-gateway:9000/issue/
 
 logging:
   logback:
@@ -24,11 +31,6 @@ logging:
   level:
     root: info
 
-docker:
-  network:
-    api-gateway-url: http://api-gateway:9000/
-    issue-tracker-service-url: http://issue-tracker-service:9091/issue/
-
 management:
   health:
     circuitbreakers:
@@ -39,20 +41,6 @@ management:
         include: "*"
       base-path: "/actuator"
 
-resilience4j:
-  circuitbreaker:
-    instances:
-      ISSUE_SERVICE_CB:
-        registerHealthIndicator: true
-        eventConsumerBufferSize: 10
-        automaticTransitionFromOpenToHalfOpenEnabled: true
-        failureRateThreshold: 10
-        minimumNumberOfCalls: 5
-        waitDurationOpenState: 5s
-        slidingWindowType: COUNT_BASED
-        slidingWindowSize: 10
-        permittedNumberOfCallsInHalfOpenState: 3
-
 eureka:
   client:
     register-with-eureka: true
@@ -61,3 +49,4 @@ eureka:
       defaultZone: http://service-registry:8761/eureka/
   instance:
     hostname: service-registry
+

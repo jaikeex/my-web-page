@@ -1,6 +1,7 @@
 package com.jaikeex.mywebpage;
 
 import com.jaikeex.mywebpage.config.StorageProperties;
+import com.jaikeex.mywebpage.config.circuitbreaker.CircuitBreakerInstanceNames;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
@@ -10,10 +11,9 @@ import org.springframework.cloud.netflix.eureka.EnableEurekaClient;
 
 @SpringBootApplication
 @EnableEurekaClient
-@EnableConfigurationProperties(StorageProperties.class)
+@EnableConfigurationProperties({StorageProperties.class})
 public class MyWebPageApplication  implements CommandLineRunner {
 
-	public static final String API_GATEWAY_URL = "http://api-gateway:9000/";
 
 	@Autowired
 	public MyWebPageApplication() {

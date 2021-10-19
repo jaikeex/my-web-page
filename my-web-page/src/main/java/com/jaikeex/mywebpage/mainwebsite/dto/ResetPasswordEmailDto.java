@@ -15,5 +15,4 @@ public class ResetPasswordEmailDto {
     @ValidateEmail
     @NotBlank
     private String email;
-
 }
