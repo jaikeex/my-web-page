@@ -16,16 +16,11 @@ import static com.jaikeex.mywebpage.config.circuitbreaker.CircuitBreakerInstance
 @Configuration
 public class CircuitBreakerConfiguration {
 
-
-
     private final CircuitBreakerFactory<?, ?> circuitBreakerFactory;
-    private final CircuitBreakerConfig config;
-    private final CircuitBreakerRegistry circuitBreakerRegistry;
+
     @Autowired
     public CircuitBreakerConfiguration(CircuitBreakerFactory<?, ?> circuitBreakerFactory) {
-        this.circuitBreakerRegistry = CircuitBreakerRegistry.of(getConfig());
         this.circuitBreakerFactory = circuitBreakerFactory;
-        this.config = getConfig();
     }
 
     @Bean
@@ -57,18 +52,4 @@ public class CircuitBreakerConfiguration {
     public CircuitBreaker getContactServiceCircuitBreaker() {
         return circuitBreakerFactory.create(CONTACT_SERVICE_CIRCUIT_BREAKER);
     }
-
-    private CircuitBreakerConfig getConfig() {
-        return CircuitBreakerConfig.custom()
-                .failureRateThreshold(50)
-                .slowCallRateThreshold(50)
-                .waitDurationInOpenState(Duration.ofMillis(1000))
-                .slowCallDurationThreshold(Duration.ofSeconds(2))
-                .permittedNumberOfCallsInHalfOpenState(3)
-                .minimumNumberOfCalls(10)
-                .slidingWindowType(CircuitBreakerConfig.SlidingWindowType.TIME_BASED)
-                .slidingWindowSize(5)
-                .build();
-    }
-
 }

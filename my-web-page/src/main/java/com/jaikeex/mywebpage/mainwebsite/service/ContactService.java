@@ -54,6 +54,7 @@ public class ContactService{
 
     private void postHttpRequestToEmailService(Email email) {
         String url = apiGatewayUrl + "emails/";
+        System.out.println(url);
         serviceRequest.sendPostRequest(url, email, SERVICE_EXCEPTION_TYPE);
         log.info("Sent a request to the email service with the following [email={}]", email);
     }

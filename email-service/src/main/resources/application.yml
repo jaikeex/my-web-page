@@ -10,6 +10,25 @@ spring:
   application:
     name: email-service
 
+logging:
+  logback:
+    appender:
+      name: "fileAppender"
+    encoder:
+      pattern: "%d [%thread] %-5level  %logger{35} - %msg%n"
+    rollingpolicy:
+      file-name-pattern: "/logs/email-service/logFile.%d{yyyy-MM-dd}.log"
+      max-history: 3
+  level:
+    root: info
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+      base-path: "/actuator"
+
 eureka:
   client:
     register-with-eureka: true

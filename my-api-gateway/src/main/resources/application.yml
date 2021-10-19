@@ -2,25 +2,46 @@ server:
   port: 9000
 spring:
   application:
-    name: API-GATEWAY
+    name: api-gateway
   cloud:
+    discovery:
+      enabled: true
     gateway:
       routes:
-        - id: PROJECTS-SERVICE
-          uri: lb://PROJECTS-SERVICE
+        - id: projects-service
+          uri: http://projects-service:8001
           predicates:
             - Path=/projects/**
-        - id: USER-SERVICE
-          uri: lb://USER-SERVICE
+        - id: user-service
+          uri: http://user-service:8002
           predicates:
             - Path=/users/**
+        - id: email-service
+          uri: http://email-service:8004
+          predicates:
+            - Path=/emails/**
+        - id: issue-tracker-service
+          uri: http://issue-tracker-service:9091
+          predicates:
+            - Path=/issue/**
 
+logging:
+  logback:
+    appender:
+      name: "fileAppender"
+    encoder:
+      pattern: "%d [%thread] %-5level  %logger{35} - %msg%n"
+    rollingpolicy:
+      file-name-pattern: "/logs/api-gateway/logFile.%d{yyyy-MM-dd}.log"
+      max-history: 3
+  level:
+    root: info
 
 eureka:
   client:
     register-with-eureka: true
     fetch-registry: true
     service-url:
-      defaultZone: http://localhost:8761/eureka/
+      defaultZone: http://service-registry:8761/eureka/
   instance:
-    hostname: localhost
+    hostname: service-registry

@@ -1,4 +1,4 @@
-package com.jaikeex.mywebpage.aspect;
+package com.jaikeex.projects.aspect;
 
 import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.JoinPoint;
@@ -17,18 +17,15 @@ public class LoggingAspect {
 
     @Pointcut("within(@org.springframework.stereotype.Repository *)" +
             " || within(@org.springframework.stereotype.Service *)" +
-            " || within(@org.springframework.stereotype.Controller *)")
+            " || within(@org.springframework.web.bind.annotation.RestController *)")
     public void springBeanPointcut() {}
 
-    @Pointcut("within(com.jaikeex.mywebpage.mainwebsite.service..*)" +
-            " || within(com.jaikeex.mywebpage.mainwebsite.controller..*)")
-    public void mwpApplicationPackagePointcut() {}
+    @Pointcut("within(com.jaikeex.projects..*)" +
+            " || within(com.jaikeex.projects.service..*)" +
+            " || within(com.jaikeex.projects.controller..*)")
+    public void applicationPackagePointcut() {}
 
-    @Pointcut("within(com.jaikeex.mywebpage.issuetracker.service..*)" +
-            " || within(com.jaikeex.mywebpage.issuetracker.controller..*)")
-    public void trackerApplicationPackagePointcut() {}
-
-    @Around("(mwpApplicationPackagePointcut() || trackerApplicationPackagePointcut()) && springBeanPointcut()")
+    @Around("applicationPackagePointcut() && springBeanPointcut()")
     public Object logAround(ProceedingJoinPoint joinPoint) throws Throwable {
         logWhenEnteringMethodBody(joinPoint);
         try {

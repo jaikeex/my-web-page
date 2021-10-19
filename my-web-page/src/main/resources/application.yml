@@ -14,6 +14,11 @@ storage:
   folder:
     issue-attachments-folder: "/issue/attachments/"
 
+docker:
+  network:
+    api-gateway-url: http://api-gateway:9000/
+    issue-tracker-service-url: http://api-gateway:9000/issue/
+
 logging:
   logback:
     appender:
@@ -25,11 +30,6 @@ logging:
       max-history: 3
   level:
     root: info
-
-docker:
-  network:
-    api-gateway-url: http://api-gateway:9000/
-    issue-tracker-service-url: http://issue-tracker-service:9091/issue/
 
 management:
   health:
