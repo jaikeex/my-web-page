@@ -16,6 +16,11 @@ import java.sql.Timestamp;
 @AllArgsConstructor
 public class Email {
 
+    public Email(String subject, String message) {
+        this.subject = subject;
+        this.message = message;
+    }
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;

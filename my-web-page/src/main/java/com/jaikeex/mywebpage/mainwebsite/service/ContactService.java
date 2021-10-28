@@ -35,8 +35,9 @@ public class ContactService{
      *                       as its fields.
      * @throws org.springframework.web.client.HttpClientErrorException
      *          Whenever a 4xx http status code gets returned.
-     * @throws org.springframework.web.client.HttpServerErrorException
-     *          Whenever a 5xx http status code gets returned.
+     * @throws ContactServiceDownException
+     *          Whenever a 5xx http status code gets returned,
+     *          or the service does not respond.
      */
     public void sendEmailToAdmin(EmailDto emailDto) {
         Email email = loadDataFromDtoIntoEmailObject(emailDto);
@@ -54,7 +55,6 @@ public class ContactService{
 
     private void postHttpRequestToEmailService(Email email) {
         String url = apiGatewayUrl + "emails/";
-        System.out.println(url);
         serviceRequest.sendPostRequest(url, email, SERVICE_EXCEPTION_TYPE);
         log.info("Sent a request to the email service with the following [email={}]", email);
     }

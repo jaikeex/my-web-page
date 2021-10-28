@@ -3,16 +3,12 @@ package com.jaikeex.mywebpage.config.circuitbreaker;
 import com.jaikeex.mywebpage.config.circuitbreaker.qualifier.CircuitBreakerName;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cloud.client.circuitbreaker.CircuitBreaker;
-import org.springframework.cloud.client.circuitbreaker.CircuitBreakerFactory;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.stereotype.Component;
-
-import static com.jaikeex.mywebpage.config.circuitbreaker.CircuitBreakerInstanceNames.*;
-
 
 import java.util.HashMap;
 import java.util.Map;
+
+import static com.jaikeex.mywebpage.config.circuitbreaker.CircuitBreakerInstanceNames.*;
 @Component
 public class CircuitBreakerLibrary {
 

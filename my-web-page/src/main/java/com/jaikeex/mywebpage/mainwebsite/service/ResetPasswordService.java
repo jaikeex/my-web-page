@@ -33,8 +33,9 @@ public class ResetPasswordService {
      *                         process.
      * @throws org.springframework.web.client.HttpClientErrorException
      *          Whenever a 4xx http status code gets returned.
-     * @throws org.springframework.web.client.HttpServerErrorException
-     *          Whenever a 5xx http status code gets returned.
+     * @throws UserServiceDownException
+     *          Whenever a 5xx http status code gets returned,
+     *          or the service does not respond.
      */
     public void resetPassword(ResetPasswordDto resetPasswordDto) {
         resetPasswordDto.encodePassword();

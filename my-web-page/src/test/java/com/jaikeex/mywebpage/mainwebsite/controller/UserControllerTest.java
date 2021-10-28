@@ -3,6 +3,7 @@ package com.jaikeex.mywebpage.mainwebsite.controller;
 import com.jaikeex.mywebpage.mainwebsite.dto.UserDto;
 import com.jaikeex.mywebpage.mainwebsite.model.User;
 import com.jaikeex.mywebpage.mainwebsite.service.UserService;
+import com.jaikeex.mywebpage.mainwebsite.utility.exception.UserServiceDownException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -91,7 +92,7 @@ class UserControllerTest {
 
     @Test
     public void postRegistrationForm_givenUsernameTaken_shouldDisplayWarning() throws Exception {
-        HttpServerErrorException exception = new HttpServerErrorException(HttpStatus.INTERNAL_SERVER_ERROR);
+        UserServiceDownException exception = new UserServiceDownException("error");
         doThrow(exception).when(service).registerUser(userDto);
         postUserDtoToSignupEndpoint(userDto)
                 .andExpect(status().isOk())

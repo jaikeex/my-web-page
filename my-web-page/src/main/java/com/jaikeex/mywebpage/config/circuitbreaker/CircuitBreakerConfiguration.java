@@ -1,15 +1,11 @@
 package com.jaikeex.mywebpage.config.circuitbreaker;
 
 import com.jaikeex.mywebpage.config.circuitbreaker.qualifier.CircuitBreakerName;
-import io.github.resilience4j.circuitbreaker.CircuitBreakerConfig;
-import io.github.resilience4j.circuitbreaker.CircuitBreakerRegistry;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cloud.client.circuitbreaker.CircuitBreaker;
 import org.springframework.cloud.client.circuitbreaker.CircuitBreakerFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-
-import java.time.Duration;
 
 import static com.jaikeex.mywebpage.config.circuitbreaker.CircuitBreakerInstanceNames.*;
 

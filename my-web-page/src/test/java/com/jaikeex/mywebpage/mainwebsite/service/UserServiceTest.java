@@ -1,9 +1,10 @@
 package com.jaikeex.mywebpage.mainwebsite.service;
 
+import com.jaikeex.mywebpage.mainwebsite.connection.MwpServiceRequest;
 import com.jaikeex.mywebpage.mainwebsite.dto.UserDto;
 import com.jaikeex.mywebpage.mainwebsite.dto.UserLastAccessDateDto;
 import com.jaikeex.mywebpage.mainwebsite.model.User;
-import com.jaikeex.mywebpage.resttemplate.RestTemplateFactory;
+import com.jaikeex.mywebpage.mainwebsite.utility.exception.UserServiceDownException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -12,11 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.MediaType;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
-import org.springframework.web.client.RestTemplate;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
@@ -26,39 +23,33 @@ import static org.mockito.Mockito.*;
 @SpringBootTest
 @ExtendWith(SpringExtension.class)
 class UserServiceTest {
-
     @MockBean
-    RestTemplateFactory restTemplateFactory;
-    @MockBean
-    RestTemplate restTemplate;
+    MwpServiceRequest serviceRequest;
 
     @Autowired
     UserService service;
 
     UserDto userDto;
+    User testUser;
     HttpEntity<User> entity;
 
     @BeforeEach
     public void beforeEach() {
-        when(restTemplateFactory.getRestTemplate()).thenReturn(restTemplate);
         userDto = new UserDto();
         userDto.setEmail("testEmail");
         userDto.setPassword("testPassword");
         userDto.setUsername("testUsername");
         userDto.setPasswordForValidation("testPassword");
 
-        User user = new User(userDto);
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_JSON);
-        entity = new HttpEntity<>(user, headers);
+        testUser = new User(userDto);
     }
 
     @Test
     public void registerUser_givenValidData_shouldCallUserServiceWithCorrectArguments(){
         service.registerUser(userDto);
         String API_GATEWAY_URL = "http://api-gateway:9000/";
-        verify(restTemplate, times(1)).exchange(
-                API_GATEWAY_URL + "users/", HttpMethod.POST, entity, User.class);
+        verify(serviceRequest, times(1)).sendPostRequest(
+                API_GATEWAY_URL + "users/", testUser, UserServiceDownException.class);
     }
 
     @Test
@@ -66,7 +57,7 @@ class UserServiceTest {
         ArgumentCaptor<UserLastAccessDateDto> argument =
                 ArgumentCaptor.forClass(UserLastAccessDateDto.class);
         service.updateUserStatsOnLogin("testUsername");
-        verify(restTemplate).patchForObject(
+        verify(serviceRequest).sendPostRequest(
                 anyString(), argument.capture(), any());
         assertEquals("testUsername", argument.getValue().getUsername());
     }

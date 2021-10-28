@@ -4,7 +4,7 @@ import com.jaikeex.mywebpage.config.circuitbreaker.CircuitBreakerLibrary;
 import com.jaikeex.mywebpage.config.connection.FallbackHandler;
 import com.jaikeex.mywebpage.config.connection.ServiceRequest;
 import com.jaikeex.mywebpage.mainwebsite.utility.exception.ServiceDownException;
-import com.jaikeex.mywebpage.resttemplate.RestTemplateFactory;
+import com.jaikeex.mywebpage.config.resttemplate.RestTemplateFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cloud.client.circuitbreaker.CircuitBreaker;
 import org.springframework.http.ResponseEntity;
@@ -22,7 +22,6 @@ public class MwpServiceRequest implements ServiceRequest {
     private final RestTemplate restTemplate;
     private final FallbackHandler fallbackHandler;
     private final Map<String, CircuitBreaker> circuitBreakers;
-
 
     @Autowired
     public MwpServiceRequest(CircuitBreakerLibrary circuitBreakerLibrary,

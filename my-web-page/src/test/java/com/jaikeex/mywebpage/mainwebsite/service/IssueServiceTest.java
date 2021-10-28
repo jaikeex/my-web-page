@@ -1,14 +1,15 @@
 package com.jaikeex.mywebpage.mainwebsite.service;
 
+import com.jaikeex.mywebpage.issuetracker.connection.TrackerServiceRequest;
 import com.jaikeex.mywebpage.issuetracker.dto.DescriptionDto;
+import com.jaikeex.mywebpage.issuetracker.dto.IssueDto;
 import com.jaikeex.mywebpage.issuetracker.dto.IssueFormDto;
 import com.jaikeex.mywebpage.issuetracker.model.Issue;
 import com.jaikeex.mywebpage.issuetracker.model.properties.IssueType;
 import com.jaikeex.mywebpage.issuetracker.model.properties.Project;
 import com.jaikeex.mywebpage.issuetracker.model.properties.Severity;
-import com.jaikeex.mywebpage.issuetracker.model.properties.Status;
 import com.jaikeex.mywebpage.issuetracker.service.IssueService;
-import com.jaikeex.mywebpage.resttemplate.RestTemplateFactory;
+import com.jaikeex.mywebpage.issuetracker.utility.IssueServiceDownException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -16,8 +17,12 @@ import org.mockito.ArgumentCaptor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.mock.web.MockMultipartFile;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
-import org.springframework.web.client.RestTemplate;
 
 import java.io.IOException;
 
@@ -30,14 +35,19 @@ import static org.mockito.Mockito.*;
 @SpringBootTest
 class IssueServiceTest {
 
+    private static final String TEST_USER_NAME = "testUser";
+
     @MockBean
-    RestTemplateFactory restTemplateFactory;
-    RestTemplate restTemplate;
+    TrackerServiceRequest serviceRequest;
+    @MockBean
+    Authentication authentication;
+    @MockBean
+    ContactService contactService;
 
     @Autowired
     IssueService service;
 
-    private static final String ISSUE_TRACKER_SERVICE_URL = "http://issue-tracker-service:9091/issue/";
+    private static final String ISSUE_TRACKER_SERVICE_URL = "http://api-gateway:9000/issue/";
     public static final String NEW_DESCRIPTION = "new description";
     public static final String NEW_TITLE = "new title";
 
@@ -46,8 +56,7 @@ class IssueServiceTest {
 
     @BeforeEach
     public void beforeEach() {
-        restTemplate = mock(RestTemplate.class);
-        when(restTemplateFactory.getRestTemplate()).thenReturn(restTemplate);
+        when(authentication.getName()).thenReturn(TEST_USER_NAME);
         initDescriptionDto();
 
         testIssueFormDto = new IssueFormDto();
@@ -56,6 +65,7 @@ class IssueServiceTest {
         testIssueFormDto.setType(IssueType.BUG);
         testIssueFormDto.setSeverity(Severity.HIGH);
         testIssueFormDto.setProject(Project.MWP);
+        testIssueFormDto.setAttachment(new MockMultipartFile("testFile", new byte[]{}));
     }
 
 
@@ -66,34 +76,49 @@ class IssueServiceTest {
     }
 
     @Test
+    @WithMockUser(roles = ("ADMIN"), username = "testUser")
     public void createNewReport_shouldPostHttpRequest() throws IOException {
         service.createNewReport(testIssueFormDto);
-        verify(restTemplate, times(1))
-                .postForEntity(anyString(), any(Issue.class), any());
+        verify(serviceRequest, times(1))
+                .sendPostRequest(anyString(), any(IssueDto.class), any());
     }
 
     @Test
-    public void createNewReport_shouldIncludeDateToDto() throws IOException {
-        ArgumentCaptor<Issue> argument = ArgumentCaptor.forClass(Issue.class);
+    @WithMockUser(roles = ("ADMIN"), username = "testUser")
+    public void createNewReport_shouldIncludeUsername() throws IOException {
+        ArgumentCaptor<IssueDto> argument = ArgumentCaptor.forClass(IssueDto.class);
         service.createNewReport(testIssueFormDto);
-        verify(restTemplate, times(1))
-                .postForEntity(anyString(), argument.capture(), any());
-        assertEquals(Status.SUBMITTED, argument.getValue().getStatus());
+        verify(serviceRequest, times(1))
+                .sendPostRequest(anyString(), argument.capture(), any());
+        assertEquals("testUser", argument.getValue().getAuthor());
     }
 
     @Test
+    @WithMockUser(roles = ("ADMIN"), username = "testUser")
+    public void createNewReport_shouldIncludeDescription() throws IOException {
+        ArgumentCaptor<IssueDto> argument = ArgumentCaptor.forClass(IssueDto.class);
+        service.createNewReport(testIssueFormDto);
+        verify(serviceRequest, times(1))
+                .sendPostRequest(anyString(), argument.capture(), any());
+        assertEquals("testDescription", argument.getValue().getDescription());
+    }
+
+    @Test
+    @WithMockUser(roles = ("ADMIN"), username = "testUser")
     public void updateDescription_shouldPostHttpRequest() {
         service.updateDescription(descriptionDto);
-        verify(restTemplate, times(1))
-                .postForEntity(anyString(), any(DescriptionDto.class), any());
+        verify(serviceRequest, times(1))
+                .sendPostRequest(anyString(), any(DescriptionDto.class), any());
     }
 
     @Test
     public void getAllIssues_shouldPostHttpRequest() {
         String url = ISSUE_TRACKER_SERVICE_URL + "all";
+        when(serviceRequest.sendGetRequest(url, Issue[].class, IssueServiceDownException.class))
+                .thenReturn(new ResponseEntity<>(new Issue[]{}, HttpStatus.OK));
         service.getAllIssues();
-        verify(restTemplate, times(1))
-                .getForEntity(url, Issue[].class);
+        verify(serviceRequest, times(1))
+                .sendGetRequest(url, Issue[].class, IssueServiceDownException.class);
 
     }
 }

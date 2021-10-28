@@ -9,7 +9,7 @@ const statusSaveSelect = document.getElementById("status-save");
 const projectSaveSelect = document.getElementById("project-save");
 const detailsElement = document.getElementById("issue-details-box");
 const searchBar = document.getElementById("search-bar");
-const principalAuthoritiesElement = document.getElementById("principal-authority")
+const principalAuthoritiesElement = document.getElementById("principal-authority");
 
 //const mainDomain = "https://www.kubahruby.com"
 const mainDomain = "http://localhost:9091"
@@ -17,10 +17,10 @@ const mainDomain = "http://localhost:9091"
 displaySuggestions();
 
 function filterIssues() {
-    let type = typeFilter.options[typeFilter.selectedIndex]
-    let severity = severityFilter.options[severityFilter.selectedIndex]
-    let status = statusFilter.options[statusFilter.selectedIndex]
-    let project = projectFilter.options[projectFilter.selectedIndex]
+    let type = typeFilter.options[typeFilter.selectedIndex];
+    let severity = severityFilter.options[severityFilter.selectedIndex];
+    let status = statusFilter.options[statusFilter.selectedIndex];
+    let project = projectFilter.options[projectFilter.selectedIndex];
 
     let resultsToHtml = ``;
     let postData = {
@@ -344,9 +344,9 @@ function deleteIssue (id, title) {
             .then(
                 function(response) {
                     if (response.status !== 200) {
-                        window.alert("There was an error deleting the report.")
+                        window.alert("There was an error deleting the report.");
                     } else {
-                        window.alert(`Report #${id} ${title} was deleted successfully`)
+                        window.alert(`Report #${id} ${title} was deleted successfully`);
 
                     }
                 });
@@ -364,23 +364,23 @@ function deleteAttachment (attachmentId, issueId, filename) {
             .then(
                 function(response) {
                     if (response.status !== 200) {
-                        window.alert("There was an error deleting the report.")
+                        window.alert("There was an error deleting the report.");
                     } else {
-                        window.alert(`File ${filename} was deleted successfully`)
+                        window.alert(`File ${filename} was deleted successfully`);
 
                     }
+                    displayIssueDetails(issueId)
                 });
     }
-    setTimeout(() => {searchIssues()}, 1000);
-    displayIssueDetails(issueId)
+    //setTimeout(() => {searchIssues()}, 1000);
 }
 
 
 function updateIssue() {
-    let type = typeSaveSelect.options[typeSaveSelect.selectedIndex]
-    let severity = severitySaveSelect.options[severitySaveSelect.selectedIndex]
-    let status = statusSaveSelect.options[statusSaveSelect.selectedIndex]
-    let project = projectSaveSelect.options[projectSaveSelect.selectedIndex]
+    let type = typeSaveSelect.options[typeSaveSelect.selectedIndex];
+    let severity = severitySaveSelect.options[severitySaveSelect.selectedIndex];
+    let status = statusSaveSelect.options[statusSaveSelect.selectedIndex];
+    let project = projectSaveSelect.options[projectSaveSelect.selectedIndex];
 
     let hiddenIssue = document.getElementById("displayed-issue-id");
     let issue = JSON.parse(hiddenIssue.value);
@@ -403,9 +403,9 @@ function updateIssue() {
     .then(
         function(response) {
             if (response.status !== 200) {
-                window.alert("There was an error updating the report.")
+                window.alert("There was an error updating the report.");
             } else {
-                window.alert(`Report #${issue.id} ${issue.title} was updated successfully`)
+                window.alert(`Report #${issue.id} ${issue.title} was updated successfully`);
             }
         });
 
