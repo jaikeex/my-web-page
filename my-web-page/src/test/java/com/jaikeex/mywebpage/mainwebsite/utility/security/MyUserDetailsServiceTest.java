@@ -1,7 +1,7 @@
 package com.jaikeex.mywebpage.mainwebsite.utility.security;
 
 import com.jaikeex.mywebpage.mainwebsite.model.User;
-import com.jaikeex.mywebpage.resttemplate.RestTemplateFactory;
+import com.jaikeex.mywebpage.config.resttemplate.RestTemplateFactory;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

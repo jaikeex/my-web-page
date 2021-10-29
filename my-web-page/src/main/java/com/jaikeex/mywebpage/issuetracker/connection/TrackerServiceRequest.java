@@ -3,7 +3,7 @@ package com.jaikeex.mywebpage.issuetracker.connection;
 import com.jaikeex.mywebpage.config.circuitbreaker.CircuitBreakerLibrary;
 import com.jaikeex.mywebpage.config.connection.ServiceRequest;
 import com.jaikeex.mywebpage.mainwebsite.utility.exception.ServiceDownException;
-import com.jaikeex.mywebpage.resttemplate.RestTemplateFactory;
+import com.jaikeex.mywebpage.config.resttemplate.RestTemplateFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cloud.client.circuitbreaker.CircuitBreaker;
 import org.springframework.http.ResponseEntity;

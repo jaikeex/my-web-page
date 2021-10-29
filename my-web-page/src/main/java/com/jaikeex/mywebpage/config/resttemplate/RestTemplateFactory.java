@@ -1,4 +1,4 @@
-package com.jaikeex.mywebpage.resttemplate;
+package com.jaikeex.mywebpage.config.resttemplate;
 
 import org.springframework.cloud.client.loadbalancer.LoadBalanced;
 import org.springframework.context.annotation.Bean;

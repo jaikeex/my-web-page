@@ -1,17 +1,21 @@
 package com.jaikeex.mywebpage.mainwebsite.service;
 
+import com.jaikeex.mywebpage.mainwebsite.connection.MwpServiceRequest;
 import com.jaikeex.mywebpage.mainwebsite.model.Project;
-import com.jaikeex.mywebpage.resttemplate.RestTemplateFactory;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.springframework.boot.test.context.TestComponent;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
-import org.springframework.web.client.RestTemplate;
+
+import java.util.List;
+
+import static org.junit.jupiter.api.Assertions.*;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -22,33 +26,42 @@ import static org.mockito.Mockito.*;
 class ProjectDetailsServiceTest {
 
     @Mock
-    RestTemplateFactory restTemplateFactory;
-    @Mock
-    RestTemplate restTemplate;
+    MwpServiceRequest serviceRequest;
 
     @InjectMocks
     ProjectDetailsService service;
 
+    Project testProject;
+
     @BeforeEach
     public void beforeEach() {
-        when(restTemplateFactory.getRestTemplate()).thenReturn(restTemplate);
+        testProject = new Project();
     }
 
     @Test
     public void getProjectById_shouldCallProjectsService() {
-        when(restTemplate.getForEntity(anyString(), any()))
+        ArgumentCaptor<String> argument = ArgumentCaptor.forClass(String.class);
+        when(serviceRequest.sendGetRequest(anyString(), any(), any()))
                 .thenReturn(new ResponseEntity<>(HttpStatus.OK));
         service.getProjectById(1);
-        verify(restTemplate, times(1))
-                .getForEntity(anyString(), any());
+        verify(serviceRequest, times(1))
+                .sendGetRequest(argument.capture(), any(), any());
+        assertTrue(argument.getValue().contains("/id/1"));
     }
 
     @Test
-    public void getProjectsList_shouldCallProjectsService() {
-        when(restTemplate.getForEntity(anyString(), any()))
-                .thenReturn(new ResponseEntity<>(new Project[]{}, HttpStatus.OK));
-        service.getProjectsList();
-        verify(restTemplate, times(1))
-                .getForEntity(anyString(), any());
+    public void getProjectById_shouldFetchCorrectResults() {
+        when(serviceRequest.sendGetRequest(anyString(), any(), any()))
+                .thenReturn(new ResponseEntity<>(testProject, HttpStatus.OK));
+        Project project = service.getProjectById(1);
+        assertSame(project, testProject);
+    }
+
+    @Test
+    public void getProjectsList_shouldFetchCorrectResults() {
+        when(serviceRequest.sendGetRequest(anyString(), any(), any()))
+                .thenReturn(new ResponseEntity<>(new Project[]{testProject}, HttpStatus.OK));
+        List<Project> projects = service.getProjectsList();
+        assertSame(projects.get(0), testProject);
     }
 }

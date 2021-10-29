@@ -35,8 +35,9 @@ public class ProjectDetailsService {
      * @return Project with the requested id.
      * @throws org.springframework.web.client.HttpClientErrorException
      *          Whenever a 4xx http status code gets returned.
-     * @throws org.springframework.web.client.HttpServerErrorException
-     *          Whenever a 5xx http status code gets returned.
+     * @throws ProjectsServiceDownException
+     *          Whenever a 5xx http status code gets returned,
+     *          or the service does not respond.
      */
     public Project getProjectById(Integer projectId) {
         String url = apiGatewayUrl + "projects/id/" + projectId;
@@ -50,8 +51,9 @@ public class ProjectDetailsService {
      * @return List of all projects in the database.
      * @throws org.springframework.web.client.HttpClientErrorException
      *          Whenever a 4xx http status code gets returned.
-     * @throws org.springframework.web.client.HttpServerErrorException
-     *          Whenever a 5xx http status code gets returned.
+     * @throws ProjectsServiceDownException
+     *          Whenever a 5xx http status code gets returned,
+     *          or the service does not respond.
      */
     public List<Project> getProjectsList() {
         String url = apiGatewayUrl + "projects";

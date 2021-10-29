@@ -1,0 +1,52 @@
+server:
+  port: 8080
+
+spring:
+  thymeleaf:
+    prefix: classpath:/templates/
+    suffix: .html
+  application:
+    name: my-web-page
+  error-page-view: "error"
+  error-message-attribute-name: "errorMessage"
+
+storage:
+  folder:
+    issue-attachments-folder: "/issue/attachments/"
+
+docker:
+  network:
+    api-gateway-url: http://api-gateway:9000/
+    issue-tracker-service-url: http://api-gateway:9000/issue/
+
+logging:
+  logback:
+    appender:
+      name: "fileAppender"
+    encoder:
+      pattern: "%d [%thread] %-5level  %logger{35} - %msg%n"
+    rollingpolicy:
+      file-name-pattern: "/logs/my-web-page/logFile.%d{yyyy-MM-dd}.log"
+      max-history: 3
+  level:
+    root: info
+
+management:
+  health:
+    circuitbreakers:
+      enabled: true
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+      base-path: "/actuator"
+
+eureka:
+  client:
+    register-with-eureka: true
+    fetch-registry: true
+    service-url:
+      defaultZone: http://service-registry:8761/eureka/
+  instance:
+    hostname: service-registry
+

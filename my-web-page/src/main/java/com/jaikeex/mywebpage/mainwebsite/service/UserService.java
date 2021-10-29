@@ -34,8 +34,9 @@ public class UserService {
      *                the registration process.
      * @throws org.springframework.web.client.HttpClientErrorException
      *          Whenever a 4xx http status code gets returned.
-     * @throws org.springframework.web.client.HttpServerErrorException
-     *          Whenever a 5xx http status code gets returned.
+     * @throws UserServiceDownException
+     *          Whenever a 5xx http status code gets returned,
+     *          or the service does not respond.
      */
     public void registerUser (UserDto userDto){
         String url = apiGatewayUrl + "users/";
@@ -48,8 +49,9 @@ public class UserService {
      * @param username Name of the user that just logged in.
      * @throws org.springframework.web.client.HttpClientErrorException
      *          Whenever a 4xx http status code gets returned.
-     * @throws org.springframework.web.client.HttpServerErrorException
-     *          Whenever a 5xx http status code gets returned.
+     * @throws UserServiceDownException
+     *          Whenever a 5xx http status code gets returned,
+     *          or the service does not respond.
      */
     public void updateUserStatsOnLogin(String username) {
         String url = apiGatewayUrl + "users/last-access/";
