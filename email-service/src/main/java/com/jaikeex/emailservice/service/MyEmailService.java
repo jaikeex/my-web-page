@@ -46,7 +46,7 @@ public class MyEmailService extends Authenticator {
 
 
     protected PasswordAuthentication getPasswordAuthentication () {
-        return new PasswordAuthentication("kbhsmtp@gmail.com", "heslo789");
+        return new PasswordAuthentication("kbhsmtp@gmail.com", "redacted");
     }
 
     private void setActiveSession() {
