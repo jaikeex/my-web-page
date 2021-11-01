@@ -34,4 +34,9 @@ public class ProjectService {
         return repository.findProjectById(projectId);
     }
 
+    public Project saveProject(Project project) {
+        log.info("Saving new project into database [project={}]", project);
+        return repository.save(project);
+    }
+
 }
