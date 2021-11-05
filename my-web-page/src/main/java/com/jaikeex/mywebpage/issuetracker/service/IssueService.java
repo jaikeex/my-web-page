@@ -85,7 +85,7 @@ public class IssueService {
      *          or the service does not respond.
      */
     public void uploadNewAttachment(AttachmentFormDto attachmentFormDto) throws IOException {
-        String url = issueTrackerServiceUrl + "upload-attachment";
+        String url = issueTrackerServiceUrl + "attachments/upload";
         AttachmentFileDto attachmentFileDto = new AttachmentFileDto(attachmentFormDto);
         serviceRequest.sendPostRequest(url, attachmentFileDto, SERVICE_DOWN_EXCEPTION);
     }

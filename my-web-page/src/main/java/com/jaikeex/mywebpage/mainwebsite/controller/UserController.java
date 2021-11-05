@@ -58,7 +58,7 @@ public class UserController {
     @PostMapping(value = "/user/signup")
     public String postRegistrationForm(Model model, @Valid UserDto userDto, BindingResult result) {
         if (isResultOk(result, model)) {
-            sendUserToUserServiceForRegistration(model, userDto);
+            sendDataToUserServiceForRegistration(model, userDto);
         }
         return SIGNUP_VIEW;
     }
@@ -69,7 +69,7 @@ public class UserController {
         return errorParser.isResultOk();
     }
 
-    private void sendUserToUserServiceForRegistration(Model model, UserDto userDto) {
+    private void sendDataToUserServiceForRegistration(Model model, UserDto userDto) {
         userService.registerUser(userDto);
         addRegistrationSuccessAttributesToModel(model);
     }
@@ -77,7 +77,6 @@ public class UserController {
     private void addRegistrationSuccessAttributesToModel(Model model) {
         model.addAttribute(REGISTRATION_STATUS_ATTRIBUTE_NAME, true);
         log.debug("Added attribute to model [name={}, value={}]", REGISTRATION_STATUS_ATTRIBUTE_NAME, true);
-
     }
 
     private void addRegistrationFailedAttributesToModel(Model model, Exception exception) {

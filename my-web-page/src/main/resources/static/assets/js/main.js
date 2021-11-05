@@ -51,7 +51,8 @@ function filterIssues() {
     .then(response => response.json())
     .then(results => {
         results.forEach(issue => {
-            resultsToHtml +=`
+            if (principalAuthoritiesElement.value.includes('ROLE_ADMIN')) {
+                resultsToHtml += `
                     <div class="card issue-card-custom">
                         <div class="issue-card-header-custom">
                             <h5 class="card-header" style="float:left">${issue.title}</h5>
@@ -79,7 +80,37 @@ function filterIssues() {
                         </div>
                     </div>
                 `;
-        });
+            }
+        else {
+                resultsToHtml += `
+                    <div class="card issue-card-custom">
+                        <div class="issue-card-header-custom">
+                            <h5 class="card-header" style="float:left">${issue.title}</h5>
+                            <h5 class="card-header" style="float:right" >#${issue.id}</h5>
+                        </div>
+                        <div class="card-body issue-card-body">
+                            <p class="card-text issue-description-text">${issue.description}</p>
+                            <hr class="issue-card-hr-separator">
+                            <div style="display: inline">
+                                <div class="issue-card-properties" style="margin-right: 1rem">
+                                    <p>Type: <span>${issue.type}</span></p>
+                                    <p>Severity: <span>${issue.severity}</span></p>
+                                </div>
+                                <div class="issue-card-properties">
+                                    <p>Status: <span>${issue.status}</span></p>
+                                    <p>Project: <span>${issue.project}</span></p>
+                                </div>
+                                <a class="btn btn-primary issue-details-button btn-danger" onclick="deleteIssueNotAdmin()">
+                                    Delete
+                                </a>
+                                <a class="btn btn-primary issue-details-button issue-card-button-details" onclick="displayIssueDetails(${issue.id})">
+                                    Details
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }});
         resultsElement.innerHTML = resultsToHtml;
     });
 }
@@ -94,7 +125,8 @@ function searchIssues() {
     .then(response => response.json())
     .then(results => {
         results.forEach(issue => {
-            resultsToHtml +=`
+            if (principalAuthoritiesElement.value.includes('ROLE_ADMIN')) {
+                resultsToHtml += `
                         <div class="card issue-card-custom">
                             <div class="issue-card-header-custom">
                                 <h5 class="card-header" style="float:left">${issue.title}</h5>
@@ -122,6 +154,37 @@ function searchIssues() {
                             </div>
                         </div>
                 `;
+            }
+            else {
+                resultsToHtml += `
+                        <div class="card issue-card-custom">
+                            <div class="issue-card-header-custom">
+                                <h5 class="card-header" style="float:left">${issue.title}</h5>
+                                <h5 class="card-header" style="float:right" >#${issue.id}</h5>
+                            </div>
+                            <div class="card-body issue-card-body">
+                                <p class="card-text issue-description-text">${issue.description}</p>
+                                <hr class="issue-card-hr-separator">
+                                <div style="display: inline">
+                                    <div class="issue-card-properties" style="margin-right: 1rem">
+                                        <p>Type: <span>${issue.type}</span></p>
+                                        <p>Severity: <span>${issue.severity}</span></p>
+                                    </div>
+                                    <div class="issue-card-properties">
+                                        <p>Status: <span>${issue.status}</span></p>
+                                        <p>Project: <span>${issue.project}</span></p>
+                                    </div>
+                                    <a class="btn btn-primary issue-details-button btn-danger" onclick="deleteIssueNotAdmin()">
+                                        Delete
+                                    </a>
+                                    <a class="btn btn-primary issue-details-button issue-card-button-details" onclick="displayIssueDetails(${issue.id})">
+                                        Details
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                `;
+            }
         });
         resultsElement.innerHTML = resultsToHtml;
         resetFilters();
@@ -139,7 +202,9 @@ function displaySuggestions() {
             .then(response => response.json())
             .then(results => {
                 results.forEach(issue => {
-                    resultsToHtml +=`
+                    if (principalAuthoritiesElement.value.includes('ROLE_ADMIN')) {
+
+                        resultsToHtml +=`
                         <div class="card issue-card-custom">
                             <div class="issue-card-header-custom">
                                 <h5 class="card-header" style="float:left">${issue.title}</h5>
@@ -167,7 +232,37 @@ function displaySuggestions() {
                             </div>
                         </div>
                 `;
-                });
+                }
+                else {
+                        resultsToHtml +=`
+                        <div class="card issue-card-custom">
+                            <div class="issue-card-header-custom">
+                                <h5 class="card-header" style="float:left">${issue.title}</h5>
+                                <h5 class="card-header" style="float:right" >#${issue.id}</h5>
+                            </div>
+                            <div class="card-body issue-card-body">
+                                <p class="card-text issue-description-text">${issue.description}</p>
+                                <hr class="issue-card-hr-separator">
+                                <div style="display: inline">
+                                    <div class="issue-card-properties" style="margin-right: 1rem">
+                                        <p>Type: <span>${issue.type}</span></p>
+                                        <p>Severity: <span>${issue.severity}</span></p>
+                                    </div>
+                                    <div class="issue-card-properties">
+                                        <p>Status: <span>${issue.status}</span></p>
+                                        <p>Project: <span>${issue.project}</span></p>
+                                    </div>
+                                    <a class="btn btn-primary issue-details-button btn-danger" onclick="deleteIssueNotAdmin()">
+                                        Delete
+                                    </a>
+                                    <a class="btn btn-primary issue-details-button issue-card-button-details" onclick="displayIssueDetails(${issue.id})">
+                                        Details
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                `;
+                    }});
                 resultsElement.innerHTML = resultsToHtml;
                 resetFilters();
             });
@@ -356,6 +451,10 @@ function deleteIssue (id, title) {
     resetFilters();
 }
 
+function deleteIssueNotAdmin () {
+    confirm(`Admin rights are required for this operation.`);
+    }
+
 function deleteAttachment (attachmentId, issueId, filename) {
     if (confirm(`delete file ${filename}?`)) {
         fetch(`${mainDomain}/issue/attachments/${attachmentId}`, {
@@ -374,7 +473,6 @@ function deleteAttachment (attachmentId, issueId, filename) {
     }
     //setTimeout(() => {searchIssues()}, 1000);
 }
-
 
 function updateIssue() {
     let type = typeSaveSelect.options[typeSaveSelect.selectedIndex];

@@ -41,6 +41,16 @@ management:
         include: "*"
       base-path: "/actuator"
 
+resilience4j:
+  timelimiter:
+    instances:
+      ContactService_CB:
+        timeoutDuration: 6s
+      ResetPasswordService_CB:
+        timeoutDuration: 6s
+      IssueService_CB:
+        timeoutDuration: 6s
+
 eureka:
   client:
     register-with-eureka: true

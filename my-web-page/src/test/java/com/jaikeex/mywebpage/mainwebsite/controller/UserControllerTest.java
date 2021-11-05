@@ -14,6 +14,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.context.WebApplicationContext;
 
@@ -92,7 +93,7 @@ class UserControllerTest {
 
     @Test
     public void postRegistrationForm_givenUsernameTaken_shouldDisplayWarning() throws Exception {
-        UserServiceDownException exception = new UserServiceDownException("error");
+        HttpClientErrorException exception = new HttpClientErrorException(HttpStatus.CONFLICT, "error");
         doThrow(exception).when(service).registerUser(userDto);
         postUserDtoToSignupEndpoint(userDto)
                 .andExpect(status().isOk())

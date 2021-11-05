@@ -22,7 +22,6 @@ public class TrackerServiceRequest implements ServiceRequest {
     private final TrackerFallbackHandler fallbackHandler;
     private final Map<String, CircuitBreaker> circuitBreakers;
 
-
     @Autowired
     public TrackerServiceRequest(CircuitBreakerLibrary circuitBreakerLibrary,
                                  RestTemplateFactory restTemplateFactory,
