@@ -16,9 +16,7 @@ import javax.mail.MessagingException;
 @RequestMapping("/emails")
 public class EmailController {
 
-
     MyEmailService emailService;
-
 
     @Autowired
     public EmailController(MyEmailService emailService) {
@@ -31,6 +29,8 @@ public class EmailController {
             emailService.sendMessage(email);
             return getOkEmailResponseEntity(email);
         } catch (MessagingException exception) {
+            System.out.println(exception.getMessage());
+            exception.printStackTrace();
             return getEmailNotSendResponseEntity(exception.getMessage());
         }
     }

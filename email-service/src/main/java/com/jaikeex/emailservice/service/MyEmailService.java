@@ -19,11 +19,11 @@ import java.util.Properties;
 @EqualsAndHashCode(callSuper = true)
 @Service
 @Data
-@NoArgsConstructor
-@AllArgsConstructor
 @Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
 public class MyEmailService extends Authenticator {
 
+    private static final String SMTP_USERNAME = "kbhsmtp@gmail.com";
+    private static final String SMTP_PASSWORD = "heslo789";
     EmailRepository repository;
 
     private String from = "kbhsmtp@gmail.com";
@@ -40,29 +40,29 @@ public class MyEmailService extends Authenticator {
         this.to = email.getRecipient();
         setActiveSession();
         MimeMessage message = constructMessage(email.getSubject(), email.getMessage());
-        Transport.send(message);
+        Transport.send(message, SMTP_USERNAME, SMTP_PASSWORD);
         repository.save(email);
     }
 
-
     protected PasswordAuthentication getPasswordAuthentication () {
-        return new PasswordAuthentication("kbhsmtp@gmail.com", "heslo789");
+        return new PasswordAuthentication(SMTP_USERNAME, SMTP_PASSWORD);
     }
 
     private void setActiveSession() {
         if (session == null) {
             Properties properties = constructProperties();
-            setSession(Session.getInstance(properties, this));
+            setSession(Session.getInstance(properties));
         }
     }
 
     private Properties constructProperties() {
         Properties properties = System.getProperties();
+        properties.put("mail.smtp.user", from);
         properties.put("mail.smtp.host", host);
         properties.put("mail.smtp.port", "465");
         properties.put("mail.smtp.ssl.enable", "true");
+        properties.put("mail.smtp.ssl.trust", "smtp.gmail.com");
         properties.put("mail.smtp.auth", "true");
-        properties.put("mail.smtp.user", from);
         properties.put("mail.smtp.socketFactory.port", "465");
         properties.put("mail.smtp.socketFactory.class", "javax.net.ssl.SSLSocketFactory");
         properties.put("mail.smtp.socketFactory.fallback", "false");
