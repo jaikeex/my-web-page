@@ -1,4 +1,4 @@
-package com.jaikeex.mywebpage.mainwebsite.utility.security;
+package com.jaikeex.mywebpage.config.security.encoder;
 
 import org.springframework.security.crypto.argon2.Argon2PasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;

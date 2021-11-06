@@ -1,4 +1,4 @@
-package com.jaikeex.mywebpage.mainwebsite.utility.security;
+package com.jaikeex.mywebpage.config.security.userdetails;
 
 import com.jaikeex.mywebpage.mainwebsite.model.User;
 import com.jaikeex.mywebpage.config.resttemplate.RestTemplateFactory;

@@ -6,7 +6,7 @@ import com.jaikeex.mywebpage.issuetracker.dto.IssueDto;
 import com.jaikeex.mywebpage.issuetracker.dto.IssueFormDto;
 import com.jaikeex.mywebpage.issuetracker.model.Issue;
 import com.jaikeex.mywebpage.issuetracker.service.IssueService;
-import com.jaikeex.mywebpage.issuetracker.utility.IssueServiceDownException;
+import com.jaikeex.mywebpage.issuetracker.utility.exception.IssueServiceDownException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;

@@ -4,7 +4,7 @@ import com.jaikeex.mywebpage.config.connection.ServiceRequest;
 import com.jaikeex.mywebpage.issuetracker.connection.TrackerServiceRequest;
 import com.jaikeex.mywebpage.issuetracker.dto.*;
 import com.jaikeex.mywebpage.issuetracker.model.Issue;
-import com.jaikeex.mywebpage.issuetracker.utility.IssueServiceDownException;
+import com.jaikeex.mywebpage.issuetracker.utility.exception.IssueServiceDownException;
 import com.jaikeex.mywebpage.mainwebsite.dto.EmailDto;
 import com.jaikeex.mywebpage.mainwebsite.service.ContactService;
 import com.jaikeex.mywebpage.mainwebsite.utility.exception.ServiceDownException;
@@ -13,7 +13,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.HttpClientErrorException;
 
 import java.io.IOException;
 import java.util.Arrays;

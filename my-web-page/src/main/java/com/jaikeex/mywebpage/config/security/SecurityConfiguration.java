@@ -1,8 +1,7 @@
-package com.jaikeex.mywebpage.config;
+package com.jaikeex.mywebpage.config.security;
 
-import com.jaikeex.mywebpage.mainwebsite.utility.security.MyAuthenticationSuccessHandler;
-import com.jaikeex.mywebpage.mainwebsite.utility.security.MyPasswordEncoder;
-import com.jaikeex.mywebpage.mainwebsite.utility.security.MyUserDetailsService;
+import com.jaikeex.mywebpage.config.security.encoder.MyPasswordEncoder;
+import com.jaikeex.mywebpage.config.security.userdetails.MyUserDetailsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -53,32 +52,32 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 
     private void setTrackerRules(HttpSecurity http) throws Exception {
         http.authorizeRequests()
-                .antMatchers("/tracker/update")
-                .hasRole("ADMIN")
-                .and()
+                    .antMatchers("/tracker/update")
+                    .hasRole("ADMIN")
+                    .and()
                 .formLogin()
-                .loginPage("/login")
-                .permitAll()
-                .successHandler(successHandler);
+                    .loginPage("/login")
+                    .permitAll()
+                    .successHandler(successHandler);
         http.authorizeRequests()
-                .antMatchers("/tracker/create")
-                .hasAnyRole("USER", "ADMIN")
-                .and()
+                    .antMatchers("/tracker/create")
+                    .hasAnyRole("USER", "ADMIN")
+                    .and()
                 .formLogin()
-                .loginPage("/login")
-                .permitAll()
-                .successHandler(successHandler);
+                    .loginPage("/login")
+                    .permitAll()
+                    .successHandler(successHandler);
     }
 
     private void setUserInfoRules(HttpSecurity http) throws Exception {
         http.authorizeRequests()
-                .antMatchers("/user/auth/**")
-                .hasAnyRole("USER", "ADMIN")
-                .and()
+                    .antMatchers("/user/auth/**")
+                    .hasAnyRole("USER", "ADMIN")
+                    .and()
                 .formLogin()
-                .loginPage("/login")
-                .permitAll()
-                .successHandler(successHandler);
+                    .loginPage("/login")
+                    .permitAll()
+                    .successHandler(successHandler);
     }
 
     private void setAdminPageRules(HttpSecurity http) throws Exception {

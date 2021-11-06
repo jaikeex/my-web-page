@@ -8,7 +8,7 @@ import com.jaikeex.mywebpage.issuetracker.model.properties.IssueType;
 import com.jaikeex.mywebpage.issuetracker.model.properties.Project;
 import com.jaikeex.mywebpage.issuetracker.model.properties.Severity;
 import com.jaikeex.mywebpage.issuetracker.service.IssueServiceImpl;
-import com.jaikeex.mywebpage.issuetracker.utility.IssueServiceDownException;
+import com.jaikeex.mywebpage.issuetracker.utility.exception.IssueServiceDownException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

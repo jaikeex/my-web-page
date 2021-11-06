@@ -1,4 +1,4 @@
-package com.jaikeex.mywebpage.issuetracker.utility;
+package com.jaikeex.mywebpage.issuetracker.utility.exception;
 
 import com.jaikeex.mywebpage.mainwebsite.utility.exception.ServiceDownException;
 

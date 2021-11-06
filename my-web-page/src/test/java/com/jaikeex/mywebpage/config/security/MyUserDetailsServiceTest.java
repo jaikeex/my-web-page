@@ -1,5 +1,7 @@
-package com.jaikeex.mywebpage.mainwebsite.utility.security;
+package com.jaikeex.mywebpage.config.security;
 
+import com.jaikeex.mywebpage.config.security.userdetails.MyUserDetails;
+import com.jaikeex.mywebpage.config.security.userdetails.MyUserDetailsService;
 import com.jaikeex.mywebpage.mainwebsite.model.User;
 import com.jaikeex.mywebpage.config.resttemplate.RestTemplateFactory;
 import org.junit.jupiter.api.BeforeEach;

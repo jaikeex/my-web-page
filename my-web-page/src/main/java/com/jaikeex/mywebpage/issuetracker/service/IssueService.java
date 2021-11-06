@@ -4,7 +4,7 @@ import com.jaikeex.mywebpage.issuetracker.dto.AttachmentFormDto;
 import com.jaikeex.mywebpage.issuetracker.dto.IssueDto;
 import com.jaikeex.mywebpage.issuetracker.dto.IssueFormDto;
 import com.jaikeex.mywebpage.issuetracker.model.Issue;
-import com.jaikeex.mywebpage.issuetracker.utility.IssueServiceDownException;
+import com.jaikeex.mywebpage.issuetracker.utility.exception.IssueServiceDownException;
 import org.springframework.web.client.HttpClientErrorException;
 
 import java.io.IOException;

@@ -1,6 +1,6 @@
 package com.jaikeex.mywebpage.mainwebsite.dto;
 
-import com.jaikeex.mywebpage.mainwebsite.utility.security.MyPasswordEncoder;
+import com.jaikeex.mywebpage.config.security.encoder.MyPasswordEncoder;
 import com.jaikeex.mywebpage.mainwebsite.utility.validators.MatchingPasswords;
 import com.jaikeex.mywebpage.mainwebsite.utility.validators.PasswordMatches;
 import com.jaikeex.mywebpage.mainwebsite.utility.validators.ValidateEmail;
