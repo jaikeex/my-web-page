@@ -2,7 +2,7 @@ package com.jaikeex.mywebpage.issuetracker.controller;
 
 import com.google.gson.Gson;
 import com.jaikeex.mywebpage.issuetracker.dto.AttachmentFormDto;
-import com.jaikeex.mywebpage.issuetracker.dto.DescriptionDto;
+import com.jaikeex.mywebpage.issuetracker.dto.IssueDto;
 import com.jaikeex.mywebpage.issuetracker.dto.IssueFormDto;
 import com.jaikeex.mywebpage.issuetracker.model.Issue;
 import com.jaikeex.mywebpage.issuetracker.service.IssueService;
@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.client.HttpClientErrorException;
 
 import java.io.IOException;
 import java.util.List;
@@ -67,8 +68,8 @@ public class DashboardController {
     }
 
     @PostMapping("/update")
-    public String postUpdateDescription (DescriptionDto descriptionDto, Model model) {
-        issueService.updateDescription(descriptionDto);
+    public String postUpdateDescription (IssueDto issueDto, Model model) {
+        issueService.updateDescription(issueDto);
         addSuccessTrueAttributeToModel(model);
         return "issuetracker/update-description-success";
     }
@@ -106,7 +107,7 @@ public class DashboardController {
     }
 
     private void addUpdateDescriptionAttributesToModel(Model model) {
-        DescriptionDto descriptionDto = new DescriptionDto();
+        IssueDto descriptionDto = new IssueDto();
         model.addAttribute(DESCRIPTION_DTO_ATTRIBUTE_NAME, descriptionDto);
         log.debug("Added attribute to model [name={}, value={}]", DESCRIPTION_DTO_ATTRIBUTE_NAME, descriptionDto);
     }
@@ -124,6 +125,14 @@ public class DashboardController {
 
     @ExceptionHandler({IssueServiceDownException.class, IOException.class})
     public String IssueServiceDown(Model model, Exception exception) {
+        String errorMessage = exception.getMessage();
+        log.warn(errorMessage);
+        addExceptionCaughtAttributesToModel(model, errorMessage);
+        return ISSUETRACKER_ERROR_VIEW;
+    }
+
+    @ExceptionHandler(HttpClientErrorException.class)
+    public String handleClientError(Model model, HttpClientErrorException exception) {
         String errorMessage = exception.getMessage();
         log.warn(errorMessage);
         addExceptionCaughtAttributesToModel(model, errorMessage);

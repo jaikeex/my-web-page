@@ -4,12 +4,12 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
 import com.fasterxml.jackson.databind.SerializationFeature;
-import com.jaikeex.mywebpage.issuetracker.dto.DescriptionDto;
+import com.jaikeex.mywebpage.issuetracker.dto.IssueDto;
 import com.jaikeex.mywebpage.issuetracker.dto.IssueFormDto;
 import com.jaikeex.mywebpage.issuetracker.model.properties.IssueType;
 import com.jaikeex.mywebpage.issuetracker.model.properties.Project;
 import com.jaikeex.mywebpage.issuetracker.model.properties.Severity;
-import com.jaikeex.mywebpage.issuetracker.service.IssueService;
+import com.jaikeex.mywebpage.issuetracker.service.IssueServiceImpl;
 import com.jaikeex.mywebpage.issuetracker.utility.IssueServiceDownException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -39,11 +39,11 @@ class DashboardControllerTest {
     private WebApplicationContext context;
 
     @MockBean
-    IssueService service;
+    IssueServiceImpl service;
 
     IssueFormDto testIssueFormDto;
     String issueDtoJson;
-    DescriptionDto descriptionDto;
+    IssueDto descriptionDto;
 
     public static final String NEW_DESCRIPTION = "new description";
     public static final String NEW_TITLE = "new title";
@@ -70,7 +70,7 @@ class DashboardControllerTest {
     }
 
     private void initDescriptionDto() {
-        descriptionDto = new DescriptionDto();
+        descriptionDto = new IssueDto();
         descriptionDto.setDescription(NEW_DESCRIPTION);
         descriptionDto.setTitle(NEW_TITLE);
     }

@@ -348,7 +348,7 @@ function displayIssueDetails(id) {
                 resultsToHtml +=
                     `
                     <input type="text" id="displayed-issue-id" style="display: none" value='${JSON.stringify(issue).replace(/[\/\(\)\']/g, "&apos;")}'>
-                    <h5>${issue.title}</h5>
+                    <h5>#<span id="issue-id">${issue.id}</span>  <span id="issue-title">${issue.title}</span></h5>
                     <p style="margin-bottom: 0">Author: ${issue.author}</p>
                     <p>Created: ${formattedDate}</p>
                     <p style="margin-bottom: 0">Type: <span style="font-weight: bold">${issue.type}</span></p>
@@ -389,7 +389,7 @@ function displayIssueDetails(id) {
                 resultsToHtml +=
                     `
                     <input type="text" id="displayed-issue-id" style="display: none" value='${JSON.stringify(issue).replace(/[\/\(\)\']/g, "&apos;")}'>
-                    <h5>${issue.title}</h5>
+                    <h5>#<span id="issue-id">${issue.id}</span>  <span id="issue-title">${issue.title}</span></h5>
                     <p style="margin-bottom: 0">Author: ${issue.author}</p>
                     <p>Created: ${formattedDate}</p>
                     <p style="margin-bottom: 0">Type: <span style="font-weight: bold">${issue.type}</span></p>
@@ -479,18 +479,22 @@ function updateIssue() {
     let severity = severitySaveSelect.options[severitySaveSelect.selectedIndex];
     let status = statusSaveSelect.options[statusSaveSelect.selectedIndex];
     let project = projectSaveSelect.options[projectSaveSelect.selectedIndex];
+    let issueIdElement = document.getElementById("issue-id");
+    let issueTitleElement = document.getElementById("issue-title");
 
     let hiddenIssue = document.getElementById("displayed-issue-id");
-    let issue = JSON.parse(hiddenIssue.value);
+    let issueDto = {};
 
-    issue.type = type.value;
-    issue.severity = severity.value;
-    issue.status = status.value;
-    issue.project = project.value;
+    issueDto.id = issueIdElement.innerHTML;
+    issueDto.title = issueTitleElement.innerHTML;
+    issueDto.type = type.value;
+    issueDto.severity = severity.value;
+    issueDto.status = status.value;
+    issueDto.project = project.value;
 
-    console.log(issue);
+    console.log(issueDto);
 
-    let postBody = JSON.stringify(issue);
+    let postBody = JSON.stringify(issueDto);
     fetch(`${mainDomain}/issue/update`, {
         headers: {
             'Content-Type': 'application/json',
@@ -503,13 +507,13 @@ function updateIssue() {
             if (response.status !== 200) {
                 window.alert("There was an error updating the report.");
             } else {
-                window.alert(`Report #${issue.id} ${issue.title} was updated successfully`);
+                window.alert(`Report #${issueDto.id} ${issueDto.title} was updated successfully`);
             }
         });
 
     let element = document.getElementById("status");
-    element.value = issue['status'];
+    element.value = issueDto['status'];
     setTimeout(() => {filterIssues()}, 1000);
-    setTimeout(() => {displayIssueDetails(issue['id'])}, 1000);
+    setTimeout(() => {displayIssueDetails(issueDto['id'])}, 1000);
 }
 

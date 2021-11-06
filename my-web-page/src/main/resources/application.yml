@@ -48,7 +48,7 @@ resilience4j:
         timeoutDuration: 6s
       ResetPasswordService_CB:
         timeoutDuration: 6s
-      IssueService_CB:
+      IssueServiceImpl_CB:
         timeoutDuration: 6s
 
 eureka:
