@@ -1,4 +1,4 @@
-package com.jaikeex.mywebpage.config.resttemplate;
+package com.jaikeex.mywebpage.config.connection.resttemplate;
 
 import org.springframework.http.client.ClientHttpRequestFactory;
 import org.springframework.web.client.RestTemplate;

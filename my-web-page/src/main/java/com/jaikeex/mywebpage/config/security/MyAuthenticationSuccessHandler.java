@@ -1,28 +1,23 @@
 package com.jaikeex.mywebpage.config.security;
 
-import com.jaikeex.mywebpage.mainwebsite.service.UserService;
-import org.apache.commons.lang3.StringUtils;
+import com.jaikeex.mywebpage.mainwebsite.service.user.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.web.DefaultRedirectStrategy;
 import org.springframework.security.web.RedirectStrategy;
-import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.security.web.authentication.SavedRequestAwareAuthenticationSuccessHandler;
 import org.springframework.security.web.savedrequest.HttpSessionRequestCache;
+import org.springframework.security.web.savedrequest.RequestCache;
 import org.springframework.security.web.savedrequest.SavedRequest;
 import org.springframework.stereotype.Component;
-import org.springframework.stereotype.Service;
-import org.springframework.security.web.savedrequest.RequestCache;
-import javax.servlet.FilterChain;
+
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
 @Component
-public class MyAuthenticationSuccessHandler
-        extends SavedRequestAwareAuthenticationSuccessHandler
-        {
+public class MyAuthenticationSuccessHandler extends SavedRequestAwareAuthenticationSuccessHandler {
 
     UserService accountManagementService;
     private final RedirectStrategy redirectStrategy = new DefaultRedirectStrategy();

@@ -13,9 +13,9 @@ import org.springframework.web.client.HttpClientErrorException;
 public class MwpFallbackHandler implements FallbackHandler {
 
     @Override
-    public <T> ResponseEntity<T> throwFallbackException(String fallbackMessage,
-                                                        Throwable exception,
-                                                        Class<? extends ServiceDownException> exceptionType) {
+    public <T> ResponseEntity<T> throwBackendServiceException(String fallbackMessage,
+                                                              Throwable exception,
+                                                              Class<? extends ServiceDownException> exceptionType) {
         log.warn("{}", ExceptionUtils.getStackTrace(exception));
         checkForClientError(exception);
         throwMatchingException(fallbackMessage, exceptionType);

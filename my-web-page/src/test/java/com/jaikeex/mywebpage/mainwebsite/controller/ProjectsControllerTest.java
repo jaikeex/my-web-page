@@ -1,7 +1,7 @@
 package com.jaikeex.mywebpage.mainwebsite.controller;
 
 import com.jaikeex.mywebpage.mainwebsite.model.Project;
-import com.jaikeex.mywebpage.mainwebsite.service.ProjectDetailsService;
+import com.jaikeex.mywebpage.mainwebsite.service.project.ProjectDetailsServiceImpl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,7 +33,7 @@ class ProjectsControllerTest {
     Project project;
 
     @MockBean
-    ProjectDetailsService service;
+    ProjectDetailsServiceImpl service;
 
     @Autowired
     ProjectsController controller;

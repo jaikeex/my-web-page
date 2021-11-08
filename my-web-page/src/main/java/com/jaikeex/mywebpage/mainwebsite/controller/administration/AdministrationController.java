@@ -1,8 +1,8 @@
 package com.jaikeex.mywebpage.mainwebsite.controller.administration;
 
 import com.jaikeex.mywebpage.mainwebsite.dto.ProjectDto;
-import com.jaikeex.mywebpage.mainwebsite.service.ProjectDetailsService;
 import com.jaikeex.mywebpage.mainwebsite.service.administration.AdministrationService;
+import com.jaikeex.mywebpage.mainwebsite.service.project.ProjectDetailsServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -13,11 +13,11 @@ import org.springframework.web.bind.annotation.PostMapping;
 public class AdministrationController {
 
     private final AdministrationService administrationService;
-    private final ProjectDetailsService projectService;
+    private final ProjectDetailsServiceImpl projectService;
 
     @Autowired
     public AdministrationController(AdministrationService administrationService,
-                                    ProjectDetailsService projectService) {
+                                    ProjectDetailsServiceImpl projectService) {
         this.administrationService = administrationService;
         this.projectService = projectService;
     }

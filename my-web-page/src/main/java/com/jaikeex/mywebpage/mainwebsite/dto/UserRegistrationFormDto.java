@@ -14,7 +14,7 @@ import javax.validation.constraints.NotBlank;
 @NoArgsConstructor
 @AllArgsConstructor
 @PasswordMatches.List({@PasswordMatches(field = "password", fieldMatch = "passwordForValidation")})
-public class UserDto implements MatchingPasswords {
+public class UserRegistrationFormDto implements MatchingPasswords {
 
     MyPasswordEncoder encoder = new MyPasswordEncoder();
 
@@ -27,7 +27,7 @@ public class UserDto implements MatchingPasswords {
     @NotBlank
     protected String passwordForValidation;
 
-    public UserDto(String email, String username, String password, String passwordForValidation) {
+    public UserRegistrationFormDto(String email, String username, String password, String passwordForValidation) {
         this.email = email;
         this.username = username;
         this.password = password;

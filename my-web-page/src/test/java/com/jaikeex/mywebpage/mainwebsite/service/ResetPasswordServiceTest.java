@@ -2,6 +2,7 @@ package com.jaikeex.mywebpage.mainwebsite.service;
 
 import com.jaikeex.mywebpage.mainwebsite.connection.MwpServiceRequest;
 import com.jaikeex.mywebpage.mainwebsite.dto.ResetPasswordDto;
+import com.jaikeex.mywebpage.mainwebsite.service.user.passwordreset.ResetPasswordServiceImpl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -26,7 +27,7 @@ class ResetPasswordServiceTest {
     MwpServiceRequest serviceRequest;
     
     @InjectMocks
-    ResetPasswordService service;
+    ResetPasswordServiceImpl service;
 
     @BeforeEach
     public void beforeEach() {

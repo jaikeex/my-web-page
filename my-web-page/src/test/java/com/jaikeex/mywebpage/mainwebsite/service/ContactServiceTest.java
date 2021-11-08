@@ -4,6 +4,7 @@ package com.jaikeex.mywebpage.mainwebsite.service;
 import com.jaikeex.mywebpage.mainwebsite.connection.MwpServiceRequest;
 import com.jaikeex.mywebpage.mainwebsite.dto.EmailDto;
 import com.jaikeex.mywebpage.mainwebsite.model.Email;
+import com.jaikeex.mywebpage.mainwebsite.service.contact.ContactServiceImpl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -31,7 +32,7 @@ class ContactServiceTest {
     MwpServiceRequest serviceRequest;
 
     @InjectMocks
-    ContactService service;
+    ContactServiceImpl service;
 
     @BeforeEach
     public void beforeEach() {
@@ -43,7 +44,7 @@ class ContactServiceTest {
     @Test
     public void sendContactFormAsEmail_emailShouldIncludeSubject() {
         ArgumentCaptor<Email> argument = ArgumentCaptor.forClass(Email.class);
-        service.sendEmailToAdmin(testEmailDto);
+        service.sendMessage(testEmailDto);
         verify(serviceRequest).sendPostRequest(anyString(), argument.capture(), any());
         assertTrue(argument.getValue().getSubject().contains(TEST_SUBJECT));
     }
@@ -51,7 +52,7 @@ class ContactServiceTest {
     @Test
     public void sendContactFormAsEmail_emailShouldIncludeBody() {
         ArgumentCaptor<Email> argument = ArgumentCaptor.forClass(Email.class);
-        service.sendEmailToAdmin(testEmailDto);
+        service.sendMessage(testEmailDto);
         verify(serviceRequest).sendPostRequest(anyString(), argument.capture(), any());
         assertTrue(argument.getValue().getMessage().contains(TEST_MESSAGE_TEXT));
     }
@@ -59,14 +60,14 @@ class ContactServiceTest {
     @Test
     public void sendContactFormAsEmail_emailShouldIncludeEmailAddress() {
         ArgumentCaptor<Email> argument = ArgumentCaptor.forClass(Email.class);
-        service.sendEmailToAdmin(testEmailDto);
+        service.sendMessage(testEmailDto);
         verify(serviceRequest).sendPostRequest(anyString(), argument.capture(), any());
         assertTrue(argument.getValue().getMessage().contains(TEST_EMAIL));
     }
 
     @Test
     public void sendContactFormAsEmail_shouldPostHttpRequestToEmailService() {
-        service.sendEmailToAdmin(testEmailDto);
+        service.sendMessage(testEmailDto);
         verify(serviceRequest, times(1))
                 .sendPostRequest(anyString(), any(Email.class), any());
     }

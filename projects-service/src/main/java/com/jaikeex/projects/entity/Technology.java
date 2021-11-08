@@ -1,6 +1,7 @@
 package com.jaikeex.projects.entity;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -22,7 +23,7 @@ public class Technology {
     private String name;
 
     @ManyToMany(mappedBy = "technologies")
-    @JsonBackReference
+    @JsonIgnore
     Set<Project> projects = new HashSet<>();
 
 

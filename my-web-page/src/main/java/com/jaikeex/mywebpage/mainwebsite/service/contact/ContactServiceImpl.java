@@ -1,4 +1,4 @@
-package com.jaikeex.mywebpage.mainwebsite.service;
+package com.jaikeex.mywebpage.mainwebsite.service.contact;
 
 import com.jaikeex.mywebpage.config.connection.ServiceRequest;
 import com.jaikeex.mywebpage.mainwebsite.connection.MwpServiceRequest;
@@ -14,7 +14,7 @@ import org.springframework.stereotype.Service;
 
 @Service
 @Slf4j
-public class ContactService{
+public class ContactServiceImpl implements ContactService{
 
     private static final String CONTACT_EMAIL_RECIPIENT = "hrubyy.jakub@gmail.com";
     private static final Class<? extends ServiceDownException> SERVICE_EXCEPTION_TYPE = ContactServiceDownException.class;
@@ -25,21 +25,12 @@ public class ContactService{
     private final ServiceRequest serviceRequest;
 
     @Autowired
-    public ContactService(MwpServiceRequest serviceRequest) {
+    public ContactServiceImpl(MwpServiceRequest serviceRequest) {
         this.serviceRequest = serviceRequest;
     }
 
-    /**Passes the data from a filled-in contact form to the email service
-     * with an http request.
-     * @param emailDto Data transfer object with the email form parameters
-     *                       as its fields.
-     * @throws org.springframework.web.client.HttpClientErrorException
-     *          Whenever a 4xx http status code gets returned.
-     * @throws ContactServiceDownException
-     *          Whenever a 5xx http status code gets returned,
-     *          or the service does not respond.
-     */
-    public void sendEmailToAdmin(EmailDto emailDto) {
+    @Override
+    public void sendMessage(EmailDto emailDto) {
         Email email = loadDataFromDtoIntoEmailObject(emailDto);
         postHttpRequestToEmailService(email);
     }

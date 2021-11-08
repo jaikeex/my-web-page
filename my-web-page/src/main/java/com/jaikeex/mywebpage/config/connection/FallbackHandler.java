@@ -4,9 +4,12 @@ import com.jaikeex.mywebpage.mainwebsite.utility.exception.ServiceDownException;
 import org.springframework.http.ResponseEntity;
 
 
+/**
+ * Processes any exceptions thrown by the microservices.
+ */
 public interface FallbackHandler {
 
-    <T> ResponseEntity<T> throwFallbackException(String fallbackMessage,
-                                                Throwable throwable,
-                                                Class<? extends ServiceDownException> exceptionType);
+    <T> ResponseEntity<T> throwBackendServiceException(String fallbackMessage,
+                                                       Throwable throwable,
+                                                       Class<? extends ServiceDownException> exceptionType);
 }

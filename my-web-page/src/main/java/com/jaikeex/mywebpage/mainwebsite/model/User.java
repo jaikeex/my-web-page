@@ -1,6 +1,6 @@
 package com.jaikeex.mywebpage.mainwebsite.model;
 
-import com.jaikeex.mywebpage.mainwebsite.dto.UserDto;
+import com.jaikeex.mywebpage.mainwebsite.dto.UserRegistrationFormDto;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -27,7 +27,7 @@ public class User{
     private boolean enabled;
     private String role;
 
-    public User (UserDto userDto) {
+    public User (UserRegistrationFormDto userDto) {
         Timestamp now = new Timestamp(System.currentTimeMillis());
         userDto.encodePassword();
         this.setUsername(userDto.getUsername());

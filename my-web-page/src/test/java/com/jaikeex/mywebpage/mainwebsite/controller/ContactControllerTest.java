@@ -1,7 +1,7 @@
 package com.jaikeex.mywebpage.mainwebsite.controller;
 
 import com.jaikeex.mywebpage.mainwebsite.dto.EmailDto;
-import com.jaikeex.mywebpage.mainwebsite.service.ContactService;
+import com.jaikeex.mywebpage.mainwebsite.service.contact.ContactServiceImpl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -41,7 +41,7 @@ class ContactControllerTest {
 
 
     @MockBean
-    ContactService service;
+    ContactServiceImpl service;
     @Autowired
     private MockMvc mockMvc;
     @Autowired
@@ -80,7 +80,7 @@ class ContactControllerTest {
     public void sendForm_shouldSendConfirmationEmail() throws Exception {
         postContactFormDtoToSendformEndpoint(emailDto)
                 .andExpect(status().isOk());
-        verify(service).sendEmailToAdmin(any(EmailDto.class));
+        verify(service).sendMessage(any(EmailDto.class));
     }
 
     @Test
@@ -125,7 +125,7 @@ class ContactControllerTest {
     public void sendForm_shouldCatchHttpServerErrorException() throws Exception {
         HttpServerErrorException exception =
                 new HttpServerErrorException(HttpStatus.INTERNAL_SERVER_ERROR, "testException");
-        doThrow(exception).when(service).sendEmailToAdmin(emailDto);
+        doThrow(exception).when(service).sendMessage(emailDto);
         postContactFormDtoToSendformEndpoint(emailDto)
                 .andExpect(status().isOk())
                 .andExpect(model().attributeExists("message"));
@@ -135,7 +135,7 @@ class ContactControllerTest {
     public void sendForm_shouldCatchHttpClientErrorException() throws Exception {
         HttpClientErrorException exception =
                 new HttpClientErrorException(HttpStatus.BAD_REQUEST, "testException");
-        doThrow(exception).when(service).sendEmailToAdmin(emailDto);
+        doThrow(exception).when(service).sendMessage(emailDto);
         postContactFormDtoToSendformEndpoint(emailDto)
                 .andExpect(status().isOk())
                 .andExpect(model().attributeExists("message"));

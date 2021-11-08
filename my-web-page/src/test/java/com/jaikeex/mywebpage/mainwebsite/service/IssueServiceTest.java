@@ -9,6 +9,7 @@ import com.jaikeex.mywebpage.issuetracker.model.properties.Project;
 import com.jaikeex.mywebpage.issuetracker.model.properties.Severity;
 import com.jaikeex.mywebpage.issuetracker.service.IssueServiceImpl;
 import com.jaikeex.mywebpage.issuetracker.utility.exception.IssueServiceDownException;
+import com.jaikeex.mywebpage.mainwebsite.service.contact.ContactServiceImpl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -41,7 +42,7 @@ class IssueServiceTest {
     @MockBean
     Authentication authentication;
     @MockBean
-    ContactService contactService;
+    ContactServiceImpl contactService;
 
     @Autowired
     IssueServiceImpl service;

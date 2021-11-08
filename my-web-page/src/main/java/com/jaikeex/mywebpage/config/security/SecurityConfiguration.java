@@ -59,6 +59,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                     .loginPage("/login")
                     .permitAll()
                     .successHandler(successHandler);
+
         http.authorizeRequests()
                     .antMatchers("/tracker/create")
                     .hasAnyRole("USER", "ADMIN")
@@ -81,9 +82,13 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
     }
 
     private void setAdminPageRules(HttpSecurity http) throws Exception {
-        http.authorizeRequests().antMatchers("/admin/**").hasRole("ADMIN").and().formLogin();
+        http.authorizeRequests()
+                    .antMatchers("/admin/**")
+                    .hasRole("ADMIN")
+                    .and()
+                .formLogin()
+                    .loginPage("/login")
+                    .permitAll()
+                    .successHandler(successHandler);
     }
-
-
-
 }

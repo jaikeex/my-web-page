@@ -2,8 +2,8 @@ package com.jaikeex.mywebpage.issuetracker.connection;
 
 import com.jaikeex.mywebpage.config.circuitbreaker.CircuitBreakerLibrary;
 import com.jaikeex.mywebpage.config.connection.ServiceRequest;
+import com.jaikeex.mywebpage.config.connection.resttemplate.RestTemplateFactory;
 import com.jaikeex.mywebpage.mainwebsite.utility.exception.ServiceDownException;
-import com.jaikeex.mywebpage.config.resttemplate.RestTemplateFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cloud.client.circuitbreaker.CircuitBreaker;
 import org.springframework.http.ResponseEntity;
@@ -36,7 +36,7 @@ public class TrackerServiceRequest implements ServiceRequest {
         CircuitBreaker circuitBreaker = getCircuitBreaker();
         return circuitBreaker.run(
                 () -> restTemplate.getForEntity(url, responseType),
-                throwable -> fallbackHandler.throwFallbackException(FALLBACK_MESSAGE, throwable, exceptionType));
+                throwable -> fallbackHandler.throwBackendServiceException(FALLBACK_MESSAGE, throwable, exceptionType));
     }
 
     @Override
@@ -44,7 +44,7 @@ public class TrackerServiceRequest implements ServiceRequest {
         CircuitBreaker circuitBreaker = getCircuitBreaker();
         circuitBreaker.run(
                 () -> restTemplate.postForEntity(url, body, Object.class),
-                throwable -> fallbackHandler.throwFallbackException(FALLBACK_MESSAGE, throwable, exceptionType));
+                throwable -> fallbackHandler.throwBackendServiceException(FALLBACK_MESSAGE, throwable, exceptionType));
     }
 
     @Override
@@ -52,7 +52,7 @@ public class TrackerServiceRequest implements ServiceRequest {
         CircuitBreaker circuitBreaker = getCircuitBreaker();
         circuitBreaker.run(
                 () -> restTemplate.patchForObject(url, body, Object.class),
-                throwable -> fallbackHandler.throwFallbackException(FALLBACK_MESSAGE, throwable, exceptionType));
+                throwable -> fallbackHandler.throwBackendServiceException(FALLBACK_MESSAGE, throwable, exceptionType));
     }
 
     private CircuitBreaker getCircuitBreaker() {

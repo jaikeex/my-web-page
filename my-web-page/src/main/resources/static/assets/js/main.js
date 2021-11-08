@@ -11,8 +11,8 @@ const detailsElement = document.getElementById("issue-details-box");
 const searchBar = document.getElementById("search-bar");
 const principalAuthoritiesElement = document.getElementById("principal-authority");
 
-//const mainDomain = "https://www.kubahruby.com"
-const mainDomain = "http://localhost:9091"
+const mainDomain = "https://www.kubahruby.com"
+//const mainDomain = "http://localhost:9091"
 
 displaySuggestions();
 
@@ -462,7 +462,7 @@ function deleteAttachment (attachmentId, issueId, filename) {
         })
             .then(
                 function(response) {
-                    if (response.status !== 200) {
+                    if (response.status !== 204) {
                         window.alert("There was an error deleting the report.");
                     } else {
                         window.alert(`File ${filename} was deleted successfully`);

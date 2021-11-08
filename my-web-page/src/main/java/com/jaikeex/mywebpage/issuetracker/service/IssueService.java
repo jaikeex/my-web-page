@@ -10,6 +10,9 @@ import org.springframework.web.client.HttpClientErrorException;
 import java.io.IOException;
 import java.util.List;
 
+/**
+ * Manages communication with the issue microservice.
+ */
 public interface IssueService {
 
     /**

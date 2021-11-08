@@ -1,6 +1,6 @@
 package com.jaikeex.mywebpage.mainwebsite.utility.validators;
 
-import com.jaikeex.mywebpage.mainwebsite.dto.UserDto;
+import com.jaikeex.mywebpage.mainwebsite.dto.UserRegistrationFormDto;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -28,7 +28,7 @@ class PasswordMatchesValidatorTest {
         validator = factory.getValidator();
     }
 
-    private final UserDto userDto = new UserDto(
+    private final UserRegistrationFormDto userDto = new UserRegistrationFormDto(
             "testuserfordbaccess@testuserfordbaccess.com",
             "testuserfordbaccess",
             "testuserfordbaccess",
@@ -37,7 +37,7 @@ class PasswordMatchesValidatorTest {
 
     @Test
     public void userDtoValidFormNoViolations() {
-        Set<ConstraintViolation<UserDto>> violations = validator.validate(userDto);
+        Set<ConstraintViolation<UserRegistrationFormDto>> violations = validator.validate(userDto);
         assertTrue(violations.isEmpty());
     }
 
@@ -45,49 +45,49 @@ class PasswordMatchesValidatorTest {
     public void userDtoNoMatchingPasswords() {
         userDto.setPassword("test");
         userDto.setPasswordForValidation("fail");
-        Set<ConstraintViolation<UserDto>> violations = validator.validate(userDto);
+        Set<ConstraintViolation<UserRegistrationFormDto>> violations = validator.validate(userDto);
         assertFalse(violations.isEmpty());
     }
 
     @Test
     public void userDtoBlankUsername() {
         userDto.setUsername("");
-        Set<ConstraintViolation<UserDto>> violations = validator.validate(userDto);
+        Set<ConstraintViolation<UserRegistrationFormDto>> violations = validator.validate(userDto);
         assertFalse(violations.isEmpty());
     }
 
     @Test
     public void userDtoBlankPassword() {
         userDto.setPassword("");
-        Set<ConstraintViolation<UserDto>> violations = validator.validate(userDto);
+        Set<ConstraintViolation<UserRegistrationFormDto>> violations = validator.validate(userDto);
         assertFalse(violations.isEmpty());
     }
 
     @Test
     public void userDtoBlankPasswordForValidation() {
         userDto.setPasswordForValidation("");
-        Set<ConstraintViolation<UserDto>> violations = validator.validate(userDto);
+        Set<ConstraintViolation<UserRegistrationFormDto>> violations = validator.validate(userDto);
         assertFalse(violations.isEmpty());
     }
 
     @Test
     public void userDtoInvalidEmailNoAt() {
         userDto.setEmail("test.com");
-        Set<ConstraintViolation<UserDto>> violations = validator.validate(userDto);
+        Set<ConstraintViolation<UserRegistrationFormDto>> violations = validator.validate(userDto);
         assertFalse(violations.isEmpty());
     }
 
     @Test
     public void userDtoInvalidEmailNoDomain() {
         userDto.setEmail("test@gmail");
-        Set<ConstraintViolation<UserDto>> violations = validator.validate(userDto);
+        Set<ConstraintViolation<UserRegistrationFormDto>> violations = validator.validate(userDto);
         assertFalse(violations.isEmpty());
     }
 
     @Test
     public void userDtoInvalidEmailWrongLetters() {
         userDto.setEmail("ěščřžýáí@gmail.com");
-        Set<ConstraintViolation<UserDto>> violations = validator.validate(userDto);
+        Set<ConstraintViolation<UserRegistrationFormDto>> violations = validator.validate(userDto);
         assertFalse(violations.isEmpty());
     }
 

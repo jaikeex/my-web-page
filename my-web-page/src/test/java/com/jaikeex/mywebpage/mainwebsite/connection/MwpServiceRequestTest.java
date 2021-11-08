@@ -1,12 +1,9 @@
 package com.jaikeex.mywebpage.mainwebsite.connection;
 
-import com.jaikeex.mywebpage.config.circuitbreaker.CircuitBreakerLibrary;
-import com.jaikeex.mywebpage.config.resttemplate.RestTemplateFactory;
+import com.jaikeex.mywebpage.config.connection.resttemplate.RestTemplateFactory;
 import com.jaikeex.mywebpage.mainwebsite.utility.exception.ServiceDownException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;

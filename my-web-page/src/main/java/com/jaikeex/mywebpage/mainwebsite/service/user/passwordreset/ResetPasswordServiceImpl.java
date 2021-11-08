@@ -1,4 +1,4 @@
-package com.jaikeex.mywebpage.mainwebsite.service;
+package com.jaikeex.mywebpage.mainwebsite.service.user.passwordreset;
 
 import com.jaikeex.mywebpage.config.connection.ServiceRequest;
 import com.jaikeex.mywebpage.mainwebsite.connection.MwpServiceRequest;
@@ -12,7 +12,7 @@ import org.springframework.stereotype.Service;
 
 @Service
 @Slf4j
-public class ResetPasswordService {
+public class ResetPasswordServiceImpl implements ResetPasswordService {
 
     private static final Class<? extends ServiceDownException> SERVICE_EXCEPTION_TYPE = UserServiceDownException.class;
 
@@ -22,24 +22,20 @@ public class ResetPasswordService {
     private final ServiceRequest serviceRequest;
 
     @Autowired
-    public ResetPasswordService(MwpServiceRequest serviceRequest) {
+    public ResetPasswordServiceImpl(MwpServiceRequest serviceRequest) {
         this.serviceRequest = serviceRequest;
     }
 
-    /**Sends the request to the user service to update password in database based
-     * on the data provided in argument dto.
-     * @param resetPasswordDto Data transfer object with necessary data for
-     *                         the user service to complete the reset password
-     *                         process.
-     * @throws org.springframework.web.client.HttpClientErrorException
-     *          Whenever a 4xx http status code gets returned.
-     * @throws UserServiceDownException
-     *          Whenever a 5xx http status code gets returned,
-     *          or the service does not respond.
-     */
+    @Override
     public void resetPassword(ResetPasswordDto resetPasswordDto) {
         resetPasswordDto.encodePassword();
         sendPostRequestToUserService(resetPasswordDto);
+    }
+
+    @Override
+    public void sendConfirmationEmail(String email) {
+        String url = apiGatewayUrl + "users/reset-password/email/" + email;
+        serviceRequest.sendGetRequest(url, Object.class, SERVICE_EXCEPTION_TYPE);
     }
 
     private void sendPostRequestToUserService(ResetPasswordDto resetPasswordDto) {
@@ -51,10 +47,6 @@ public class ResetPasswordService {
         return apiGatewayUrl + "users/password/email/" + resetPasswordDto.getEmail() + "/token/" + resetPasswordDto.getToken();
     }
 
-    public void sendConfirmationEmail(String email) {
-        String url = apiGatewayUrl + "users/reset-password/email/" + email;
-        serviceRequest.sendGetRequest(url, Object.class, SERVICE_EXCEPTION_TYPE);
-    }
 }
 
 

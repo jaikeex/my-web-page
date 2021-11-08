@@ -1,9 +1,9 @@
-package com.jaikeex.mywebpage.mainwebsite.service;
+package com.jaikeex.mywebpage.mainwebsite.service.user;
 
 import com.jaikeex.mywebpage.config.connection.ServiceRequest;
 import com.jaikeex.mywebpage.mainwebsite.connection.MwpServiceRequest;
-import com.jaikeex.mywebpage.mainwebsite.dto.UserDto;
 import com.jaikeex.mywebpage.mainwebsite.dto.UserLastAccessDateDto;
+import com.jaikeex.mywebpage.mainwebsite.dto.UserRegistrationFormDto;
 import com.jaikeex.mywebpage.mainwebsite.model.User;
 import com.jaikeex.mywebpage.mainwebsite.utility.exception.ServiceDownException;
 import com.jaikeex.mywebpage.mainwebsite.utility.exception.UserServiceDownException;
@@ -14,7 +14,7 @@ import org.springframework.stereotype.Service;
 
 @Service
 @Slf4j
-public class UserService {
+public class UserServiceImpl implements UserService {
 
     private static final Class<? extends ServiceDownException> SERVICE_EXCEPTION_TYPE = UserServiceDownException.class;
 
@@ -24,35 +24,18 @@ public class UserService {
     private final ServiceRequest serviceRequest;
 
     @Autowired
-    public UserService(MwpServiceRequest serviceRequest) {
+    public UserServiceImpl(MwpServiceRequest serviceRequest) {
         this.serviceRequest = serviceRequest;
     }
 
-    /**Sends the new user's data to the user service to save them into the
-     * database.
-     * @param userDto Data transfer object with user data necessary to complete
-     *                the registration process.
-     * @throws org.springframework.web.client.HttpClientErrorException
-     *          Whenever a 4xx http status code gets returned.
-     * @throws UserServiceDownException
-     *          Whenever a 5xx http status code gets returned,
-     *          or the service does not respond.
-     */
-    public void registerUser (UserDto userDto){
+    @Override
+    public void registerNewUser(UserRegistrationFormDto userDto){
         String url = apiGatewayUrl + "users/";
         User user = new User(userDto);
         serviceRequest.sendPostRequest(url, user, SERVICE_EXCEPTION_TYPE);
     }
 
-    /**Performs all the updates necessary when the user with a given username
-     * logs in.
-     * @param username Name of the user that just logged in.
-     * @throws org.springframework.web.client.HttpClientErrorException
-     *          Whenever a 4xx http status code gets returned.
-     * @throws UserServiceDownException
-     *          Whenever a 5xx http status code gets returned,
-     *          or the service does not respond.
-     */
+    @Override
     public void updateUserStatsOnLogin(String username) {
         String url = apiGatewayUrl + "users/last-access/";
         UserLastAccessDateDto dto = new UserLastAccessDateDto(username);

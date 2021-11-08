@@ -10,7 +10,7 @@ import javax.validation.constraints.NotBlank;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class ResetPasswordEmailDto {
+public class ResetPasswordFormDto {
 
     @ValidateEmail
     @NotBlank

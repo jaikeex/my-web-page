@@ -3,6 +3,7 @@ package com.jaikeex.mywebpage.mainwebsite.service;
 import com.jaikeex.mywebpage.mainwebsite.connection.MwpServiceRequest;
 import com.jaikeex.mywebpage.mainwebsite.dto.ProjectDto;
 import com.jaikeex.mywebpage.mainwebsite.model.Project;
+import com.jaikeex.mywebpage.mainwebsite.service.project.ProjectDetailsServiceImpl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -35,7 +36,7 @@ class ProjectDetailsServiceTest {
     MwpServiceRequest serviceRequest;
 
     @InjectMocks
-    ProjectDetailsService service;
+    ProjectDetailsServiceImpl service;
 
     Project testProject;
     ProjectDto testProjectDto;

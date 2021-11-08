@@ -2,11 +2,14 @@ package com.jaikeex.mywebpage.issuetracker.service;
 
 import com.jaikeex.mywebpage.config.connection.ServiceRequest;
 import com.jaikeex.mywebpage.issuetracker.connection.TrackerServiceRequest;
-import com.jaikeex.mywebpage.issuetracker.dto.*;
+import com.jaikeex.mywebpage.issuetracker.dto.AttachmentFileDto;
+import com.jaikeex.mywebpage.issuetracker.dto.AttachmentFormDto;
+import com.jaikeex.mywebpage.issuetracker.dto.IssueDto;
+import com.jaikeex.mywebpage.issuetracker.dto.IssueFormDto;
 import com.jaikeex.mywebpage.issuetracker.model.Issue;
 import com.jaikeex.mywebpage.issuetracker.utility.exception.IssueServiceDownException;
 import com.jaikeex.mywebpage.mainwebsite.dto.EmailDto;
-import com.jaikeex.mywebpage.mainwebsite.service.ContactService;
+import com.jaikeex.mywebpage.mainwebsite.service.contact.ContactServiceImpl;
 import com.jaikeex.mywebpage.mainwebsite.utility.exception.ServiceDownException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,11 +31,11 @@ public class IssueServiceImpl implements IssueService {
     private String issueTrackerServiceUrl;
 
     private final ServiceRequest serviceRequest;
-    private final ContactService contactService;
+    private final ContactServiceImpl contactService;
 
     @Autowired
     public IssueServiceImpl(
-            TrackerServiceRequest serviceRequest, ContactService contactService) {
+            TrackerServiceRequest serviceRequest, ContactServiceImpl contactService) {
         this.serviceRequest = serviceRequest;
         this.contactService = contactService;
     }
@@ -73,6 +76,6 @@ public class IssueServiceImpl implements IssueService {
 
     private void notifyAdministrator(IssueDto issueDto) {
         final EmailDto emailDto = new EmailDto(issueDto);
-        this.contactService.sendEmailToAdmin(emailDto);
+        this.contactService.sendMessage(emailDto);
     }
 }

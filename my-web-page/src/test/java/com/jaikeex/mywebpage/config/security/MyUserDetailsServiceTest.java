@@ -3,7 +3,7 @@ package com.jaikeex.mywebpage.config.security;
 import com.jaikeex.mywebpage.config.security.userdetails.MyUserDetails;
 import com.jaikeex.mywebpage.config.security.userdetails.MyUserDetailsService;
 import com.jaikeex.mywebpage.mainwebsite.model.User;
-import com.jaikeex.mywebpage.config.resttemplate.RestTemplateFactory;
+import com.jaikeex.mywebpage.config.connection.resttemplate.RestTemplateFactory;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

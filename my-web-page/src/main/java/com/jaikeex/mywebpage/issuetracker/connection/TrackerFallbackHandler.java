@@ -3,7 +3,6 @@ package com.jaikeex.mywebpage.issuetracker.connection;
 import com.jaikeex.mywebpage.config.connection.FallbackHandler;
 import com.jaikeex.mywebpage.mainwebsite.utility.exception.ServiceDownException;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.HttpClientErrorException;
@@ -13,10 +12,9 @@ import org.springframework.web.client.HttpClientErrorException;
 public class TrackerFallbackHandler implements FallbackHandler {
 
     @Override
-    public <T> ResponseEntity<T> throwFallbackException(String fallbackMessage,
-                                                        Throwable exception,
-                                                        Class<? extends ServiceDownException> exceptionType) {
-        log.warn("{}", ExceptionUtils.getStackTrace(exception));
+    public <T> ResponseEntity<T> throwBackendServiceException(String fallbackMessage,
+                                                              Throwable exception,
+                                                              Class<? extends ServiceDownException> exceptionType) {
         checkForClientError(exception);
         throwMatchingException(fallbackMessage, exceptionType);
         return null;

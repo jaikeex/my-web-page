@@ -1,11 +1,11 @@
-package com.jaikeex.mywebpage.aspect;
+package com.jaikeex.mywebpage.aspect.logging;
 
 import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.ProceedingJoinPoint;
+import org.aspectj.lang.annotation.AfterThrowing;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
-import org.aspectj.lang.annotation.Pointcut;
 import org.springframework.stereotype.Component;
 
 import java.util.Arrays;
@@ -13,23 +13,11 @@ import java.util.Arrays;
 @Aspect
 @Component
 @Slf4j
-public class LoggingAspect {
+public class ApplicationWideAspect {
 
-    @Pointcut("within(@org.springframework.stereotype.Repository *)" +
-            " || within(@org.springframework.stereotype.Service *)" +
-            " || within(@org.springframework.stereotype.Controller *)")
-    public void springBeanPointcut() {}
-
-    @Pointcut("within(com.jaikeex.mywebpage.mainwebsite.service..*)" +
-            " || within(com.jaikeex.mywebpage.mainwebsite.controller..*)")
-    public void mwpApplicationPackagePointcut() {}
-
-    @Pointcut("within(com.jaikeex.mywebpage.issuetracker.service..*)" +
-            " || within(com.jaikeex.mywebpage.issuetracker.controller..*)")
-    public void trackerApplicationPackagePointcut() {}
-
-    @Around("(mwpApplicationPackagePointcut() || trackerApplicationPackagePointcut()) && springBeanPointcut()")
+    @Around("com.jaikeex.mywebpage.aspect.pointcut.ApplicationPointcuts.springBeanPointcut()")
     public Object logAround(ProceedingJoinPoint joinPoint) throws Throwable {
+        //Logs all method enter and exit points including the arguments used.
         logWhenEnteringMethodBody(joinPoint);
         try {
             Object result = joinPoint.proceed();
@@ -41,6 +29,14 @@ public class LoggingAspect {
         }
     }
 
+    @AfterThrowing(pointcut = "com.jaikeex.mywebpage.aspect.pointcut.ApplicationPointcuts.springBeanPointcut()", throwing = "exception")
+    public void logAfterThrowing(JoinPoint joinPoint, Throwable exception) {
+        //Logs all exceptions thrown from the pointcut classes.
+        log.warn("Exception thrown from {}.{}(); cause = {}",
+                joinPoint.getSignature().getDeclaringTypeName(),
+                joinPoint.getSignature().getName(),
+                exception.getCause() != null ? exception.getCause() : "NULL");
+    }
     private void logIllegalArgumentException(JoinPoint joinPoint) {
         log.error("Illegal argument: {} in {}.{}()",
                 Arrays.toString(joinPoint.getArgs()),

@@ -23,7 +23,7 @@ import java.util.Properties;
 public class MyEmailService extends Authenticator {
 
     private static final String SMTP_USERNAME = "kbhsmtp@gmail.com";
-    private static final String SMTP_PASSWORD = "heslo789";
+    private static final String SMTP_PASSWORD = "redacted";
     EmailRepository repository;
 
     private String from = "kbhsmtp@gmail.com";
