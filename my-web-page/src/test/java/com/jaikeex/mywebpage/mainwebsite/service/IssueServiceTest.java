@@ -1,15 +1,15 @@
 package com.jaikeex.mywebpage.mainwebsite.service;
 
 import com.jaikeex.mywebpage.issuetracker.connection.TrackerServiceRequest;
-import com.jaikeex.mywebpage.issuetracker.dto.DescriptionDto;
 import com.jaikeex.mywebpage.issuetracker.dto.IssueDto;
 import com.jaikeex.mywebpage.issuetracker.dto.IssueFormDto;
 import com.jaikeex.mywebpage.issuetracker.model.Issue;
 import com.jaikeex.mywebpage.issuetracker.model.properties.IssueType;
 import com.jaikeex.mywebpage.issuetracker.model.properties.Project;
 import com.jaikeex.mywebpage.issuetracker.model.properties.Severity;
-import com.jaikeex.mywebpage.issuetracker.service.IssueService;
-import com.jaikeex.mywebpage.issuetracker.utility.IssueServiceDownException;
+import com.jaikeex.mywebpage.issuetracker.service.IssueServiceImpl;
+import com.jaikeex.mywebpage.issuetracker.utility.exception.IssueServiceDownException;
+import com.jaikeex.mywebpage.mainwebsite.service.contact.ContactServiceImpl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -42,17 +42,17 @@ class IssueServiceTest {
     @MockBean
     Authentication authentication;
     @MockBean
-    ContactService contactService;
+    ContactServiceImpl contactService;
 
     @Autowired
-    IssueService service;
+    IssueServiceImpl service;
 
     private static final String ISSUE_TRACKER_SERVICE_URL = "http://api-gateway:9000/issue/";
     public static final String NEW_DESCRIPTION = "new description";
     public static final String NEW_TITLE = "new title";
 
     IssueFormDto testIssueFormDto;
-    DescriptionDto descriptionDto;
+    IssueDto descriptionDto;
 
     @BeforeEach
     public void beforeEach() {
@@ -70,7 +70,7 @@ class IssueServiceTest {
 
 
     private void initDescriptionDto() {
-        descriptionDto = new DescriptionDto();
+        descriptionDto = new IssueDto();
         descriptionDto.setDescription(NEW_DESCRIPTION);
         descriptionDto.setTitle(NEW_TITLE);
     }
@@ -108,7 +108,7 @@ class IssueServiceTest {
     public void updateDescription_shouldPostHttpRequest() {
         service.updateDescription(descriptionDto);
         verify(serviceRequest, times(1))
-                .sendPostRequest(anyString(), any(DescriptionDto.class), any());
+                .sendPostRequest(anyString(), any(IssueDto.class), any());
     }
 
     @Test

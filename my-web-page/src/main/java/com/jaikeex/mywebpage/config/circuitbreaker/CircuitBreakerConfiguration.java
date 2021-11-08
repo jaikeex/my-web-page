@@ -9,6 +9,9 @@ import org.springframework.context.annotation.Configuration;
 
 import static com.jaikeex.mywebpage.config.circuitbreaker.CircuitBreakerInstanceNames.*;
 
+/**
+ * Declares Beans of circuit breakers for each Service.
+ */
 @Configuration
 public class CircuitBreakerConfiguration {
 
@@ -35,6 +38,12 @@ public class CircuitBreakerConfiguration {
     @CircuitBreakerName(USER_SERVICE_CIRCUIT_BREAKER)
     public CircuitBreaker getUserServiceCircuitBreaker() {
         return circuitBreakerFactory.create(USER_SERVICE_CIRCUIT_BREAKER);
+    }
+
+    @Bean
+    @CircuitBreakerName(USER_DETAILS_SERVICE_CIRCUIT_BREAKER)
+    public CircuitBreaker getUserDetailsServiceCircuitBreaker() {
+        return circuitBreakerFactory.create(USER_DETAILS_SERVICE_CIRCUIT_BREAKER);
     }
 
     @Bean

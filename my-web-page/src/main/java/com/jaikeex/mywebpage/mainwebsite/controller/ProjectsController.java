@@ -2,7 +2,7 @@ package com.jaikeex.mywebpage.mainwebsite.controller;
 
 
 import com.jaikeex.mywebpage.mainwebsite.model.Project;
-import com.jaikeex.mywebpage.mainwebsite.service.ProjectDetailsService;
+import com.jaikeex.mywebpage.mainwebsite.service.project.ProjectDetailsService;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;

@@ -1,7 +1,9 @@
 package com.jaikeex.mywebpage.mainwebsite.service;
 
 import com.jaikeex.mywebpage.mainwebsite.connection.MwpServiceRequest;
+import com.jaikeex.mywebpage.mainwebsite.dto.ProjectDto;
 import com.jaikeex.mywebpage.mainwebsite.model.Project;
+import com.jaikeex.mywebpage.mainwebsite.service.project.ProjectDetailsServiceImpl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -25,17 +27,33 @@ import static org.mockito.Mockito.*;
 @ExtendWith(SpringExtension.class)
 class ProjectDetailsServiceTest {
 
+    private static final String TEST_PROJECT_INTRODUCTION = "test intro";
+    private static final String TEST_PROJECT_DESCRIPTION = "test detailed description";
+    private static final String TEST_PROJECT_LANGUAGE = "test language";
+    private static final String TEST_PROJECT_GITHUB_LINK = "test github link";
+    private static final String TEST_PROJECT_NAME = "test project name";
     @Mock
     MwpServiceRequest serviceRequest;
 
     @InjectMocks
-    ProjectDetailsService service;
+    ProjectDetailsServiceImpl service;
 
     Project testProject;
+    ProjectDto testProjectDto;
 
     @BeforeEach
     public void beforeEach() {
         testProject = new Project();
+        initTestProjectDto();
+    }
+
+    private void initTestProjectDto() {
+        testProjectDto = new ProjectDto();
+        testProjectDto.setIntroduction(TEST_PROJECT_INTRODUCTION);
+        testProjectDto.setDetailedDescription(TEST_PROJECT_DESCRIPTION);
+        testProjectDto.setLanguage(TEST_PROJECT_LANGUAGE);
+        testProjectDto.setGithubLink(TEST_PROJECT_GITHUB_LINK);
+        testProjectDto.setName(TEST_PROJECT_NAME);
     }
 
     @Test
@@ -63,5 +81,15 @@ class ProjectDetailsServiceTest {
                 .thenReturn(new ResponseEntity<>(new Project[]{testProject}, HttpStatus.OK));
         List<Project> projects = service.getProjectsList();
         assertSame(projects.get(0), testProject);
+    }
+
+    @Test
+    public void saveNewProject_shouldSendCorrectInfo() {
+        ArgumentCaptor<Project> argument = ArgumentCaptor.forClass(Project.class);
+        service.saveNewProject(testProjectDto);
+        verify(serviceRequest, times(1))
+                .sendPostRequest(anyString(), argument.capture(), any());
+        assertEquals(argument.getValue().getName(), TEST_PROJECT_NAME);
+        assertEquals(argument.getValue().getIntroduction(), TEST_PROJECT_INTRODUCTION);
     }
 }

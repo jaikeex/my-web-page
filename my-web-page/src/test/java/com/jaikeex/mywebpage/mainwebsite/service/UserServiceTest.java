@@ -1,9 +1,10 @@
 package com.jaikeex.mywebpage.mainwebsite.service;
 
 import com.jaikeex.mywebpage.mainwebsite.connection.MwpServiceRequest;
-import com.jaikeex.mywebpage.mainwebsite.dto.UserDto;
+import com.jaikeex.mywebpage.mainwebsite.dto.UserRegistrationFormDto;
 import com.jaikeex.mywebpage.mainwebsite.dto.UserLastAccessDateDto;
 import com.jaikeex.mywebpage.mainwebsite.model.User;
+import com.jaikeex.mywebpage.mainwebsite.service.user.UserServiceImpl;
 import com.jaikeex.mywebpage.mainwebsite.utility.exception.UserServiceDownException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -27,15 +28,15 @@ class UserServiceTest {
     MwpServiceRequest serviceRequest;
 
     @Autowired
-    UserService service;
+    UserServiceImpl service;
 
-    UserDto userDto;
+    UserRegistrationFormDto userDto;
     User testUser;
     HttpEntity<User> entity;
 
     @BeforeEach
     public void beforeEach() {
-        userDto = new UserDto();
+        userDto = new UserRegistrationFormDto();
         userDto.setEmail("testEmail");
         userDto.setPassword("testPassword");
         userDto.setUsername("testUsername");
@@ -46,7 +47,7 @@ class UserServiceTest {
 
     @Test
     public void registerUser_givenValidData_shouldCallUserServiceWithCorrectArguments(){
-        service.registerUser(userDto);
+        service.registerNewUser(userDto);
         String API_GATEWAY_URL = "http://api-gateway:9000/";
         verify(serviceRequest, times(1)).sendPostRequest(
                 API_GATEWAY_URL + "users/", testUser, UserServiceDownException.class);

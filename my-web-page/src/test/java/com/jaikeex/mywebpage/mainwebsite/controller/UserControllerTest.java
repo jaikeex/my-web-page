@@ -1,9 +1,9 @@
 package com.jaikeex.mywebpage.mainwebsite.controller;
 
-import com.jaikeex.mywebpage.mainwebsite.dto.UserDto;
+import com.jaikeex.mywebpage.mainwebsite.dto.UserRegistrationFormDto;
 import com.jaikeex.mywebpage.mainwebsite.model.User;
-import com.jaikeex.mywebpage.mainwebsite.service.UserService;
-import com.jaikeex.mywebpage.mainwebsite.utility.exception.UserServiceDownException;
+import com.jaikeex.mywebpage.mainwebsite.service.user.UserService;
+import com.jaikeex.mywebpage.mainwebsite.service.user.UserServiceImpl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,7 +14,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-import org.springframework.web.client.HttpServerErrorException;
+import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.context.WebApplicationContext;
 
 import static org.hamcrest.Matchers.containsString;
@@ -40,7 +40,7 @@ class UserControllerTest {
     @Autowired
     private WebApplicationContext context;
 
-    private final UserDto userDto = new UserDto(
+    private final UserRegistrationFormDto userDto = new UserRegistrationFormDto(
             "testuserfordbaccess@testuserfordbaccess.com",
             "testuserfordbaccess",
             "testuserfordbaccess",
@@ -92,8 +92,8 @@ class UserControllerTest {
 
     @Test
     public void postRegistrationForm_givenUsernameTaken_shouldDisplayWarning() throws Exception {
-        UserServiceDownException exception = new UserServiceDownException("error");
-        doThrow(exception).when(service).registerUser(userDto);
+        HttpClientErrorException exception = new HttpClientErrorException(HttpStatus.CONFLICT, "error");
+        doThrow(exception).when(service).registerNewUser(userDto);
         postUserDtoToSignupEndpoint(userDto)
                 .andExpect(status().isOk())
                 .andExpect(model().attributeExists("databaseErrorMessage"));
@@ -103,7 +103,7 @@ class UserControllerTest {
     public void postRegistrationForm_givenAllOk_shouldCallUserService() throws Exception {
         postUserDtoToSignupEndpoint(userDto)
                 .andExpect(status().isOk());
-        verify(service, times(1)).registerUser(any(UserDto.class));
+        verify(service, times(1)).registerNewUser(any(UserRegistrationFormDto.class));
     }
 
     @Test
@@ -129,7 +129,7 @@ class UserControllerTest {
 
     }
 
-    private ResultActions postUserDtoToSignupEndpoint(UserDto userDto) throws Exception {
+    private ResultActions postUserDtoToSignupEndpoint(UserRegistrationFormDto userDto) throws Exception {
         return mockMvc.perform(post(USER_SIGNUP_ENDPOINT)
                 .with(csrf())
                 .flashAttr("userDto", userDto));

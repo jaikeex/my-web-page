@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<!--suppress ThymeleafVariablesResolveInspection -->
+<!--This is the user/auth view-->
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+
+  <head>
+    <title>Administration</title>
+    <div th:replace="fragments/head :: head"></div>
+  </head>
+  <body>
+    <div th:replace="fragments/mobile-nav :: mobile-nav"></div>
+    <div th:replace="fragments/header :: headertemplate (currentpage='extra')"></div>
+
+    <main id="main"><!-- #main -->
+      <div th:replace="fragments/banner :: banner"></div>
+      <div th:replace="fragments/breadcrumbs :: breadcrumbs (title='Profile info')"></div>
+
+        <div class="container form-container">
+          <div sec:authorize="isAuthenticated()">
+            <a href="/admin/projects/create">Create new project</a>
+            <a href="/admin/projects/update">Update existing project</a>
+          </div>
+        </div>
+
+    </main><!-- End #main -->
+
+    <div th:replace="fragments/footer :: footer"></div>
+    <div th:replace="fragments/arrowup :: arrowup"></div>
+    <div th:replace="fragments/jsfiles :: jsfiles"></div>
+  </body>
+</html>

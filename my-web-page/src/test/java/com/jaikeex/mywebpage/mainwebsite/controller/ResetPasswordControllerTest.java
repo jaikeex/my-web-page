@@ -1,8 +1,9 @@
 package com.jaikeex.mywebpage.mainwebsite.controller;
 
 import com.jaikeex.mywebpage.mainwebsite.dto.ResetPasswordDto;
-import com.jaikeex.mywebpage.mainwebsite.dto.ResetPasswordEmailDto;
-import com.jaikeex.mywebpage.mainwebsite.service.ResetPasswordService;
+import com.jaikeex.mywebpage.mainwebsite.dto.ResetPasswordFormDto;
+import com.jaikeex.mywebpage.mainwebsite.service.user.passwordreset.ResetPasswordService;
+import com.jaikeex.mywebpage.mainwebsite.service.user.passwordreset.ResetPasswordServiceImpl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -41,8 +42,8 @@ class ResetPasswordControllerTest {
             "testuserfordbaccess",
             "testuserfordbaccess");
 
-    private final ResetPasswordEmailDto resetPasswordEmailDto =
-            new ResetPasswordEmailDto("email@email.com");
+    private final ResetPasswordFormDto resetPasswordEmailDto =
+            new ResetPasswordFormDto("email@email.com");
 
     @BeforeEach
     public void beforeEach() {

@@ -1,7 +1,7 @@
 package com.jaikeex.mywebpage.mainwebsite.controller;
 
-import com.jaikeex.mywebpage.mainwebsite.dto.UserDto;
-import com.jaikeex.mywebpage.mainwebsite.service.UserService;
+import com.jaikeex.mywebpage.mainwebsite.dto.UserRegistrationFormDto;
+import com.jaikeex.mywebpage.mainwebsite.service.user.UserService;
 import com.jaikeex.mywebpage.mainwebsite.utility.BindingResultErrorParser;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -56,9 +56,9 @@ public class UserController {
     }
 
     @PostMapping(value = "/user/signup")
-    public String postRegistrationForm(Model model, @Valid UserDto userDto, BindingResult result) {
+    public String postRegistrationForm(Model model, @Valid UserRegistrationFormDto userDto, BindingResult result) {
         if (isResultOk(result, model)) {
-            sendUserToUserServiceForRegistration(model, userDto);
+            sendDataToUserServiceForRegistration(model, userDto);
         }
         return SIGNUP_VIEW;
     }
@@ -69,15 +69,14 @@ public class UserController {
         return errorParser.isResultOk();
     }
 
-    private void sendUserToUserServiceForRegistration(Model model, UserDto userDto) {
-        userService.registerUser(userDto);
+    private void sendDataToUserServiceForRegistration(Model model, UserRegistrationFormDto userDto) {
+        userService.registerNewUser(userDto);
         addRegistrationSuccessAttributesToModel(model);
     }
 
     private void addRegistrationSuccessAttributesToModel(Model model) {
         model.addAttribute(REGISTRATION_STATUS_ATTRIBUTE_NAME, true);
         log.debug("Added attribute to model [name={}, value={}]", REGISTRATION_STATUS_ATTRIBUTE_NAME, true);
-
     }
 
     private void addRegistrationFailedAttributesToModel(Model model, Exception exception) {
@@ -89,7 +88,7 @@ public class UserController {
     }
 
     private void addUserDtoObjectToModel(Model model) {
-        UserDto userDto = new UserDto();
+        UserRegistrationFormDto userDto = new UserRegistrationFormDto();
         model.addAttribute(USER_DTO_ATTRIBUTE_NAME, userDto);
         log.debug("Added attribute to model [name={}, value={}]", USER_DTO_ATTRIBUTE_NAME, userDto);
     }

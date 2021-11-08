@@ -2,8 +2,8 @@ package com.jaikeex.mywebpage.mainwebsite.controller;
 
 
 import com.jaikeex.mywebpage.mainwebsite.dto.ResetPasswordDto;
-import com.jaikeex.mywebpage.mainwebsite.dto.ResetPasswordEmailDto;
-import com.jaikeex.mywebpage.mainwebsite.service.ResetPasswordService;
+import com.jaikeex.mywebpage.mainwebsite.dto.ResetPasswordFormDto;
+import com.jaikeex.mywebpage.mainwebsite.service.user.passwordreset.ResetPasswordService;
 import com.jaikeex.mywebpage.mainwebsite.utility.BindingResultErrorParser;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -48,7 +48,7 @@ public class ResetPasswordController {
     }
 
     @PostMapping("/user/reset-password")
-    public String postResetPasswordForm(@Valid ResetPasswordEmailDto resetPasswordEmailDto, BindingResult result, Model model) {
+    public String postResetPasswordForm(@Valid ResetPasswordFormDto resetPasswordEmailDto, BindingResult result, Model model) {
         if (isResultOk(result, model)) {
             passEmailDataToResetPasswordService(resetPasswordEmailDto, model);
         }
@@ -76,7 +76,7 @@ public class ResetPasswordController {
     }
 
     private void addResetPasswordEmailDtoToModel(Model model) {
-        ResetPasswordEmailDto resetPasswordEmailDto = new ResetPasswordEmailDto();
+        ResetPasswordFormDto resetPasswordEmailDto = new ResetPasswordFormDto();
         model.addAttribute(RESET_PASSWORD_EMAIL_DTO_ATTRIBUTE_NAME, resetPasswordEmailDto);
         log.debug("Added attribute to model [name={}, value={}]", RESET_PASSWORD_EMAIL_DTO_ATTRIBUTE_NAME, resetPasswordEmailDto);
     }
@@ -97,7 +97,7 @@ public class ResetPasswordController {
         }
     }
 
-    private void passEmailDataToResetPasswordService(ResetPasswordEmailDto resetPasswordEmailDto, Model model) {
+    private void passEmailDataToResetPasswordService(ResetPasswordFormDto resetPasswordEmailDto, Model model) {
         try {
             resetPasswordService.sendConfirmationEmail(resetPasswordEmailDto.getEmail());
             appendModelWithMessageSuccessAttributes(model);

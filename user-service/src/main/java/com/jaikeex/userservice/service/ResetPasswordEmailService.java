@@ -52,7 +52,7 @@ public class ResetPasswordEmailService {
     }
 
     private void setupProperties(String emailAddressArgument) {
-        // Always call before creating emailObject.
+        // Always call before creating email Object.
         this.email = emailAddressArgument;
         this.resetToken = generateResetPasswordToken();
     }

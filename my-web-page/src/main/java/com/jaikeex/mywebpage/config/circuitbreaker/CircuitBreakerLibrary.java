@@ -9,6 +9,10 @@ import java.util.HashMap;
 import java.util.Map;
 
 import static com.jaikeex.mywebpage.config.circuitbreaker.CircuitBreakerInstanceNames.*;
+
+/**
+ * Manages access to the circuit breaker beans.
+ */
 @Component
 public class CircuitBreakerLibrary {
 
@@ -21,7 +25,9 @@ public class CircuitBreakerLibrary {
                                              CircuitBreaker projectsServiceCircuitBreaker,
                                  @CircuitBreakerName(USER_SERVICE_CIRCUIT_BREAKER)
                                              CircuitBreaker userServiceCircuitBreaker,
-                                 @CircuitBreakerName(RESET_PASSWORD_SERVICE_CIRCUIT_BREAKER)
+                                 @CircuitBreakerName(USER_DETAILS_SERVICE_CIRCUIT_BREAKER)
+                                             CircuitBreaker userDetailsServiceCircuitBreaker,
+                                 @CircuitBreakerName(USER_DETAILS_SERVICE_CIRCUIT_BREAKER)
                                              CircuitBreaker resetPasswordServiceCircuitBreaker,
                                  @CircuitBreakerName(CONTACT_SERVICE_CIRCUIT_BREAKER)
                                              CircuitBreaker contactServiceCircuitBreaker) {
@@ -29,6 +35,7 @@ public class CircuitBreakerLibrary {
                 issueServiceCircuitBreaker,
                 projectsServiceCircuitBreaker,
                 userServiceCircuitBreaker,
+                userDetailsServiceCircuitBreaker,
                 resetPasswordServiceCircuitBreaker,
                 contactServiceCircuitBreaker);
     }
@@ -45,12 +52,14 @@ public class CircuitBreakerLibrary {
             CircuitBreaker issueServiceCircuitBreaker,
             CircuitBreaker projectsServiceCircuitBreaker,
             CircuitBreaker userServiceCircuitBreaker,
+            CircuitBreaker userDetailsServiceCirtcuitBreaker,
             CircuitBreaker resetPasswordServiceCircuitBreaker,
             CircuitBreaker contactServiceCircuitBreaker) {
         this.breakers = new HashMap<>();
         breakers.put(ISSUE_SERVICE_CIRCUIT_BREAKER, issueServiceCircuitBreaker);
         breakers.put(PROJECTS_SERVICE_CIRCUIT_BREAKER, projectsServiceCircuitBreaker);
         breakers.put(USER_SERVICE_CIRCUIT_BREAKER, userServiceCircuitBreaker);
+        breakers.put(USER_DETAILS_SERVICE_CIRCUIT_BREAKER, userDetailsServiceCirtcuitBreaker);
         breakers.put(RESET_PASSWORD_SERVICE_CIRCUIT_BREAKER, resetPasswordServiceCircuitBreaker);
         breakers.put(CONTACT_SERVICE_CIRCUIT_BREAKER, contactServiceCircuitBreaker);
         return breakers;

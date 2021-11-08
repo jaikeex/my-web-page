@@ -31,7 +31,6 @@ public class Project {
             joinColumns = @JoinColumn(name = "project_id"),
             inverseJoinColumns = @JoinColumn(name = "technology_id")
     )
-    @JsonManagedReference
     private Set<Technology> technologies = new HashSet<>();
 
 

@@ -1,5 +1,6 @@
 package com.jaikeex.mywebpage.mainwebsite.model;
 
+import com.jaikeex.mywebpage.mainwebsite.dto.ProjectDto;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -13,6 +14,15 @@ import java.util.Set;
 public class Project {
 
     //TODO: Refactor the project-technology relationship.
+
+    public Project(ProjectDto projectDto) {
+        this.setName(projectDto.getName());
+        this.setDetailedDescription(projectDto.getDetailedDescription());
+        this.setGithubLink(projectDto.getGithubLink());
+        this.setIntroduction(projectDto.getIntroduction());
+        this.setLanguage(projectDto.getLanguage());
+        this.setSnapshot(projectDto.getSnapshot());
+    }
 
     private int id;
     private String name;

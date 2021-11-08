@@ -1,13 +1,14 @@
 package com.jaikeex.mywebpage.mainwebsite.controller;
 
 import com.jaikeex.mywebpage.mainwebsite.model.Project;
-import com.jaikeex.mywebpage.mainwebsite.service.ProjectDetailsService;
+import com.jaikeex.mywebpage.mainwebsite.service.project.ProjectDetailsServiceImpl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.http.HttpStatus;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.ui.ExtendedModelMap;
 import org.springframework.ui.Model;
@@ -32,7 +33,7 @@ class ProjectsControllerTest {
     Project project;
 
     @MockBean
-    ProjectDetailsService service;
+    ProjectDetailsServiceImpl service;
 
     @Autowired
     ProjectsController controller;
@@ -91,7 +92,8 @@ class ProjectsControllerTest {
 
     @Test
     public void displayProjectDetailsById_shouldHandleNotFound() throws Exception {
-        when(service.getProjectById(anyInt())).thenThrow(HttpClientErrorException.class);
+        HttpClientErrorException exception = new HttpClientErrorException(HttpStatus.NOT_FOUND, "not found");
+        when(service.getProjectById(anyInt())).thenThrow(exception);
         mockMvc.perform(get("/projects/details?id=5"))
                 .andExpect(status().isOk())
                 .andExpect(model().attributeExists("errorMessage"));
@@ -99,7 +101,8 @@ class ProjectsControllerTest {
 
     @Test
     public void displayAllProjects_shouldHandleNotFound() throws Exception {
-        when(service.getProjectsList()).thenThrow(HttpClientErrorException.class);
+        HttpClientErrorException exception = new HttpClientErrorException(HttpStatus.NOT_FOUND, "not found");
+        when(service.getProjectsList()).thenThrow(exception);
         mockMvc.perform(get("/projects/"))
                 .andExpect(status().isOk())
                 .andExpect(model().attributeExists("errorMessage"));
